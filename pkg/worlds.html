@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="icon" type="image/png" href="img/abbozza_icon.png">
+
+        <title>abbozza!</title>
+
+	<!--link rel="stylesheet" href="samples.css"-->
+        <!-- link rel="stylesheet" href="js/SCEditor/themes/default.min.css" id="theme-style" /-->
+        <link rel="stylesheet" type="text/css" href="css/abbozza.css">
+        <link rel="stylesheet" type="text/css" href="css/worlds.css">
+        <link rel="stylesheet" type="text/css" href="/abbozza/world/World.css">
+        
+        <script src="js/polyfill/CustomElements.js"></script>
+        <script src="js/blockly/blockly_compressed_new.js"></script>
+        <script src="js/ckeditor/ckeditor.js"></script>
+        <!-- script src="js/abbozza/core/Generator.js" type="text/javascript"></script-->
+
+        <!-- worlds specific classes -->
+        <script src="js/abbozza/worlds/DummyBoard.js" type="text/javascript"></script>
+        <script src="js/abbozza/worlds/DummyGenerator.js" type="text/javascript"></script>
+        <script src="js/abbozza/worlds/Splitter.js" type="text/javascript"></script>
+
+        <!-- general classes -->
+        <script src="js/abbozza/core/ToolboxMgr.js" type="text/javascript"></script>        
+        <script src="js/abbozza/core/ColorMgr.js" type="text/javascript"></script>        
+        <script src="js/abbozza/core/Connection.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/Validator.js" type="text/javascript"></script>  
+        <script src="js/abbozza/core/SymbolDB.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/DeviceDB.js" type="text/javascript"></script>
+        <script src="js/abbozza/gui/field_nameinput.js"></script>
+        <script src="js/abbozza/gui/field_devnameinput.js"></script>
+        <script src="js/abbozza/gui/field_lengthinput.js"></script>
+        <script src="js/abbozza/gui/field_variabledropdown.js"></script>
+        <script src="js/abbozza/gui/field_devicedropdown.js"></script>
+        <script src="js/abbozza/gui/field_functiondropdown.js"></script>
+        <script src="js/abbozza/gui/field_slider.js"></script>
+        <script src="js/abbozza/gui/field_pindropdown.js"></script>
+        <script src="js/abbozza/gui/InternalWindow.js" type="text/javascript"></script>	
+        <script src="js/abbozza/core/AbbozzaBubble.js" type="text/javascript"></script>	
+        <script src="js/abbozza/core/TaskHintIcon.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/TaskWindow.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/TaskHint.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/Configuration.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/ErrorMgr.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/TabMgr.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/DynamicMutator.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/DraggingManager.js" type="text/javascript"></script>
+        
+        <script src="/abbozza/world/World.js" type="text/javascript"></script>
+        
+        <script src="js/abbozza/core/Abbozza.js" type="text/javascript"></script>
+        <script src="js/abbozza/core/Tools.js" type="text/javascript"></script>
+
+        <script src="js/abbozza/blocks/Unknown.js" type="text/javascript"></script>
+
+        <!-- worlds specific stuff -->
+        <script src="js/abbozza/worlds/Abbozza.js" type="text/javascript"></script>
+        <script src="js/abbozza/worlds/Interpreter.js" type="text/javascript"></script>
+        <script src="/abbozza/world/Tools.js" type="text/javascript"></script>
+        
+
+        <!-- worlds specific blocks -->
+        <script src="js/abbozza/worlds/blocks/Main.js" type="text/javascript"></script>
+        <script src="/abbozza/world/Blocks.js" type="text/javascript"></script>
+        <script src="js/abbozza/worlds/Execs.js" type="text/javascript"></script>
+        
+        <!-- general blocks -->
+        <script src="js/abbozza/blocks/Conditionals.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Loops.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Math.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Logic.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Text.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Parser.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Variable.js" type="text/javascript"></script>
+        <script src="js/abbozza/blocks/Functions.js" type="text/javascript"></script>
+        
+        <!-- The plugins -->
+        <script src="/abbozza/plugins/plugins.js" type="text/javascript"></script>
+        
+        <script type="text/javascript">
+            function init() {
+                Abbozza.init('worlds',true,'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
+                this.splitter = new Splitter(document.getElementById('splitter'), "");                
+                World.init();
+                AbbozzaInterpreter.init();
+                // splitter.parent.addEventListener("splitter_resize", function(event) {
+                //    Blockly.mainWorkspace.resize();
+                // });
+            }
+        </script>
+    </head>
+
+    <body onload="init()">
+
+        <div id="overlay" onclick="Abbozza.overlayClicked(this, event)">
+            <div id="overlay_content">
+            </div>
+        </div>
+        
+        <div id="splitter" style="position: fixed; width: 100%; height: 100%;">
+            <div id=".topleft" style="min-height: 50px; min-width: 50px"></div>
+            <div id=".bottomleft" style="min-height: 50px; min-width: 50px"></div>
+            <div id=".right" style="min-height: 50px; min-width: 100px">
+                <div id="workspace" style="position: fixed"></div>                
+                <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="img/step.png"></div>
+                <div class="topButton" id="run" title="Run" onclick="AbbozzaInterpreter.run()"><img width=50 height=50  src="img/run.png"></div>
+                <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.stop()"><img width=50 height=50  src="img/stop.png"></div>
+                <div class="topButton" id="new" title="Neuer Sketch" onclick="Abbozza.newSketch()"><img width=50 height=50  src="img/new.png"></div>
+                <div class="topButton" id="load" title="Lade Sketch" onclick="Abbozza.loadSketch()"><img width=50 height=50  src="img/load.png"></div>
+                <div class="topButton" id="save" title="Speichere Sketch" onclick="Abbozza.saveSketch()"><img width=50 height=50  src="img/save.png"></div>
+                <div class="topButton" id="tools" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>	
+                <div class="topButton" id="config" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>	
+                <div class="topButton" id="info" title="Informationen"><div class="toolButton" id="serial" onclick="Abbozza.openTaskWindow()"><img width=50 height=50  src="img/info.png"></div></div>
+                <div class="license_div">
+                    Based on <a href="https://developers.google.com/blockly/">Blockly</a>, 
+                    Icons and images designed by <a href="http://www.flaticon.com/authors/freepik">Freepik</a>
+                </div>
+            </div>
+        </div> 
+
+    <xml id="startBlocks" style="display: none">
+        <block type="main" id="main" inline="false" x="100" y="100"></block>
+        <block type="devices" id="block_global_vars" inline="false" x="500" y="20"></block>
+    </xml>
+    <xml id="startBlocksWoDevices" style="display: none">
+        <block type="main" id="main" inline="false" x="100" y="20"></block>
+    </xml>    
+</body>
+</html>

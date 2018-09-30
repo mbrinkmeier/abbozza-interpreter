@@ -1,0 +1,71 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="73" y="85">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol name="text" symboltype="0" type="STRING"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="zf5sm^rgjtWxx/6Zvtrw" type="loop_endless">
+<statement name="STATEMENTS">
+<block id="|QAUpyV:eU`v1h0W@(S3" type="console_print">
+<value name="TEXT">
+<block id=")WxZ.5*ZcsZ6Mn5_J/@S" type="text_const">
+<field name="CONTENT">&gt;&gt; </field>
+</block>
+</value>
+<next>
+<block id="|d7d#by^`emDaBm{L|DW" type="var_assign">
+<value name="LEFT">
+<block id="sbV7+@XqMRwWcG}*N/rd" type="var_block">
+<field name="NAME">text</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="PQV%EIA([@w_[#[=L5wr" type="console_readline"/>
+</value>
+<next>
+<block id="8QaF4T@c18Um:.0-lPh+" type="cond_if_else">
+<value name="CONDITION">
+<block id="=AN@jG5%`]eb;?eV.btU" type="text_is_empty">
+<value name="TEXT">
+<block id="9(-kV-qG3KM#c5c_l(H." type="var_block">
+<field name="NAME">text</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="STATEMENTS1">
+<block id="R=??JokIYVZVmEJV9(KB" type="console_println">
+<value name="TEXT">
+<block id="9;`fDL/7fdI4Xn~,Vo,*" type="text_const">
+<field name="CONTENT">War leer</field>
+</block>
+</value>
+</block>
+</statement>
+<statement name="STATEMENTS2">
+<block id="7Z*`P6gUpQ0sx(pECuI2" type="console_println">
+<value name="TEXT">
+<block id="9@d,(PT^xrO|e05/i2.)" type="var_block">
+<field name="NAME">text</field>
+</block>
+</value>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=false,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.advanced=true,option.colorCategory=false,option.noArrays=false}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>

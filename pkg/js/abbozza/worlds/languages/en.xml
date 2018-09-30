@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <blocks>
+        <msg id="block.MAIN">Main program</msg> 
+    </blocks>
+    <categories>
+    </categories>
+    <gui>
+        <msg id="gui.QUIT">Quit</msg> 
+        <msg id="gui.SET_WORLD">Start World</msg> 
+        <msg id="gui.close_and_quit">abbozza! is not terminated by closing the window!</msg> 
+    </gui>
+</language>    

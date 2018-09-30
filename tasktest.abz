@@ -1,0 +1,36 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="384" width="585">&lt;page&gt;&lt;script class="page"&gt;
+Page.onShow = function() {
+console.log("HIER");
+}
+Page.onHide = function(){
+console.log("DA");
+} 
+
+&lt;/script&gt;&lt;script class="task"&gt;
+Task.onShow = function(){
+console.log("Task");
+} 
+Task.onHide = function() {
+console.log("Task beendet");
+}
+&lt;/script&gt;&lt;/page&gt;&lt;page&gt;&lt;script class="page"&gt;
+Page.onShow = function() {
+   console.log("Seite 2");
+}
+
+Page.onHide = function() {
+   console.log("Seite 2 verlassen");
+}
+&lt;/script&gt;&lt;/page&gt;</task>
+<system>worlds</system>
+</xml>

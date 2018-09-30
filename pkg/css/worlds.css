@@ -1,0 +1,41 @@
+#step {
+    right: 420px;
+}
+
+#run {
+    right: 370px;
+}
+
+#stop {
+    right: 320px;
+}
+
+#new {
+    right: 270px;
+}
+
+#load {
+    right: 220px;
+}
+
+#save {
+    right: 170px;
+}
+
+#tools {
+    right: 120px;
+}
+
+#config {
+    right: 70px;
+}
+
+#info {
+    right: 20px;
+}
+
+#workspace {
+    width: 100%;
+    height: 100%;
+}
+

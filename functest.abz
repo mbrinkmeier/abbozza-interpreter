@@ -1,0 +1,120 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="70" y="46">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol len="" name="fakultaet" symboltype="2" type="NUMBER"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="-bd_VNo:{WM5([K{t)i+" type="console_clear">
+<next>
+<block id="4{srXs@5ZjvZA`Z4Hp]K" type="console_println">
+<value name="TEXT">
+<block id=".p/)MXT`Gh{P.d*-Lk6L" inline="false" type="func_call">
+<mutation name="fakultaet" type="NUMBER">
+<par name="wert" type="NUMBER"/>
+</mutation>
+<field name="NAME">fakultaet</field>
+<value name="PAR0">
+<block id="+]1@gVT=,qhiR=A)ra9n" type="math_number">
+<field name="VALUE">10</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block id="!BJz6T+A,cX(ufR9k7j@" type="func_decl" x="12" y="179">
+<mutation>
+<name name="fakultaet"/>
+<type type="NUMBER"/>
+<symbols>
+<symbol name="wert" symboltype="1" type="NUMBER"/>
+</symbols>
+</mutation>
+<statement name="STATEMENTS">
+<block id="=k3kNjLz--#1m_7X_-_t" type="cond_if_else">
+<value name="CONDITION">
+<block id="|FdaNNe0G/2oT+E.#i?@" type="logic_compare">
+<field name="OP">LESSEQ</field>
+<value name="LEFT">
+<block id=";K28=%4)nocDWK^|wFTd" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id=",I[{VZ9*Ulcmdsr/%OKG" type="math_number">
+<field name="VALUE">2</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="STATEMENTS1">
+<block id="8tPs|u//I%uP}+Z-G7]+" type="func_return">
+<value name="VALUE">
+<block id="hhRXxHYi1w;HV,]sM6qM" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+</block>
+</statement>
+<statement name="STATEMENTS2">
+<block id="tn8#Zs5b.::#~|Cinb=V" type="var_assign">
+<value name="LEFT">
+<block id="FjKL-~@pRv_I;)tQCfPw" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="g^H9XI+9o)cz!H7VOfVl" type="math_calc">
+<field name="OP">MULT</field>
+<value name="LEFT">
+<block id="KVNUholRSh4Dq1Fig9DC" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="5}U7tJ8oUZ4rMyRh3++N" inline="false" type="func_call">
+<mutation name="fakultaet" type="NUMBER">
+<par name="wert" type="NUMBER"/>
+</mutation>
+<field name="NAME">fakultaet</field>
+<value name="PAR0">
+<block id="g?y_Er,L:KuJ/Hi`)o;w" type="math_calc">
+<field name="OP">MINUS</field>
+<value name="LEFT">
+<block id="wBfIC?[N.ly7.YC[h66g" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="Nt[Bf6l8pby2Z32USRG6" type="math_number">
+<field name="VALUE">1</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</statement>
+</block>
+</statement>
+<value name="RETURN">
+<block id="^[W~U/ZA|zdkGRo=kFD-" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=true,option.linArrays=false,option.colorType=false,option.advanced=true,option.colorCategory=false,option.noArrays=false}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>

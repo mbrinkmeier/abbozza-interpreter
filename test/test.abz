@@ -1,0 +1,65 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="107" y="25">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="2zI2fw3C+s/HkroI;[G:" type="turtle_clear">
+<next>
+<block id="?btUH5~dZ1-DUVEiXcEc" type="loop_fixed">
+<value name="COUNT">
+<block id=")I[*^GPUOEA1JP]zI5D?" type="math_number">
+<field name="VALUE">4</field>
+</block>
+</value>
+<statement name="STATEMENTS">
+<block id="*Aa^p@d`M[sUUa+onaJ~" type="turtle_set_rgb_color">
+<value name="RED">
+<block id="L#vnIvbmWy1qCwI{~AB4" type="math_number">
+<field name="VALUE">255</field>
+</block>
+</value>
+<value name="GREEN">
+<block id="y5rCT,A?sQ={CDPyo]az" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">0</field>
+</block>
+</value>
+<value name="BLUE">
+<block id="H048vym.V:0SQF]YZhr%" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">0</field>
+</block>
+</value>
+<next>
+<block id="Xwz=E(/doeLG4~u4eX6R" type="turtle_forward">
+<value name="VALUE">
+<block id="NH3]-6!dB[g@M0)[IohA" type="math_number">
+<field name="VALUE">100</field>
+</block>
+</value>
+<next>
+<block id="[0;!~(XO%Jc/jcppRMwX" type="turtle_turn">
+<value name="VALUE">
+<block id="T6ki;zGiQ`r_J#F7mnoj" type="math_number">
+<field name="VALUE">90</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=true,option.linArrays=false,option.colorType=false,option.advanced=true,option.colorCategory=false,option.noArrays=false}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>

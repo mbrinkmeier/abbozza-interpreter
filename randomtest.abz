@@ -1,0 +1,51 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="pgNZY9K[ml}BgL--Q=._" type="loop_fixed">
+<value name="COUNT">
+<block id="rtB^~b#,1GJ;+]RFzmy^" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">42</field>
+</block>
+</value>
+<statement name="STATEMENTS">
+<block id="Tn#fwTTj*PfBZuK+T:cm" type="console_println">
+<value name="TEXT">
+<block id="9fGzs@uh|HQ@7;b*%Hfi" type="math_random">
+<value name="MAX">
+<block id="*W17OfJJ]E!g6i4{F5eb" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">100</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<block id="%-1u}gAUq~FS-7J?S,Xq" type="math_random2" x="245.37130737304688" y="291">
+<value name="MIN">
+<block id="c.|At[7xHL]D!s/hqXVA" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">1</field>
+</block>
+</value>
+<value name="MAX">
+<block id="y!WUZd%8?K_o!:vRmU(." type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">50</field>
+</block>
+</value>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>

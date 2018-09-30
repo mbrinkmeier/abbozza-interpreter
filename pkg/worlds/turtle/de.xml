@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <categories>
+        <msg id="cat.TURTLE">Turtle</msg>
+    </categories>
+    <blocks>
+        <msg id="turtle.clear">Lösche Zeichnung</msg>
+        <msg id="turtle.reset">Setze zurück</msg>
+        <msg id="turtle.forward">Vorwärts</msg>
+        <msg id="turtle.turn">Drehe</msg>
+        <msg id="turtle.set_dir">Setze Richtung auf</msg>
+        <msg id="turtle.set_width">Setze Strichbreite auf</msg>
+        <msg id="turtle.set_color">Setze Farbe</msg>
+        <msg id="turtle.red">Rot</msg>
+        <msg id="turtle.green">Grün</msg>
+        <msg id="turtle.blue">Blau</msg>
+        <msg id="turtle.penup">Stift hoch</msg>
+        <msg id="turtle.pendown">Stift runter</msg>
+        <msg id="turtle.hide">Verstecke Dich</msg>
+        <msg id="turtle.show">Zeige Dich</msg>
+        <msg id="turtle.getx">x-Koordinate</msg>
+        <msg id="turtle.gety">y-Koordinate</msg>
+        <msg id="turtle.get_dir">Richtung</msg>
+        <msg id="turtle.get_red">Rotanteil des Pixels unter Dir</msg>
+        <msg id="turtle.get_green">Grünanteil des Pixels unter Dir</msg>
+        <msg id="turtle.get_blue">Blauanteil des Pixels unter Dir</msg>
+    </blocks>
+</language>

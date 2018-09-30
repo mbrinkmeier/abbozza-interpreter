@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<world id="console">
+   <name>Console</name>
+   <description>
+Programmiere Programme, die Text einlesen und ausgeben können.
+       
+Sehr gut für Berechnungen und Wortspielereien.
+   </description>
+</world>
+

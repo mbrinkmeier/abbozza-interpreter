@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <categories>
+        <msg id="cat.CONSOLE">Konsole</msg>
+    </categories>
+    <blocks>
+        <msg id="console.clear">Lösche Konsole</msg>
+        <msg id="console.print">Gebe aus</msg>
+        <msg id="console.println">Gebe Zeile aus</msg>
+        <msg id="console.readkey">Lese Zeichen</msg>
+        <msg id="console.readline">Lese Zeile</msg>
+    </blocks>
+</language>

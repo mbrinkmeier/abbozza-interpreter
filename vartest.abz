@@ -1,0 +1,108 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="93" y="72">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol name="zahl" symboltype="0" type="NUMBER"/>
+<symbol name="text" symboltype="0" type="STRING"/>
+<symbol name="dezimal" symboltype="0" type="DECIMAL"/>
+<symbol name="wahr" symboltype="0" type="BOOLEAN"/>
+<symbol len="[10][5]" name="array" symboltype="0" type="NUMBER"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="uMkn*I31a]K|@3nL!+PM" type="var_assign">
+<value name="LEFT">
+<block id="KKw?ocJHks6i|l56#ez7" type="var_block">
+<field name="NAME">zahl</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="|dq*oQBS?`4j94:2AQU_" type="math_number">
+<field name="VALUE">42</field>
+</block>
+</value>
+<next>
+<block id="kZ~irVp=#!,M0~C!.h83" type="var_assign">
+<value name="LEFT">
+<block id="+`p^F1!0m^E}PSkgG.Pt" type="var_block">
+<field name="NAME">zahl</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="t;VEiX`P1P+UO@Au2*{l" type="math_number">
+<field name="VALUE">43</field>
+</block>
+</value>
+<next>
+<block id="P,M3uJ`,7pB1=IeU2=3`" type="var_assign">
+<value name="LEFT">
+<block id="Ky1Rs@ep}p^{!7rWbp7W" type="var_block">
+<mutation dimension="2"/>
+<field name="NAME">array</field>
+<value name="DIM0">
+<block id="ZY+_u.lp/EziHtQ0MOGm" type="math_number">
+<field name="VALUE">2</field>
+</block>
+</value>
+<value name="DIM1">
+<block id="rs:8}qsw,n6X`aDU:bBr" type="math_number">
+<field name="VALUE">3</field>
+</block>
+</value>
+</block>
+</value>
+<value name="RIGHT">
+<block id="fNY/|ZNC.X*Y}YLu1{]i" type="var_block">
+<field name="NAME">zahl</field>
+</block>
+</value>
+<next>
+<block id="KU_Fl)=HhQ(R,+NM~+K8" type="var_assign">
+<value name="LEFT">
+<block id="-y!EJ;_3)ch~BbT[(|9i" type="var_block">
+<mutation dimension="2"/>
+<field name="NAME">array</field>
+<value name="DIM0">
+<block id="B%o/Q,uh{gi%W#xm5{}v" type="math_number">
+<field name="VALUE">4</field>
+</block>
+</value>
+<value name="DIM1">
+<block id="cY(bj1}O3#OY0i;r+B7F" type="math_number">
+<field name="VALUE">1</field>
+</block>
+</value>
+</block>
+</value>
+<value name="RIGHT">
+<block id="3nB0NBW@i{-HAEYL_sJN" type="var_block">
+<mutation dimension="2"/>
+<field name="NAME">array</field>
+<value name="DIM0">
+<block id="YH+U4-tzR3jC!/:dQpp6" type="math_number">
+<field name="VALUE">2</field>
+</block>
+</value>
+<value name="DIM1">
+<block id="-d56Zz}+x_*`]2.]YpY:" type="math_number">
+<field name="VALUE">3</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>

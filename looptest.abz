@@ -1,0 +1,61 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="75" y="111">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="2%ZhAR;h{{)S!23p+?dv" type="console_clear">
+<next>
+<block id="q7)_^tm_F.ctra#N*__0" type="console_print">
+<value name="TEXT">
+<block id="P/xB.wn7(bU);.%[s9CB" type="text_const">
+<field name="CONTENT">&gt;&gt; </field>
+</block>
+</value>
+<next>
+<block id="wF`a.Re#zK^Di(nc^Y2U" type="loop_while">
+<value name="CONDITION">
+<block id="!@N3`JS/zQcA9(I},.+?" type="logic_compare">
+<field name="OP">EQUALS</field>
+<value name="LEFT">
+<block id="_!YXM9p]~XJ)R2-h6Nq." type="text_const">
+<field name="CONTENT">a</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="/3MpO~.3r=a15YU|z^mn" type="console_readkey"/>
+</value>
+</block>
+</value>
+<statement name="STATEMENTS">
+<block id="QQ:k!OBqwC.GJ@uu#(K6" type="console_print">
+<value name="TEXT">
+<block id="MF!9CM#|cy,yDanufWuD" type="text_const">
+<field name="CONTENT">&gt;&gt; </field>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block id="Rho0!H/^wPAO5W0eRX@n" type="console_println">
+<value name="TEXT">
+<block id="97yxt8v6209L=Y.BS~W~" type="text_const">
+<field name="CONTENT">Ende</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>

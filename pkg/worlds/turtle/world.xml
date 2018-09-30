@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<world id="turtle">
+   <name>Turtle</name>
+   <description>
+Zeichne mit einer Schildkröte.
+   </description>
+</world>
+

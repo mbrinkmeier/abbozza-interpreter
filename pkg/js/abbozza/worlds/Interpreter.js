@@ -1,0 +1,419 @@
+/**
+ * The static object for the Interpreter
+ * 
+ */
+
+
+var AbbozzaInterpreter = {
+    mode : 0,
+    delay : 1,
+    worker : null,
+    hilightedBlock : null,
+    localSymbols : [],
+    globalSymbols : [],
+    exec: [],
+    breakLoop: false,
+    
+    execStack : []
+};
+
+
+AbbozzaInterpreter.MODE_STOPPED  = 0;
+AbbozzaInterpreter.MODE_RUNNING  = 1;
+AbbozzaInterpreter.MODE_STEPPING = 2;
+AbbozzaInterpreter.MODE_PAUSED  = 3;
+
+
+AbbozzaInterpreter.init = function() {
+    AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
+    
+    document.addEventListener("abz_step", AbbozzaInterpreter.handleStep );
+    document.addEventListener("abz_stop", AbbozzaInterpreter.handleStop );
+};
+
+
+AbbozzaInterpreter.step = function() {
+    AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STEPPING;
+    this.executeStep();
+}
+
+AbbozzaInterpreter.run = function() {
+    if ( this.mode == this.MODE_RUNNING ) {
+        this.mode = this.MODE_STEPPING;
+        return;
+    }
+    this.mode = this.MODE_RUNNING;
+    this.worker = window.setInterval( function() { 
+        AbbozzaInterpreter.executeStep();
+    } , this.delay );
+};
+
+
+AbbozzaInterpreter.stop = function() {
+    window.clearInterval(this.worker);    
+    this.stopping();
+};
+  
+  
+  
+AbbozzaInterpreter.executeStep = function() {
+    var newEvent = new CustomEvent("abz_step");
+    document.dispatchEvent(newEvent);
+    
+    // If the execution stack is empty, add the main block ...
+    if ( (this.execStack.length == 0) && ((this.mode == this.MODE_STEPPING) || (this.mode == this.MODE_RUNNING))     ) {
+        ErrorMgr.clearErrors();
+        var workspace = Blockly.mainWorkspace;
+        var topBlocks = workspace.getTopBlocks(true);
+        for (var i = 0; i < topBlocks.length; i++) {
+            var block = topBlocks[i];
+            if (block.type.startsWith("main")) {
+                // The main block
+                var newEntry = new ExecStackEntry(block,true);
+                this.execStack.push(newEntry);
+            }
+        }
+    }
+    
+    // If the execution stack is empty
+    if ( this.execStack.length == 0) {
+        this. stopping();
+        return;
+    }
+    
+    // Execute the top block
+    var topEntry = this.execStack[this.execStack.length-1];
+    if (topEntry) { 
+        // First check if block is done
+        if ( topEntry.phase < 0 ) {
+            // Remove entry from execution stack
+            AbbozzaInterpreter.execStack.pop();
+       
+            if ( topEntry.isStatement == false ) {
+                // If it has a return value, take it and insert it as callResult into new top
+                var newTop = AbbozzaInterpreter.execStack[AbbozzaInterpreter.execStack.length-1];
+                if ( newTop ) {
+                    newTop.callResult = topEntry.returnValue;
+                }
+            } else {
+                // Execute the next statement
+                var nextBlock = topEntry.block.getNextBlock();
+                if ( nextBlock ) {
+                    var newEntry = new ExecStackEntry(nextBlock,true);
+                    AbbozzaInterpreter.execStack.push(newEntry);
+                }
+            }
+            topEntry = this.execStack[this.execStack.length-1];
+        }
+        if ( topEntry ) topEntry.execute();
+    } else {
+        // Remove empty entry
+        this.execStack.pop();
+    }
+    
+    
+    if ( this.execStack.length == 0 ) {
+        this.stopping();
+    }
+    
+};
+
+
+
+AbbozzaInterpreter.stopping = function() {
+    window.clearInterval(this.worker);    
+
+    var newEvent = new CustomEvent("abz_stop");
+    document.dispatchEvent(newEvent);
+    this.mode = this.MODE_STOPPED;
+        
+    if ( this.highlightedBlock ) {
+        this.highlightedBlock.unselect();
+    }    
+    
+    this.execStack = [];
+    
+    alert("Execution finished!");
+}
+
+
+
+
+
+AbbozzaInterpreter.handleStep = function(event) {
+    if ( this.mode = this.MODE_STOPPED ) return;
+};
+
+
+AbbozzaInterpreter.handleStop = function(event) {
+};
+
+
+
+AbbozzaInterpreter.callBlock = function(block) {
+    if ( !block ) return false;
+    
+    var entry = new ExecStackEntry(block);
+    this.execStack.push(entry);
+    return true;
+};
+
+
+AbbozzaInterpreter.callInput = function(block,name, enfType = null) {
+    if ( !block ) return false;
+    
+    if (block.getInput(name) == null) {
+        ErrorMgr.addError(block, _("err.NOINPUT"));
+        return false;
+    }
+    var calledBlock = block.getInputTargetBlock(name);
+    var entry = new ExecStackEntry(calledBlock,false,enfType);
+    if (( enfType == "NUMBER" ) || ( enfType == "DECIMAL")) {
+        entry.returnValue = Number(entry.returnValue);
+    } else if (( enfType == "STRING" ) || ( enfType == "TEXT")) {
+        entry.returnValue = String(entry.returnValue);
+    } else if ( enfType == "BOOLEAN" ) {
+        if ( typeof entry.returnValue == "string" ) {
+           entry.returnValue = ( entry.returnValue != "" );
+       } else if ( typeof entry.returnValue == "number") {
+           entry.returnValue = ( entry.returnValue != 0 );           
+       }
+    }
+    this.execStack.push(entry);
+};
+
+
+
+AbbozzaInterpreter.callStatement = function(block,name = null ) {
+    if ( !block ) return false;
+    
+    var calledBlock;
+    if ( name != null ) {
+        calledBlock = block.getInputTargetBlock(name);    
+    } else {
+        calledBlock = block;
+    }
+    
+    if ( calledBlock == null) {
+        return false;
+    }
+    
+    var entry = new ExecStackEntry(calledBlock,true);
+    this.execStack.push(entry);
+    return true;
+};
+
+
+AbbozzaInterpreter.callFunction = function(block,parameters) {
+    if ( !block ) return false;
+    
+    var entry;
+    if ( block.rettype != "VOID" ) {
+        entry = new ExecStackEntry(block,false);
+    } else {
+        entry = new ExecStackEntry(block,true);
+    }
+    entry.args = parameters;
+    
+    this.execStack.push(entry);
+    return true;
+};
+
+
+AbbozzaInterpreter.endFunctionCall = function(returnEntry) {
+    while ( (this.execStack.length > 0) && (this.execStack[this.execStack.length-1].block.type != "func_decl" )) {
+        this.execStack.pop();
+    }
+    if ( this.execStack.length > 0 ) {
+        var funcEntry = this.execStack[this.execStack.length-1];
+        if ((funcEntry.block.rettype == "STRING") || (funcEntry.block.rettype == "TEXT")) {
+            funcEntry.returnValue = String(returnEntry.returnValue);
+        } else if ((funcEntry.block.rettype == "NUMBER") || (funcEntry.block.rettype == "DECIMAL")) {
+            funcEntry.returnValue = Number(returnEntry.returnValue);
+        } else if ( funcEntry.block.rettype == "BOOLEAN" ) {
+            if ( typeof entry.returnValue == "string" ) {
+                funcEntry.returnValue = ( returnEntry.returnValue != "" );
+            } else if ( typeof entry.returnValue == "number") {
+                funcEntry.returnValue = ( returnEntry.returnValue != 0 );           
+            }
+        } else {
+            funcEntry.returnValue = returnEntry.returnValue;
+        }
+        funcEntry.finished();
+    }
+}
+
+
+
+AbbozzaInterpreter.getDefaultValue  = function(type, len) {
+    if ( type == "NUMBER") {
+        if ( len != null ) {
+            return this.getDefaultArray(len,0);
+        } else {
+            return 0;
+        }
+    } else if ( type == "DECIMAL") {
+        if ( len != null ) {
+            return this.getDefaultArray(len,0.0);
+        } else {
+            return 0.0;
+        }
+    } else if ( (type == "STRING")  || (type == "TEXT") ) {
+        if ( len != null) {
+            return this.getDefaultArray(len,"");
+        } else {
+            return "";
+        }
+    } else if ( type == "BOOLEAN") {
+        if ( len != null) {
+            return this.getDefaultArray(len,false);
+        } else {
+            return false;
+        }
+    } else {
+        return null;
+    }
+};
+
+
+AbbozzaInterpreter.getDefaultArray  = function(dimension,val, pos = 0) {
+    var ar = [];
+    if ( pos == dimension.length-1 ) {
+        // Last dimension
+        for ( var i = 0; i < dimension[pos]; i++ ) {
+            ar.push(val);
+        }
+    } else {
+        for ( var i = 0; i < dimension[pos]; i++ ) {
+            ar.push(this.getDefaultArray(dimension,val,pos+1));
+        }
+    }
+    return ar;
+}
+
+
+
+AbbozzaInterpreter.setGlobalSymbol = function(key,value, dim = null) {
+    if ( dim == null ) {
+        this.globalSymbols[key] = value;
+    } else {    
+        var ar = this.globalSymbols[key];
+        for ( var i = 0; i < dim.length-1; i++) {
+            ar = ar[dim[i]];
+        }
+        ar[dim[dim.length-1]] = value;
+    }
+};
+
+
+AbbozzaInterpreter.getGlobalSymbol = function(key) {
+    return this.globalSymbols[key];
+};
+
+
+AbbozzaInterpreter.setLocalSymbol = function(key,value, dim = null) {
+    if ( this.localSymbols.length == 0 ) return null;
+
+    var symbols = this.localSymbols[this.localSymbols.length-1];
+    if ( dim == null ) {
+        symbols[key] = value;
+    } else {    
+        var ar = this.globalSymbols[key];
+        for ( var i = 0; i < dim.length-1; i++) {
+            ar = ar[dim[i]];
+        }
+        ar[dim[dim.length-1]] = value;        
+    }
+};
+
+
+AbbozzaInterpreter.getLocalSymbol = function(key) {
+    if ( this.localSymbols.length == 0 ) return null;
+
+    var symbols = this.localSymbols[this.localSymbols.length-1];
+    return symbols[key];
+};
+
+
+AbbozzaInterpreter.pushLocalSymbols = function() {
+    this.localSymbols.push([]);
+}
+
+
+AbbozzaInterpreter.popLocalSymbols = function() {
+    this.localSymbols.pop();
+}
+
+
+AbbozzaInterpreter.getSymbol = function(key, dim) {
+    var val = this.getLocalSymbol(key);
+    if ( val == null ) {
+        val = this.getGlobalSymbol(key);
+    }
+    // Run through the dimensions
+    if ( dim != null ) {
+        for ( var i = 0; i < dim.length; i++ ) {
+            val = val[dim[i]];
+        }
+    }
+    return val;
+}
+
+AbbozzaInterpreter.setSymbol = function(key, val, dim) {
+    var sym = this.getLocalSymbol(key);
+    if ( sym == null ) {
+        sym = this.getGlobalSymbol(key);
+        if ( sym == null ) {
+            return false;
+        }
+        this.setGlobalSymbol(key,val,dim);
+    } else {
+        this.setLocalSymbol(key,val,dim);        
+    }    
+}
+
+/**
+ * Th class for the executoin stack entries
+ * 
+ * @param {type} block
+ * @returns {ExecStackEntry}
+ */
+function ExecStackEntry(block,isStatement, enfType = null) {
+    this.isStatement = isStatement;
+    this.phase = 0;
+    this.block = block;
+    this.returnValue = null;
+    this.callResult = null;
+    this.enfType = enfType;
+};
+
+
+/**
+ * Execute the block with the current phase
+ */
+ExecStackEntry.prototype.execute = function() {
+    if ( !this.block ) return false;
+
+    if ( (AbbozzaInterpreter.highlightedBlock != null) && (AbbozzaInterpreter.highlightedBlock != this.block) ) {
+        AbbozzaInterpreter.highlightedBlock.unselect();
+    }
+    AbbozzaInterpreter.highlightedBlock = this.block;
+    this.block.select();
+
+
+    if ( this.block.execute ) {
+        // Call the blocks own execute function.
+        this.block.execute(this);
+    } else if ( AbbozzaInterpreter.exec[this.block.type] ) {
+        // Call the function given externally
+        AbbozzaInterpreter.exec[this.block.type].call(this.block,this);
+    } else {
+        ErrorMgr.addError(this.block, _("err.NO_EXECUTE"));
+        this.finished();
+    }    
+};
+
+
+ExecStackEntry.prototype.finished = function() {
+    this.phase = -1;
+};

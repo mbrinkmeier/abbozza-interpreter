@@ -1,0 +1,125 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="24" y="78">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol name="x" symboltype="0" type="NUMBER"/>
+<symbol name="y" symboltype="0" type="NUMBER"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="!`eUTkTbz)U)Bx]Ac^U+" type="console_clear">
+<next>
+<block id="BR.;gO2F}!KXjqP?R/m," type="loop_fixed">
+<value name="COUNT">
+<block id="8UMHHbCD1:%/LK#]-[b_" type="math_number">
+<field name="VALUE">5</field>
+</block>
+</value>
+<statement name="STATEMENTS">
+<block id="I^ebx|h#/1fZU9LK@on-" type="var_assign">
+<value name="LEFT">
+<block id="k+m1z9#GYT;bX|Ann^bU" type="var_block">
+<field name="NAME">x</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="}u0m]-Tz7e(Q.3KkH-@k" type="math_random2">
+<value name="MIN">
+<block id="%!P~RA3M4bC%ZhgVwQ62" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">1</field>
+</block>
+</value>
+<value name="MAX">
+<block id="o[cJ:zg#rVdh%3`:Xo{`" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">50</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block id="W7V~|z(HkIXaq/9Ch;,|" type="var_assign">
+<value name="LEFT">
+<block id="AFhV+`#JOeoJ+!~9.|kc" type="var_block">
+<field name="NAME">y</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="]*|smqhzP*xVRVS%CyHy" type="math_random2">
+<value name="MIN">
+<block id="(XJ8_T}HFRYs:G]qzVkW" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">1</field>
+</block>
+</value>
+<value name="MAX">
+<block id="adMGN]eGNe3Q9E@YV57f" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">50</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block id="!FtpLaAVE)!zeeZb^/lU" type="console_println">
+<value name="TEXT">
+<block id="Y`cGop;t@h~NzUR,Uu2F" type="var_block">
+<field name="NAME">x</field>
+</block>
+</value>
+<next>
+<block id="e6:Br}H_4B]!G_).013D" type="console_println">
+<value name="TEXT">
+<block id="8ifit+5Yw}-PRgS|T`@0" type="var_block">
+<field name="NAME">y</field>
+</block>
+</value>
+<next>
+<block id="TB9_+L!IRLG#m7ww2-b+" type="console_println">
+<value name="TEXT">
+<block id="[Nr^(opLGI{C|iy}5q;^" type="math_calc">
+<field name="OP">MINUS</field>
+<value name="LEFT">
+<block id="3=Bcv=8]db@dB(!sbb8*" type="var_block">
+<field name="NAME">x</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="pF2mz*C?Hu^p[0GvctE^" type="var_block">
+<field name="NAME">y</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block id="~?YP0PT2mf{1Q.DHep15" type="console_println">
+<value name="TEXT">
+<block id="!sh/m.^^jFm,2Lf]Am?o" type="text_const">
+<field name="CONTENT">---</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="400" width="600">&lt;page&gt;Test&lt;/page&gt;</task>
+<system>interpreter</system>
+</xml>
