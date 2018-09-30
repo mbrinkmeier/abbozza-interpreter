@@ -67,10 +67,10 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
         AbbozzaSplashScreen.showSplashScreen("de/uos/inf/did/abbozza/worlds/icons/abbozza-worlds-splash.png");
         
-        
         super.init(system, args);
 
         worldManager = new WorldManager(this);
+        worldManager.registerWorld(new World("worlds/kara"));
         worldManager.registerWorld(new World("worlds/console"));
         worldManager.registerWorld(new World("worlds/turtle"));
         currentWorld = worldManager.getElementAt(0);
@@ -199,7 +199,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     @Override
     public void findJarsAndDirs(JarDirHandler jarHandler) {
         jarHandler.addDir(jarPath + "/", "Dir");
-        jarHandler.addJar(jarPath + "/abbozza-interpreter.jar", "Jar");
+        jarHandler.addJar(jarPath + "/abbozza-worlds.jar", "Jar");
     }
 
     @Override

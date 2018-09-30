@@ -43,15 +43,21 @@ AbbozzaInterpreter.run = function() {
         return;
     }
     this.mode = this.MODE_RUNNING;
-    this.worker = window.setInterval( function() { 
-        AbbozzaInterpreter.executeStep();
-    } , this.delay );
+    this.worker = window.setTimeout( AbbozzaInterpreter.doStep , this.delay );
 };
 
 
+AbbozzaInterpreter.doStep = function() {
+    AbbozzaInterpreter.executeStep();
+    if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING )
+        window.setTimeout(AbbozzaInterpreter.doStep , this.delay);
+}
+
+
 AbbozzaInterpreter.stop = function() {
-    window.clearInterval(this.worker);    
-    this.stopping();
+    this.mode = this.MODE_STOPPED;
+    this.execStack = [];
+    // window.clearInterval(this.worker);    
 };
   
   
@@ -77,7 +83,7 @@ AbbozzaInterpreter.executeStep = function() {
     
     // If the execution stack is empty
     if ( this.execStack.length == 0) {
-        this. stopping();
+        this.stopping();
         return;
     }
     
@@ -130,9 +136,7 @@ AbbozzaInterpreter.stopping = function() {
     if ( this.highlightedBlock ) {
         this.highlightedBlock.unselect();
     }    
-    
-    this.execStack = [];
-    
+       
     alert("Execution finished!");
 }
 

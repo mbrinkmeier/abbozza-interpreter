@@ -1,0 +1,32 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="MXVtkVOl6nZ8bg2aDsy3" type="loop_endless">
+<statement name="STATEMENTS">
+<block id="F,wURR^/=7`?`hSQIG_[" type="cond_if_else">
+<value name="CONDITION">
+<block id="S!yYG@A,DpRv%%}:5*-G" type="kara_is_forward">
+<field name="TYPE">-2</field>
+</block>
+</value>
+<statement name="STATEMENTS1">
+<block id="?(aF%Sy[]3=mBs{r)6*y" type="kara_turn_right"/>
+</statement>
+<statement name="STATEMENTS2">
+<block id="ue*u8B+I=l-*6Ivlt6zo" type="kara_forward"/>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>worlds</system>
+</xml>

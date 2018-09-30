@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <categories>
+        <msg id="cat.KARA">Kara</msg>
+    </categories>
+    <blocks>
+        <msg id="kara.forward">Gehe vor</msg>
+        <msg id="kara.turn_left">Drehe nach links</msg>
+        <msg id="kara.turn_right">Drehe nach rechts</msg>
+        <msg id="kara.pick_up">Hebe Kleeblatt auf</msg>
+        <msg id="kara.drop">Lege Kleeblatt ab</msg>
+        <msg id="kara.is_empty">Ist vorne leer?</msg>
+        <msg id="kara.is_on_shamrock">Ist auf Kleeblatt?</msg>
+        <msg id="kara.is_forward">Ist vorne ein</msg>
+        <msg id="kara.MUSHROOM">Pilz</msg>
+        <msg id="kara.TREE">Baumstumpf</msg>
+        <msg id="kara.ROCK">Stein</msg>
+        <msg id="kara.collision">Kollision mit</msg>
+        <msg id="kara.no_shamrock">Kein Kleeblatt!</msg>
+    </blocks>
+</language>

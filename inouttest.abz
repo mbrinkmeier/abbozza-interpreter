@@ -1,0 +1,58 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="79" y="85">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol name="eingabe" symboltype="0" type="STRING"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="fDf:/Q46hCrFknB:_4{+" type="loop_endless">
+<statement name="STATEMENTS">
+<block id="@`yrFA1+Nfv8{PzDjMOA" type="console_print">
+<value name="TEXT">
+<block id="@:+J8N|6sDVx%Ix;F7=t" type="text_const">
+<field name="CONTENT">&gt;&gt; </field>
+</block>
+</value>
+<next>
+<block id="rfuXPHDgk`W+fbAi{8`1" type="var_assign">
+<value name="LEFT">
+<block id="]0P%J[T(MLxaTr%5F-6;" type="var_block">
+<field name="NAME">eingabe</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="nN?qOz^Ixwb/7EBz4F[V" type="console_readline"/>
+</value>
+<next>
+<block id="q#1q;^=~dZS1o=kD7Y:?" type="console_print">
+<value name="TEXT">
+<block id="PvbANlzQ@A#=cZ%pfof+" type="text_concat">
+<value name="TEXT1">
+<block id="s!2L9^N@4H]~)ui}v8)M" type="text_const">
+<field name="CONTENT">ECHO: </field>
+</block>
+</value>
+<value name="TEXT2">
+<block id="3nRebVk]7CxN,5kQ-V0n" type="var_block">
+<field name="NAME">eingabe</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>worlds</system>
+</xml>
