@@ -50,31 +50,12 @@ public class WorldFeatureHandler extends AbstractHandler {
 
     @Override
     protected void handleRequest(HttpExchange exchg) throws IOException {
-        String contextId = null;
-        Headers headers = exchg.getRequestHeaders();
-        List<String> cookies = headers.get("Cookie");
-        if ( cookies == null ) {
-            AbbozzaLogger.info("no cookies");
-        } else {
-            for ( String cookie : cookies ) {
-                if ( cookie.contains("world=") ) {
-                    int pos = cookie.indexOf("world=");
-                    int pos2 = cookie.indexOf(';', pos);
-                    if ( pos2 < 0 ) {
-                        contextId = cookie.substring(pos+8);                        
-                    } else {
-                        contextId = cookie.substring(pos+8,pos2);
-                    }
-                    AbbozzaLogger.info("WORLD: " + contextId);
-                }
-            }
-        }
-        
         World context = ((AbbozzaWorlds) _abbozzaServer).getWorld();
-
         sendResponse(exchg, 200, "text/xml", XMLTool.documentToString(getFeatures(context)));
     }
 
+    
+    
     private Document getFeatures(World context) {
         
         // Read the xml file for the global feature

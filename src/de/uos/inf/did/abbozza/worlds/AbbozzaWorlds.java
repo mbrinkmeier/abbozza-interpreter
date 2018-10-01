@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     protected TrayIcon trayIcon;
-    protected String worldId;
     protected String localWorldPath;
     protected String globalWorldPath;
     protected WorldManager worldManager;
@@ -78,9 +77,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
         frame.open();
-        mainFrame = frame;
-
-        
+        mainFrame = frame;       
         
         // Try to start server on given port
         int serverPort = config.getServerPort();
@@ -120,7 +117,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
                 PopupMenu trayMenu = new PopupMenu();
                 MenuItem item = new MenuItem(AbbozzaLocale.entry("gui.startBrowser"));
                 item.addActionListener((ActionEvent e) -> {
-                    startBrowser(system + ".html");
+                    // startBrowser(system + ".html");
+                    startBrowser("worlds.html");
                 });
                 trayMenu.add(item);
                 item = new MenuItem(AbbozzaLocale.entry("gui.showFrame"));
@@ -248,19 +246,19 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
  
     public String getOptionsPath() {
-        return "worlds/" + worldId + "/options.xml";
+        return "/worlds/" + currentWorld.getId() + "/options.xml";
     }    
 
     public void setWorld(World world) {
         currentWorld = world;
         AbbozzaLocale.setLocale( this.config.getLocale() );
-        this.startBrowser(this.getRootURL());
+        this.startBrowser("worlds.html");
         // @TODO
     }
 
     
     public String getWorldId() {
-        return this.worldId;
+        return currentWorld.getId();
     }
     
     public World getWorld() {

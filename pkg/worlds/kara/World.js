@@ -21,7 +21,7 @@
  */
 var World = {
     kara: null,
-
+    
     init: function () {
         this.kara = new Kara(document.getElementById('.topleft'));
         // ColorMgr.catColor['cat.TURTLE'] = "#00FF00";

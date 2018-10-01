@@ -282,7 +282,8 @@ AbbozzaInterpreter.exec["var_block"] = function(entry) {
         } else {
             entry.phase = 2;
         }
-    } else if ( entry.phase == 2 ) {
+    } 
+    if ( entry.phase == 2 ) {
         if ( entry.dim.length == 0 ) {
             entry.dim = null;
         }
@@ -292,12 +293,11 @@ AbbozzaInterpreter.exec["var_block"] = function(entry) {
             ar.push(entry.name);
             ar.push(entry.dim);
             entry.returnValue = ar;
-            entry.finished();
         } else {
             // Return the value
             entry.returnValue = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
-            entry.finished();
         }
+        entry.finished();
     }
 };
 
@@ -870,7 +870,9 @@ AbbozzaInterpreter.exec["func_call"] = function(entry) {
                 entry.phase = 1;
             } else {
                 entry.par = null;
-                entry.phase = 2;
+                // Call function
+                AbbozzaInterpreter.callFunction(entry.funcBlock,entry.par);
+                entry.phase = 3;
             }
             break;
         case 1 :
@@ -880,7 +882,9 @@ AbbozzaInterpreter.exec["func_call"] = function(entry) {
             if ( this.getInput("PAR" + entry.no ) != null ) {
                 AbbozzaInterpreter.callInput(this,"PAR" + entry.no,entry.parameters[entry.no][1]);
             } else {
-                entry.phase = 2;
+                // Call function
+                AbbozzaInterpreter.callFunction(entry.funcBlock,entry.par);
+                entry.phase = 3;
             }
             break;
         case 2 : 

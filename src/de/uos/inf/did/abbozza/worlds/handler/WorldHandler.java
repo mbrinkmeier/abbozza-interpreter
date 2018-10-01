@@ -32,40 +32,23 @@ public class WorldHandler extends AbstractHandler {
     
     @Override
     protected void handleRequest(HttpExchange exchg) throws IOException {
-        String contextId = null;
-        Headers headers = exchg.getRequestHeaders();
-        List<String> cookies = headers.get("Cookie");
-        if ( cookies == null ) {
-            AbbozzaLogger.info("no cookies");
-        } else {
-            for ( String cookie : cookies ) {
-                if ( cookie.contains("world=") ) {
-                    int pos = cookie.indexOf("world=");
-                    int pos2 = cookie.indexOf(';', pos);
-                    if ( pos2 < 0 ) {
-                        contextId = cookie.substring(pos+8);
-                    } else {
-                        contextId = cookie.substring(pos+8,pos2);
-                    }
-                    AbbozzaLogger.info("CONTEXT: " + contextId);
-                }
-            }
-        }
-        
-        World context = abbozza.getWorld();
-        
+        World world = abbozza.getWorld();
+
         int len = prefix.length();
         String path = exchg.getRequestURI().getPath(); 
+
+        InputStream is = null;
+
         if ( len > path.length() ) {
             path = null;
         } else {
             path = path.substring(len+1);
         }
-          
-        InputStream is;
+        if (( path == null ) || ( path == "" )) {
+            path = "worlds/" + world.getId() + "/world.xml";
+        }
+        is = world.getStream(path);
         
-        is = context.getStream(path);
-        // is = abbozza.getContext().getStream(path);
         OutputStream os = exchg.getResponseBody();
         if (is != null) {
             exchg.sendResponseHeaders(200,0);
@@ -76,7 +59,7 @@ public class WorldHandler extends AbstractHandler {
             is.close();
             os.close();
         } else {
-            String result = "worlds/console/world.xml not found";
+            String result = path + " not found";
             exchg.sendResponseHeaders(400,result.length());            
             os.write(result.getBytes());
             os.close();            

@@ -24,11 +24,29 @@ var World = {
     
     init : function() {
         this.turtle = new Turtle(document.getElementById('.topleft'));
+        Abbozza.splitter.addEventListener("splitter_resize", this.resize);        
         // ColorMgr.catColor['cat.TURTLE'] = "#00FF00";
     },
     
     getId : function() {
         return "turtle";
+    },
+    
+    resize : function(event) { 
+        World.turtle.reset();
+        /*
+        var ow = World.turtle.view_.width;
+        var oh = World.turtle.view_.height;
+        var w = World.turtle.parent_.clientWidth;
+        var h = World.turtle.parent_.clientHeight;
+        World.turtle.view_.width = World.turtle.parent_.clientWidth;
+        World.turtle.view_.height = World.turtle.parent_.clientHeight;
+        World.turtle.svg_.setAttribute("width",World.turtle.turtle_layer_.offsetWidth);
+        World.turtle.svg_.setAttribute("height",World.turtle.turtle_layer_.offsetHeight);
+        World.turtle.turtle_x = World.turtle.turtle_x - (ow-w)/2;
+        World.turtle.turtle_y = World.turtle.turtle_y - (oh-h)/2;
+        World.turtle.updateTurtle();
+        */
     }
 }
 
@@ -46,7 +64,7 @@ function Turtle(view) {
     
     this.view_ = document.createElement("canvas");
     this.view_.turtle = this;
-    this.view_.className = "turtleInt";
+    this.view_.className = "turtleIntCanvas";
     this.parent_.appendChild(this.view_);
     this.context_ = this.view_.getContext("2d");
 
@@ -56,10 +74,10 @@ function Turtle(view) {
     this.turtle_layer_.className = "turtleInt";
 
     this.svg_ = document.createElementNS(svgNS,"svg");
-    this.svg_.setAttribute("width","100%");
-    this.svg_.setAttribute("height","100%");
-    this.svg_.className = "turtleInt";
+    this.svg_.className = "turtleIntSvg";
     this.turtle_layer_.appendChild(this.svg_);    
+    this.svg_.setAttribute("width",this.turtle_layer_.offsetWidth);
+    this.svg_.setAttribute("height",this.turtle_layer_.offsetHeight);
         
     this.reset();
 };
@@ -67,9 +85,10 @@ function Turtle(view) {
 
 
 Turtle.prototype.reset = function() {
-    var child;
-    while ( child = this.svg_.firstChild ) {
-        this.svg_removeChild(child);
+    var child = this.svg_.firstChild;
+    while ( child ) {
+        this.svg_.removeChild(child);
+        child = this.svg_.firstChild;
     }
         
     this.turtle_svg_ = document.createElementNS(svgNS,"path");
@@ -248,43 +267,43 @@ Turtle.prototype.setWidth = function (width) {
 }
 
 
-Turtle.prototoype.getX = function() {
+Turtle.prototype.getX = function() {
     return this.turtle_x;
 }
 
-Turtle.prototoype.getY = function() {
+Turtle.prototype.getY = function() {
     return this.turtle_y;
 }
 
-Turtle.prototoype.getDirection = function() {
+Turtle.prototype.getDirection = function() {
     return (360 - this.turtle_dir) % 360;
 }
 
-Turtle.prototoype.getWidth = function() {
+Turtle.prototype.getWidth = function() {
     return this.turtle_width;
 }
 
-Turtle.prototoype.getColor = function() {
+Turtle.prototype.getColor = function() {
     return this.turtle_color;
 }
 
-Turtle.prototoype.ishidden = function() {
+Turtle.prototype.ishidden = function() {
     return this.turtle_hidden;
 }
 
-Turtle.prototoype.isPenDown = function() {
+Turtle.prototype.isPenDown = function() {
     return this.turtle_penDown;
 }
 
-Turtle.prototoype.getPixelRed = function() {
+Turtle.prototype.getPixelRed = function() {
     var pixel = this.context_.getImageData(this.turtle_x,this.turtle_y,1,1)[0];
 }
 
-Turtle.prototoype.getPixelGreen = function() {
+Turtle.prototype.getPixelGreen = function() {
     var pixel = this.context_.getImageData(this.turtle_x,this.turtle_y,1,1)[1];
 }
 
-Turtle.prototoype.getPixelBlue = function() {
+Turtle.prototype.getPixelBlue = function() {
     var pixel = this.context_.getImageData(this.turtle_x,this.turtle_y,1,1)[2];
 }
 

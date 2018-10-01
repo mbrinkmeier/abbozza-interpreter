@@ -223,7 +223,6 @@ Splitter.prototype.updateViews = function () {
     }
     
     this.parent.dispatchEvent(new CustomEvent("splitter_resize"));
-
 }
 
 // Grow splitter icon
@@ -373,4 +372,13 @@ Splitter.prototype.checkPosition = function (newX, newY) {
         return false;
     }
     return true;
+}
+
+
+Splitter.prototype.addEventListener = function(event,listener) {
+    this.parent.addEventListener(event,listener);
+}
+
+Splitter.prototype.removeEventListener = function(event,listener) {
+    this.parent.removeEventListener(event,listener);
 }
