@@ -19,18 +19,24 @@
  * 
  * @type type
  */
-var World = {
-    kara: null,
-    
-    init: function () {
-        this.kara = new Kara(document.getElementById('.topleft'));
-        // ColorMgr.catColor['cat.TURTLE'] = "#00FF00";
-    },
+var World = new AbbozzaWorld("kara");
 
-    getId: function () {
-        return "kara";
-    }
-}
+
+World.init = function() {
+    this.kara = new Kara(document.getElementById('.topleft'));
+};
+
+World.toDom = function() {
+    return this.kara.toDom();
+};
+
+World.fromDom = function() {
+    this.kara.fromDom();
+};
+    
+World.reset = function () {
+    this.kara.reset;
+};
 
 var svgNS = "http://www.w3.org/2000/svg";
 
@@ -56,38 +62,38 @@ function Kara(view) {
 
     this.pic_kara_up_ = document.createElement("img");
     this.pic_kara_up_.style.display = "none";
-    this.pic_kara_up_.src = "/abbozza/world/kara.png";
+    this.pic_kara_up_.src = "kara.png";
 
     this.pic_kara_right_ = document.createElement("img");
     this.pic_kara_right_.style.display = "none";
-    this.pic_kara_right_.src = "/abbozza/world/kara_right.png";
+    this.pic_kara_right_.src = "kara_right.png";
 
     this.pic_kara_left_ = document.createElement("img");
     this.pic_kara_left_.style.display = "none";
-    this.pic_kara_left_.src = "/abbozza/world/kara_left.png";
+    this.pic_kara_left_.src = "kara_left.png";
 
     this.pic_kara_down_ = document.createElement("img");
     this.pic_kara_down_.style.display = "none";
-    this.pic_kara_down_.src = "/abbozza/world/kara_down.png";
+    this.pic_kara_down_.src = "kara_down.png";
 
     this.pic_rock_ = document.createElement("img");
     this.pic_rock_.style.display = "none";
-    this.pic_rock_.src = "/abbozza/world/rock.png";
+    this.pic_rock_.src = "rock.png";
 
     this.pic_shamrock_ = document.createElement("img");
     this.pic_shamrock_.style.display = "none";
-    this.pic_shamrock_.src = "/abbozza/world/shamrock.png";
+    this.pic_shamrock_.src = "shamrock.png";
 
     this.pic_mushroom_ = document.createElement("img");
     this.pic_mushroom_.style.display = "none";
-    this.pic_mushroom_.src = "/abbozza/world/mushroom.png";
+    this.pic_mushroom_.src = "mushroom.png";
 
     this.pic_tree_ = document.createElement("img");
     this.pic_tree_.style.display = "none";
     this.pic_tree_.onload = function (event) {
         World.kara.redraw();
     };
-    this.pic_tree_.src = "/abbozza/world/tree.png";
+    this.pic_tree_.src = "tree.png";
 
     this.width = 20;
     this.height = 20;
@@ -118,6 +124,7 @@ Kara.prototype.reset = function () {
     this.karaDir = 0;
     this.karaDX = 1;
     this.karaDY = 0;
+    this.squareSize = 40;    
 
     this.field = [];
     for (var x = 0; x < this.width; x++) {
@@ -335,7 +342,7 @@ Kara.prototype.clicked = function(event) {
         }
     }
     kara.drawSquare(x,y);
-}
+};
 
 
 Kara.prototype.rightclicked = function(event) {
@@ -353,4 +360,75 @@ Kara.prototype.rightclicked = function(event) {
         kara.drawSquare(x,y);
     }
     
-}
+};
+
+
+Kara.prototype.toDom = function() {
+    var root = document.createElement("world");
+    root.setAttribute("width",this.width);
+    root.setAttribute("height",this.height);
+    
+    var kara = document.createElement("kara");
+    kara.setAttribute("x", this.karaX);
+    kara.setAttribute("y", this.karaY);
+    kara.setAttribute("dir", this.karaDir);
+    root.appendChild(kara);
+    
+    var el;
+    
+    for ( var row = 0; row < this.height; row++ ) {
+        for ( var col = 0 ; col < this.width ; col++ ) {
+            if ( this.field[col][row] != 0 ) {
+                switch ( this.field[col][row] ) {
+                    case Kara.ROCK:
+                        el = document.createElement("rock");
+                        break;
+                    case Kara.TREE:
+                        el = document.createElement("tree");
+                        break;
+                    case Kara.MUSHROOM:
+                        el = document.createElement("mushroom");
+                        break;
+                    default:
+                        el = document.createElement("shamrock");
+                        el.setAttribute("count", this.field[col][row]);
+                        break;
+                        
+                }
+                el.setAttribute("x", col);
+                el.setAttribute("y", row);
+                root.appendChild(el);
+            }
+        }
+    }
+    return root;
+};
+
+
+Kara.prototype.fromDom = function(xml) {
+    this.width = Number(xml.getAttribute("width"));
+    this.height = Number(xml.getAttribute("height"));
+    
+    this.reset();
+    
+    for ( var idx = 0; idx < xml.children.length; idx++) {
+        var child = xml.children[idx];
+        if ( child ) {
+            if ( child.nodeName == "kara" ) {
+                this.karaX = Number(child.getAttribute("x"));
+                this.karaY = Number(child.getAttribute("y"));
+                this.karaDir = Number(child.getAttribute("dir"));
+            } else {
+                var type;
+                if ( child.nodeName == "rock" ) type = Kara.ROCK;
+                else if ( child.nodeName == "tree" ) type = Kara.TREE;
+                else if ( child.nodeName == "mushroom" ) type = Kara.MUSHROOM;
+                else if ( child.nodeName == "shamrock" ) type = child.getAttribute("count");
+                var x = Number(child.getAttribute("x"));
+                var y = Number(child.getAttribute("y"));
+                this.field[x][y] = Number(type);
+            }
+        }
+    }
+    this.redraw();
+};

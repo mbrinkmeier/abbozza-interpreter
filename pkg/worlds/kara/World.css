@@ -10,7 +10,7 @@
     bottom      : 10px;    
     padding     : 0px;
     border      : 2px #c0c0c0 solid;
-    overflow    : scroll;
+    overflow    : auto;
     background-color: #d0FFd0;
 }
 
@@ -24,9 +24,8 @@
     overflowY   : auto;
     font-family : monospaced;
     font-size   : 14px;
-    margin-top  : auto;
-    margin-bottom: auto;
     margin-left : auto;
     margin-right: auto;
     display     : block;
+    vertical-align: middle;
 }

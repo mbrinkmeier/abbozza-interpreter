@@ -21,7 +21,6 @@ import org.xml.sax.SAXException;
  * @author michael
  */
 
-
 public class World {
 
     private String basePath;
@@ -29,6 +28,8 @@ public class World {
     private String id;
     private String displayName;
     private String description;
+    private Node options;
+    private String infoPane;
     
     
     public World(String path) {
@@ -115,16 +116,40 @@ public class World {
                     displayName = child.getTextContent().trim();
                 } else if ( name.equals("description") ) {
                     description = child.getTextContent().trim();
+                } else if ( name.equals("options") ) {
+                   options = child; 
                 }
             }            
         }
         
         AbbozzaLogger.info("Context: Found world " + this.id + " at path " + this.basePath);
-
         
     }
 
     String getDescription() {
         return description;
+    }
+    
+    
+    Node getOptions() {
+        return options;
+    }
+    
+    
+    public Document getFeatures() {
+        Document featureXml = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        
+        try {
+            InputStream stream = this.getStream("features.xml");
+            builder = factory.newDocumentBuilder();
+            StringBuilder xmlStringBuilder = new StringBuilder();
+            featureXml = builder.parse(stream);
+        } catch (Exception ex) {
+            AbbozzaLogger.stackTrace(ex);
+        }
+
+        return featureXml;
     }
 }

@@ -47,3 +47,65 @@
     height: 50px;
 }
 
+#speedslider {
+    position: fixed;
+    top: 0px;
+    right: 520px;
+    width: auto;
+    height: 49px;
+}
+
+#speedslider * {
+    vertical-align: middle;
+    height: 49px;
+}
+
+.tab {
+    overflow: scroll;
+    background-color: white;
+    padding-left: 15px;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    background-color: #bbb;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 12px 24px;
+    transition: 0.3s;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    margin-right: 5px;
+    height: 41px;
+    z-index : 20;
+    position: relative;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-weight: bold;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #eee;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: white;
+}
+
+/* Style the tab content */
+.tabcontent {
+    position: absolute;
+    display: none;
+    padding: 10px 10px;
+    border: 1px solid #ccc;
+    top: 39px;
+    left: 15px;
+    right: 15px;
+    bottom: 10px;
+    background-color: white;
+    z-index : 10;
+}

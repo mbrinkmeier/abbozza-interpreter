@@ -5,28 +5,16 @@
 <symbols/>
 </mutation>
 <data>main</data>
-<statement name="STATEMENTS">
-<block id="MXVtkVOl6nZ8bg2aDsy3" type="loop_endless">
-<statement name="STATEMENTS">
-<block id="F,wURR^/=7`?`hSQIG_[" type="cond_if_else">
-<value name="CONDITION">
-<block id="S!yYG@A,DpRv%%}:5*-G" type="kara_is_forward">
-<field name="TYPE">-2</field>
-</block>
-</value>
-<statement name="STATEMENTS1">
-<block id="?(aF%Sy[]3=mBs{r)6*y" type="kara_turn_right"/>
-</statement>
-<statement name="STATEMENTS2">
-<block id="ue*u8B+I=l-*6Ivlt6zo" type="kara_forward"/>
-</statement>
-</block>
-</statement>
-</block>
-</statement>
 </block>
 <description/>
-<options apply="no" protected="no">{}</options>
+<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=true,option.noArrays=false}</options>
 <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<world height="10" width="10">
+<kara dir="2" x="6" y="2"/>
+<mushroom x="2" y="0"/>
+<tree x="2" y="1"/>
+<shamrock count="10" x="4" y="1"/>
+<rock x="2" y="2"/>
+</world>
 <system>worlds</system>
 </xml>

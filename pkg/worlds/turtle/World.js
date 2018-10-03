@@ -19,36 +19,20 @@
  * 
  * @type type
  */
-var World = {
-    turtle: null,
+var World = new AbbozzaWorld("turtle");
+
+World.init = function() {
+    this.turtle = new Turtle(document.getElementById('.topleft'));
+    Abbozza.splitter.addEventListener("splitter_resize", this.resize);        
+};
     
-    init : function() {
-        this.turtle = new Turtle(document.getElementById('.topleft'));
-        Abbozza.splitter.addEventListener("splitter_resize", this.resize);        
-        // ColorMgr.catColor['cat.TURTLE'] = "#00FF00";
-    },
+World.resize = function(event) { 
+    World.turtle.reset();
+};
     
-    getId : function() {
-        return "turtle";
-    },
-    
-    resize : function(event) { 
-        World.turtle.reset();
-        /*
-        var ow = World.turtle.view_.width;
-        var oh = World.turtle.view_.height;
-        var w = World.turtle.parent_.clientWidth;
-        var h = World.turtle.parent_.clientHeight;
-        World.turtle.view_.width = World.turtle.parent_.clientWidth;
-        World.turtle.view_.height = World.turtle.parent_.clientHeight;
-        World.turtle.svg_.setAttribute("width",World.turtle.turtle_layer_.offsetWidth);
-        World.turtle.svg_.setAttribute("height",World.turtle.turtle_layer_.offsetHeight);
-        World.turtle.turtle_x = World.turtle.turtle_x - (ow-w)/2;
-        World.turtle.turtle_y = World.turtle.turtle_y - (oh-h)/2;
-        World.turtle.updateTurtle();
-        */
-    }
-}
+World.reset = function() {
+    World.turtle.reset();
+};
 
 var svgNS = "http://www.w3.org/2000/svg";
 

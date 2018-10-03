@@ -6,6 +6,9 @@
     <categories>
     </categories>
     <gui>
+        <msg id="gui.words">Worlds</msg>
+        <msg id="gui.information">Informations</msg>        
+        <msg id="gui.debug">Debugger</msg>
         <msg id="gui.QUIT">Quit</msg> 
         <msg id="gui.SET_WORLD">Start World</msg> 
         <msg id="gui.close_and_quit">abbozza! is not terminated by closing the window!</msg> 

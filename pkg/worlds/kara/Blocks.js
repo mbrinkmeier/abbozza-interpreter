@@ -5,7 +5,7 @@ Abbozza.KaraForward = {
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.forward"));
         this.setTooltip('');
     },
@@ -25,7 +25,7 @@ Abbozza.KaraTurnLeft = {
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.turn_left"));
         this.setTooltip('');
     },
@@ -45,7 +45,7 @@ Abbozza.KaraTurnRight = {
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.turn_right"));
         this.setTooltip('');
     },
@@ -65,7 +65,7 @@ Abbozza.KaraPickUp = {
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.pick_up"));
         this.setTooltip('');
     },
@@ -85,7 +85,7 @@ Abbozza.KaraDrop = {
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.drop"));
         this.setTooltip('');
     },
@@ -107,7 +107,7 @@ Abbozza.KaraIsEmpty = {
         this.setNextStatement(false);            
         this.setOutput(true, "BOOLEAN");
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.is_empty"));
         this.setTooltip('');
     },
@@ -129,7 +129,7 @@ Abbozza.KaraIsOnShamrock = {
         this.setNextStatement(false);            
         this.setOutput(true, "BOOLEAN");
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.is_on_shamrock"));
         this.setTooltip('');
     },
@@ -151,7 +151,7 @@ Abbozza.KaraIsForward = {
         this.setNextStatement(false);            
         this.setOutput(true, "BOOLEAN");
         this.appendDummyInput()
-            .appendField(new Blockly.FieldImage("/abbozza/world/kara.png",16,16))
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
             .appendField(_("kara.is_forward"))
             .appendField(new Blockly.FieldDropdown(
                 [

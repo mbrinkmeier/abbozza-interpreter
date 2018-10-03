@@ -24,6 +24,7 @@ public class WorldHandler extends AbstractHandler {
     private AbbozzaWorlds abbozza;
     private String prefix;
     
+    
     public WorldHandler(AbbozzaWorlds abbozza, String prefix) {
         this.abbozza = abbozza;
         this.prefix = prefix;
@@ -32,22 +33,36 @@ public class WorldHandler extends AbstractHandler {
     
     @Override
     protected void handleRequest(HttpExchange exchg) throws IOException {
-        World world = abbozza.getWorld();
+        World world = null;
+        String worldId = null;
 
         int len = prefix.length();
         String path = exchg.getRequestURI().getPath(); 
 
+        // Extract world id from path
+        int start = path.indexOf(prefix);
+        if ( start >= 0 ) {
+            start = start + len;
+            int end = path.indexOf("/",start);
+            worldId = path.substring(start,end);
+            world = abbozza.getWorld(worldId);
+            path = path.substring(end+1);
+        }
+        if ( world == null) {
+            world = abbozza.getWorld("console");
+            path = null;
+        }
+        
         InputStream is = null;
 
-        if ( len > path.length() ) {
-            path = null;
+        if (( path == null ) || ( path.equals("")) || (path.equals("worlds.html")) ) {
+            is = abbozza.getJarHandler().getInputStream("/worlds.html");
         } else {
-            path = path.substring(len+1);
+            is = world.getStream(path);
+            if ( is == null ) {
+                is = abbozza.getJarHandler().getInputStream(path);
+            }
         }
-        if (( path == null ) || ( path == "" )) {
-            path = "worlds/" + world.getId() + "/world.xml";
-        }
-        is = world.getStream(path);
         
         OutputStream os = exchg.getResponseBody();
         if (is != null) {
@@ -66,4 +81,4 @@ public class WorldHandler extends AbstractHandler {
         }
     }
     
-}
+} 

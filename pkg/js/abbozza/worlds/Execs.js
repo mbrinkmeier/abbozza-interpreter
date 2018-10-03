@@ -309,14 +309,11 @@ AbbozzaInterpreter.exec["var_assign"] = function(entry) {
             break;
         case 1 :
             entry.var = entry.callResult;
-            console.log(entry.callResult);
             AbbozzaInterpreter.callInput(this,"RIGHT");
             entry.phase = 2;
             break;
         case 2 :
-            console.log(entry.callResult);
             AbbozzaInterpreter.setSymbol(entry.var[0],entry.callResult,entry.var[1]);
-            console.log(AbbozzaInterpreter.globalSymbols);
             entry.finished();
             break;
     }
@@ -484,10 +481,7 @@ AbbozzaInterpreter.exec["math_random"] = function(entry) {
             entry.phase = 1;
             break;
         case 1 :
-            console.log(entry.callResult);
             var x = Math.random();
-            console.log(x);
-            console.log(x * (entry.callResult + 1));
             entry.returnValue = Math.floor( x * (entry.callResult + 1) );
             entry.finished();
             break;
@@ -504,12 +498,10 @@ AbbozzaInterpreter.exec["math_random2"] = function(entry) {
             break;
         case 1 :
             entry.min = entry.callResult;
-            console.log(entry.min);
             AbbozzaInterpreter.callInput(this,"MAX","NUMBER");
             entry.phase = 2;
             break;
         case 2 :
-            console.log(entry.callResult);
             entry.returnValue = Math.floor( Math.random() * ((entry.callResult - entry.min) + 1)) + entry.min;
             entry.finished();
             break;
@@ -819,12 +811,10 @@ AbbozzaInterpreter.exec["logic_compare"] = function(entry) {
             break;
         case 1 :
             entry.left = entry.callResult;
-            console.log("left : " + entry.left);
             AbbozzaInterpreter.callInput(this,"RIGHT");
             entry.phase = 2;
             break;
         case 2 :
-            console.log("right : " + entry.callResult);
             if ( entry.op == "EQUALS" ) {
                 entry.returnValue = ( entry.left === entry.callResult );
             } else if ( entry.op == "INEQUAL" ) {
@@ -911,20 +901,15 @@ AbbozzaInterpreter.exec["func_decl"] = function(entry) {
                 AbbozzaInterpreter.setLocalSymbol(variable[0],AbbozzaInterpreter.getDefaultValue(variable[1],variable[2]));
             }
             
-            console.log(entry.args);
-
             var parameters = this.symbols.getParameters(true);
             for (var i = 0; i < parameters.length; i++) {
                 var parameter = parameters[i];
                 AbbozzaInterpreter.setLocalSymbol(parameter[0],entry.args[i]);
             }
             
-            console.log(AbbozzaInterpreter.localSymbols[AbbozzaInterpreter.localSymbols.length-1]);
-            
             if ( AbbozzaInterpreter.callStatement(this,"STATEMENTS") ) {
                 entry.phase = 1;
             } else {
-                console.log("poping local symbols");
                 AbbozzaInterpreter.popLocalSymbols();                
                 entry.finished();
             }
@@ -937,7 +922,6 @@ AbbozzaInterpreter.exec["func_decl"] = function(entry) {
             break;
         case 2 :
             entry.returnValue = entry.callResult;
-            console.log("poping local symbols");
             AbbozzaInterpreter.popLocalSymbols();
             entry.finished();
             break;        

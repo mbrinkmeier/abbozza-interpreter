@@ -5,12 +5,29 @@
         <link rel="icon" type="image/png" href="img/abbozza_icon.png">
 
         <title>abbozza!</title>
-
+        <script type="text/javascript">
+        getIdFromPath = function(path) {
+            var prefix = "/abbozza/world/";
+            var start = path.indexOf(prefix);
+            if ( start >= 0 ) {
+                var start = start + prefix.length;
+                var end = path.indexOf("/",start);
+                return path.substring(start,end);
+            } else {
+                // Default context is consol
+                return "console";
+            }
+        }    
+            
+        var worldId = getIdFromPath(window.location.href);
+        console.log(worldId);
+        </script>
+        
 	<!--link rel="stylesheet" href="samples.css"-->
         <!-- link rel="stylesheet" href="js/SCEditor/themes/default.min.css" id="theme-style" /-->
         <link rel="stylesheet" type="text/css" href="/css/abbozza.css">
         <link rel="stylesheet" type="text/css" href="/css/worlds.css">
-        <link rel="stylesheet" type="text/css" href="/abbozza/world/World.css">
+        <link rel="stylesheet" type="text/css" href="World.css">
         
         <script src="/js/polyfill/CustomElements.js"></script>
         <script src="/js/blockly/blockly_compressed_new.js"></script>
@@ -21,7 +38,8 @@
         <script src="/js/abbozza/worlds/DummyBoard.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/DummyGenerator.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Splitter.js" type="text/javascript"></script>
-
+        <script src="/js/abbozza/worlds/TabPane.js" type="text/javascript"></script>
+        
         <!-- general classes -->
         <script src="/js/abbozza/core/ToolboxMgr.js" type="text/javascript"></script>        
         <script src="/js/abbozza/core/ColorMgr.js" type="text/javascript"></script>        
@@ -48,7 +66,8 @@
         <script src="/js/abbozza/core/DynamicMutator.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/DraggingManager.js" type="text/javascript"></script>
         
-        <script src="/abbozza/world/World.js" type="text/javascript"></script>
+        <script src="/js/abbozza/worlds/AbbozzaWorld.js" type="text/javascript"></script>
+        <script src="World.js" type="text/javascript"></script>
         
         <script src="/js/abbozza/core/Abbozza.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/Tools.js" type="text/javascript"></script>
@@ -58,13 +77,13 @@
         <!-- worlds specific stuff -->
         <script src="/js/abbozza/worlds/Abbozza.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Interpreter.js" type="text/javascript"></script>
-        <script src="/abbozza/world/Tools.js" type="text/javascript"></script>
+        <script src="Tools.js" type="text/javascript"></script>
         
 
-        <!-- worlds specific blocks -->
+        <!-- world specific blocks -->
         <script src="/js/abbozza/worlds/blocks/Main.js" type="text/javascript"></script>
-        <script src="/abbozza/world/Blocks.js" type="text/javascript"></script>
-        <script src="/abbozza/world/Execs.js" type="text/javascript"></script>
+        <script src="/js/abbozza/worlds/Execs.js" type="text/javascript"></script>
+        <script src="Blocks.js" type="text/javascript"></script>
         
         <!-- general blocks -->
         <script src="/js/abbozza/blocks/Conditionals.js" type="text/javascript"></script>
@@ -81,12 +100,19 @@
         
         <script type="text/javascript">
             function init() {
-  
+                Abbozza.worldId = worldId;
                 Abbozza.init('worlds',true,'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
                 ToolboxMgr.rebuild();
                 Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");                
                 World.init();
                 AbbozzaInterpreter.init();
+                AbbozzaInterpreter.setSpeed(75);
+                var tabs = new TabPane(document.getElementById('tabs'));
+                var infoPane = tabs.addPane(_("gui.information"),document.getElementById("worldinfo"));
+                infoPane.innerHTML = World.getInfo();
+                var debugPane = tabs.addPane(_("gui.debug"),document.getElementById("debug"));
+                tabs.openTab(infoPane);
+                document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
                 // splitter.parent.addEventListener("splitter_resize", function(event) {
                 //    Blockly.mainWorkspace.resize();
                 // });
@@ -101,16 +127,27 @@
             </div>
         </div>
         
-        <div id="header"></div>
+        <div id="header">
+            <div id="speedslider">
+            <span>Langsam</span>
+            <input type="range" id="speed" name="speed" min="0" max="100" list="speedticks" oninput="AbbozzaInterpreter.setSpeed(this.value);"/>
+            <span>Schnell</span>
+            </div>
+        </div>
         <div id="splitter" style="position: fixed; width: 100%; top:50px; bottom:0px;">
             <div id=".topleft" style="min-height: 50px; min-width: 50px"></div>
-            <div id=".bottomleft" style="min-height: 50px; min-width: 50px"></div>
+            <div id=".bottomleft" style="min-height: 50px; min-width: 50px">
+                <div id="tabs" style="position:absolute; width: 100%; height:100%;">
+                </div>
+                <div id="debug"></div>
+                <div id="worldinfo">Information</div>
+            </div>
             <div id=".right" style="min-height: 50px; min-width: 100px">
                 <div id="workspace" style="position: fixed"></div>                
                 <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="img/step.png"></div>
                 <div class="topButton" id="run" title="Run" onclick="AbbozzaInterpreter.run()"><img width=50 height=50  src="img/run.png"></div>
                 <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.stop()"><img width=50 height=50  src="img/stop.png"></div>
-                <div class="topButton" id="new" title="Neuer Sketch" onclick="Abbozza.newSketch()"><img width=50 height=50  src="img/new.png"></div>
+                <div class="topButton" id="new" title="Neuer Sketch" onclick="AbbozzaInterpreter.newSketch()"><img width=50 height=50  src="img/new.png"></div>
                 <div class="topButton" id="load" title="Lade Sketch" onclick="Abbozza.loadSketch()"><img width=50 height=50  src="img/load.png"></div>
                 <div class="topButton" id="save" title="Speichere Sketch" onclick="Abbozza.saveSketch()"><img width=50 height=50  src="img/save.png"></div>
                 <div class="topButton" id="tools" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>	

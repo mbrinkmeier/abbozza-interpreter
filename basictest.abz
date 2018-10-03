@@ -1,0 +1,28 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="8C[PcM?1kVId!fLG/FbS" type="loop_endless">
+<statement name="STATEMENTS">
+<block id=".P`,o1Iy_0[D5SwHPt3r" type="kara_forward">
+<next>
+<block id="f]3MP/ZI1L3?^0Xo,RbC" type="kara_turn_right"/>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.advanced=true,option.colorCategory=false,option.noArrays=false}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<world height="20" width="20">
+<kara dir="0" x="0" y="0"/>
+<mushroom x="2" y="0"/>
+</world>
+<system>worlds</system>
+</xml>

@@ -8,13 +8,11 @@ var AbbozzaInterpreter = {
     mode : 0,
     delay : 1,
     worker : null,
-    hilightedBlock : null,
-    localSymbols : [],
     globalSymbols : [],
-    exec: [],
     breakLoop: false,
-    
-    execStack : []
+    threads : [],
+    activeThread : null,
+    exec: []
 };
 
 
@@ -23,12 +21,20 @@ AbbozzaInterpreter.MODE_RUNNING  = 1;
 AbbozzaInterpreter.MODE_PAUSED = 2;
 AbbozzaInterpreter.MODE_TERMINATED = 3;
 AbbozzaInterpreter.MODE_ABORTED = 4;
-
+AbbozzaInterpreter.MODE_ABORTED_BY_ERROR = 5;
 
 AbbozzaInterpreter.init = function() {
     this.mode = this.MODE_STOPPED;
- 
 };
+
+
+AbbozzaInterpreter.newSketch = function() {
+    Abbozza.newSketch();
+    if ( World.reset) World.reset();
+    threads = [];
+    this.globslSymbols = [];
+};
+
 
 /**
  * The Step button is pressed
@@ -36,15 +42,17 @@ AbbozzaInterpreter.init = function() {
  * @returns {undefined}
  */
 AbbozzaInterpreter.step = function() {
-    if ( (this.mode == this.MODE_TERMINATED) || (this.mode == this.MODE_ABORTED) ) {
-        // Empty execution stack 
-        this.execStack = [];
+    if ( (this.mode == this.MODE_TERMINATED) || (this.mode >= this.MODE_ABORTED) ) {
+        // Kill all threads 
+        this.threads = [];
         // Go to mode STOPPED to start new execution
         this.mode = this.MODE_STOPPED;
     }
     this.executeStep();
-    this.mode = this.MODE_PAUSED;
-}
+    if ( this.mode < this.MODE_TERMINATED ) {
+        this.mode = this.MODE_PAUSED;
+    }
+};
 
 /**
  * Th run button is pressed
@@ -56,13 +64,15 @@ AbbozzaInterpreter.run = function() {
         this.mode = this.MODE_PAUSED;
         return;
     }
-    if ( (this.mode == this.MODE_TERMINATED) || (this.mode == this.MODE_ABORTED) ) {
-       this.execStack = [];
+    if ( (this.mode == this.MODE_TERMINATED) || (this.mode >= this.MODE_ABORTED) ) {
+       this.threads = [];
        this.mode = this.MODE_STOPPED;
-       this.executeStep();
     }
-    this.mode = this.MODE_RUNNING;
-    this.worker = window.setTimeout( AbbozzaInterpreter.doStep , this.delay );
+    this.executeStep();
+    if ( this.mode < this.MODE_TERMINATED ) {
+       this.mode = this.MODE_RUNNING;
+       this.worker = window.setTimeout( AbbozzaInterpreter.doStep , AbbozzaInterpreter.delay );
+    }
 };
 
 /**
@@ -73,10 +83,18 @@ AbbozzaInterpreter.run = function() {
 AbbozzaInterpreter.stop = function() {
     // Immediately abort the execution and wait for a step
     this.mode = this.MODE_ABORTED;
-    this.execStack = [];
+    ErrorMgr.clearErrors();
+    for ( var idx = 0; idx < this.threads.length; idx++) {
+        if ( this.threads[idx] ) {
+            this.threads[idx].cleanUp();
+        }
+    }   
+    this.threads = [];
     var newEvent = new CustomEvent("abz_aborted");
 };
-  
+
+
+
 /**
  * This operation is executed by a timer to repeatedly execute steps.
  * 
@@ -86,26 +104,81 @@ AbbozzaInterpreter.doStep = function() {
     AbbozzaInterpreter.executeStep();
     // If RUNNING automatically execute the next step
     if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING )
-        window.setTimeout(AbbozzaInterpreter.doStep , this.delay);
-}
+        window.setTimeout(AbbozzaInterpreter.doStep , AbbozzaInterpreter.delay);
+};
 
 
 /**
  * Execute ONE step
- * 
+ *  
  * @returns {undefined}
  */  
 AbbozzaInterpreter.executeStep = function() {
+        
+    // If the thread list is empty and the mode is STOPPED, setup threads
+    // for all top-blocks with prefix "main". 
+    if ( (this.threads.length == 0) && (this.mode == this.MODE_STOPPED) ) {
+        this.setupThreads();
+    }
+       
+    // If the execution stack is empty, the status becomes TERMINATED
+    var running = false;
+    var breakpoint = false;
+    for ( var idx = 0; idx < this.threads.length ; idx++) {
+        if ( this.threads[idx] ) {
+            running = running || this.threads[idx].isRunning();
+            breakpoint = breakpoint || this.threads[idx].atBreakpoint();
+        }
+    }
+    if ( !running ) {
+        this.terminating();
+        return;
+    }
     
-    // If the execution stack is empty, and the mode is STOPPED, add the main 
-    // block to start the execution
-    var newEntry;
-    if ( (this.execStack.length == 0) && (this.mode == this.MODE_STOPPED) ) {
+    if ( breakpoint ) {
+        this.mode = this.MODE_PAUSED;
+        var newEvent = new CustomEvent("abz_breakpoint");
+        document.dispatchEvent(newEvent);
+        return;
+    }
+    
+    for ( var idx = 0; idx < this.threads.length; idx++) {
+        if ( this.threads[idx] && this.threads[idx].isRunning() ) this.threads[idx].executeStep();
+    }
+    var newEvent = new CustomEvent("abz_step");
+    document.dispatchEvent(newEvent);
+
+    // Check if all threads teminated or one terminated due to an error.
+    running = false;
+    var error = false;
+    for ( var idx = 0; idx < this.threads.length; idx++) {
+        if ( this.threads[idx] ) {
+            running = running || this.threads[idx].isRunning();
+            error = error || this.threads[idx].errorOccurred();
+        }
+    }
+    
+    // If all threaeds ended or an error occurred, terminat the whole process
+    if ( !running || error ) {
+        if ( error ) 
+            this.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERROR;
+        this.terminating();
+    } 
+};
+
+
+AbbozzaInterpreter.setupThreads = function() {
+        var newThread;
+        this.threads = [];
         ErrorMgr.clearErrors();
-        if ( World.getStartBlock ) {
+        if ( World.getStartBlocks ) {
             // Ask the world for Start block is any is provided
-            newEntry = new ExecStackEntry(World.getStartBlock(),true);
-            this.execStack.push(newEntry);
+            var startBlocks = World.getStartBlocks();
+            for ( var idx = 0; idx < startBlocks.length; idx++) {
+                newThread = new Thread();
+                newThread.setup(startBlocks[idx]);
+                this.threads.push(newThread);
+            }
         } else {
             // Take the main block
             var workspace = Blockly.mainWorkspace;
@@ -113,65 +186,13 @@ AbbozzaInterpreter.executeStep = function() {
             for (var i = 0; i < topBlocks.length; i++) {
                 var block = topBlocks[i];
                 if (block.type.startsWith("main")) {
-                    // The main block
-                    newEntry = new ExecStackEntry(block,true);
-                    this.execStack.push(newEntry);
+                    newThread = new Thread();
+                    newThread.setup(block);
+                    this.threads.push(newThread);
                 }
             }
-        }
-    }
-       
-    // If the execution stack is empty, the status becomes TERMINATED
-    if ( this.execStack.length == 0) {
-        this.terminating();
-        return;
-    }
-    
-    // Execute the top block
-    var topEntry = this.execStack[this.execStack.length-1];
-    if (topEntry) { 
-        var newEvent = new CustomEvent("abz_step");
-        document.dispatchEvent(newEvent);
-        if ( (this.highlightedBlock != null) && (this.highlightedBlock != topEntry.block) ) {
-            this.highlightedBlock.setHighlighted(false);
-        }
-        this.highlightedBlock = topEntry.block;
-        this.highlightedBlock.setHighlighted(true);
-        
-        if ( topEntry.phase >= 0 ) topEntry.execute();
-        
-        // After execution, check if block is finished
-        if ( topEntry.phase < 0 ) {
-            // Remove entry from execution stack
-            AbbozzaInterpreter.execStack.pop();
-       
-            if ( topEntry.isStatement == false ) {
-                // If it has a return value, take it and insert it as callResult into new top
-                var newTop = AbbozzaInterpreter.execStack[AbbozzaInterpreter.execStack.length-1];
-                if ( newTop ) {
-                    newTop.callResult = topEntry.returnValue;
-                }
-            } else {
-                // Execute the next statement
-                var nextBlock = topEntry.block.getNextBlock();
-                if ( nextBlock ) {
-                    var newEntry = new ExecStackEntry(nextBlock,true);
-                    AbbozzaInterpreter.execStack.push(newEntry);
-                }
-            }
-            topEntry = this.execStack[this.execStack.length-1];
-        }
-        
-    } else {
-        // Remove empty entry
-        this.execStack.pop();
-    }
-    
-    // Terminate if the stack is empty
-    if ( this.execStack.length == 0 ) {
-        this.terminating();
-    } 
-};
+        }    
+}
 
 
 /**
@@ -182,21 +203,29 @@ AbbozzaInterpreter.executeStep = function() {
 AbbozzaInterpreter.terminating = function() {
     // window.clearInterval(this.worker);    
 
-    if ( this.mode != this.MODE_ABORTED ) {
+    if ( this.mode < this.MODE_ABORTED ) {
         var newEvent = new CustomEvent("abz_terminated");
         document.dispatchEvent(newEvent);
         this.mode = this.MODE_TERMINATED;
+        for ( var idx = 0; idx < this.threads.length; idx++) {
+            if ( this.threads[idx] ) {
+                this.threads[idx].cleanUp();
+            }
+        }        
         alert("Execution finished!");
-    } else {
+    } else if ( this.mode == this.MODE_ABORTED ) {
         var newEvent = new CustomEvent("abz_aborted");
         document.dispatchEvent(newEvent);
-        // alert("Execution finished!");
+        for ( var idx = 0; idx < this.threads.length; idx++) {
+            if ( this.threads[idx] ) {
+                this.threads[idx].cleanUp();
+            }
+        }        
+    } else {
+        var newEvent = new CustomEvent("abz_aborted_by_error");        
+        document.dispatchEvent(newEvent);
+        // Do NOT clean up
     }
-        
-    if ( this.highlightedBlock ) { 
-        this.highlightedBlock.setHighlighted(false);
-        this.highlightedBlock = null;
-    }    
 }
 
 
@@ -207,11 +236,8 @@ AbbozzaInterpreter.terminating = function() {
  * @returns {Boolean}
  */
 AbbozzaInterpreter.callBlock = function(block) {
-    if ( !block ) return false;
-    
-    var entry = new ExecStackEntry(block);
-    this.execStack.push(entry);
-    return true;
+    if (this.activeThread) return this.activeThread.callBlock(block);
+    return false;
 };
 
 /**
@@ -223,26 +249,8 @@ AbbozzaInterpreter.callBlock = function(block) {
  * @returns {Boolean}
  */
 AbbozzaInterpreter.callInput = function(block,name, enfType = null) {
-    if ( !block ) return false;
-    
-    if (block.getInput(name) == null) {
-        ErrorMgr.addError(block, _("err.NOINPUT"));
-        return false;
-    }
-    var calledBlock = block.getInputTargetBlock(name);
-    var entry = new ExecStackEntry(calledBlock,false,enfType);
-    if (( enfType == "NUMBER" ) || ( enfType == "DECIMAL")) {
-        entry.returnValue = Number(entry.returnValue);
-    } else if (( enfType == "STRING" ) || ( enfType == "TEXT")) {
-        entry.returnValue = String(entry.returnValue);
-    } else if ( enfType == "BOOLEAN" ) {
-        if ( typeof entry.returnValue == "string" ) {
-           entry.returnValue = ( entry.returnValue != "" );
-       } else if ( typeof entry.returnValue == "number") {
-           entry.returnValue = ( entry.returnValue != 0 );           
-       }
-    }
-    this.execStack.push(entry);
+    if (this.activeThread) return this.activeThread.callInput(block,name,enfType);
+    return false;
 };
 
 
@@ -254,22 +262,8 @@ AbbozzaInterpreter.callInput = function(block,name, enfType = null) {
  * @returns {Boolean}
  */
 AbbozzaInterpreter.callStatement = function(block,name = null ) {
-    if ( !block ) return false;
-    
-    var calledBlock;
-    if ( name != null ) {
-        calledBlock = block.getInputTargetBlock(name);    
-    } else {
-        calledBlock = block;
-    }
-    
-    if ( calledBlock == null) {
-        return false;
-    }
-    
-    var entry = new ExecStackEntry(calledBlock,true);
-    this.execStack.push(entry);
-    return true;
+    if (this.activeThread) return this.activeThread.callStatement(block,name);
+    return false;
 };
 
 /**
@@ -280,18 +274,8 @@ AbbozzaInterpreter.callStatement = function(block,name = null ) {
  * @returns {Boolean}
  */
 AbbozzaInterpreter.callFunction = function(block,parameters) {
-    if ( !block ) return false;
-    
-    var entry;
-    if ( block.rettype != "VOID" ) {
-        entry = new ExecStackEntry(block,false);
-    } else {
-        entry = new ExecStackEntry(block,true);
-    }
-    entry.args = parameters;
-    
-    this.execStack.push(entry);
-    return true;
+   if (this.activeThread) return this.activeThread.callFunction(block,parameters);
+   return false;
 };
 
 /**
@@ -301,26 +285,8 @@ AbbozzaInterpreter.callFunction = function(block,parameters) {
  * @returns {undefined}
  */
 AbbozzaInterpreter.endFunctionCall = function(returnEntry) {
-    while ( (this.execStack.length > 0) && (this.execStack[this.execStack.length-1].block.type != "func_decl" )) {
-        this.execStack.pop();
-    }
-    if ( this.execStack.length > 0 ) {
-        var funcEntry = this.execStack[this.execStack.length-1];
-        if ((funcEntry.block.rettype == "STRING") || (funcEntry.block.rettype == "TEXT")) {
-            funcEntry.returnValue = String(returnEntry.returnValue);
-        } else if ((funcEntry.block.rettype == "NUMBER") || (funcEntry.block.rettype == "DECIMAL")) {
-            funcEntry.returnValue = Number(returnEntry.returnValue);
-        } else if ( funcEntry.block.rettype == "BOOLEAN" ) {
-            if ( typeof entry.returnValue == "string" ) {
-                funcEntry.returnValue = ( returnEntry.returnValue != "" );
-            } else if ( typeof entry.returnValue == "number") {
-                funcEntry.returnValue = ( returnEntry.returnValue != 0 );           
-            }
-        } else {
-            funcEntry.returnValue = returnEntry.returnValue;
-        }
-        funcEntry.finished();
-    }
+    if (this.activeThread) return this.activeThread.endFunctionCall(returnEntry);
+    return false;
 }
 
 
@@ -404,36 +370,23 @@ AbbozzaInterpreter.getGlobalSymbol = function(key) {
 
 
 AbbozzaInterpreter.setLocalSymbol = function(key,value, dim = null) {
-    if ( this.localSymbols.length == 0 ) return null;
-
-    var symbols = this.localSymbols[this.localSymbols.length-1];
-    if ( dim == null ) {
-        symbols[key] = value;
-    } else {    
-        var ar = this.globalSymbols[key];
-        for ( var i = 0; i < dim.length-1; i++) {
-            ar = ar[dim[i]];
-        }
-        ar[dim[dim.length-1]] = value;        
-    }
+    if (this.activeThread) this.activeThread.setLocalSymbol(key,value,dim);
 };
 
 
 AbbozzaInterpreter.getLocalSymbol = function(key) {
-    if ( this.localSymbols.length == 0 ) return null;
-
-    var symbols = this.localSymbols[this.localSymbols.length-1];
-    return symbols[key];
+    if (this.activeThread) return this.activeThread.getLocalSymbol(key);
+    return null;
 };
 
 
 AbbozzaInterpreter.pushLocalSymbols = function() {
-    this.localSymbols.push([]);
+    if (this.activeThread) this.activeThread.localSymbols.push([]);
 }
 
 
 AbbozzaInterpreter.popLocalSymbols = function() {
-    this.localSymbols.pop();
+    if (this.activeThread) this.activeThread.localSymbols.pop();
 }
 
 
@@ -462,7 +415,17 @@ AbbozzaInterpreter.setSymbol = function(key, val, dim) {
     } else {
         this.setLocalSymbol(key,val,dim);        
     }    
-}
+};
+
+
+AbbozzaInterpreter.setSpeed = function(speed) {
+    this.delay = 10 * ( 100-speed );    
+};
+
+AbbozzaInterpreter.getSpeed = function() {
+    return 100 - Math.round(this.delay/10);    
+};
+
 
 Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
       if (!this.rendered) {
@@ -477,6 +440,21 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
     delete this.svgPathLight_.style.display;
   }
 }
+
+
+Blockly.BlockSvg.prototype.updateBreakpointMark = function() {
+    if ( this.isBreakpoint && (this.isBreakpoint == true)) {
+        if ( this.warning == null ) {
+            this._hadWarning_ = false;
+            this.setWarningText("Breakpoint");
+        }
+    } else {
+        this.isBreakpoint = false;
+        this.setWarningText(null);
+    }
+}
+
+
 
 /**
  * Th class for the executoin stack entries
@@ -518,3 +496,251 @@ ExecStackEntry.prototype.finished = function() {
 };
 
 
+/**
+ * A class for handling threads
+ * 
+ * @returns {undefined}
+ */
+Thread = function() {
+    this.execStack = [];
+    this.localSymbols = [];
+    this.highlightedBlock = null;
+}
+
+
+Thread.prototype.setup = function(block) {
+    this.execStack = [];
+    this.localSymbols = [];
+    this.terminated = false;
+    this.terminatedByError = false;
+
+    // Create an entry for the start block
+    newEntry = new ExecStackEntry(block,true);
+    this.execStack.push(newEntry);
+}
+
+
+
+/**
+ * Execute ONE step
+ *  
+ * @returns {undefined}
+ */  
+Thread.prototype.executeStep = function() {
+       
+    AbbozzaInterpreter.activeThread = this;
+    
+    this.terminated = false;
+    this.terminatedByError = false;
+    
+    if ( this.execStack.length == 0) {
+        this.terminate();
+        return;
+    }
+    
+    // Execute the top block
+    var topEntry = this.execStack[this.execStack.length-1];
+    if (topEntry) { 
+        if ( (this.highlightedBlock != null) && (this.highlightedBlock != topEntry.block) ) {
+            this.highlightedBlock.setHighlighted(false);
+        }
+        this.highlightedBlock = topEntry.block;
+        this.highlightedBlock.setHighlighted(true);
+        
+        if ( topEntry.phase >= 0 ) topEntry.execute();
+        
+        // After execution, check if block is finished
+        if ( topEntry.phase < 0 ) {
+            // Remove entry from execution stack
+            this.execStack.pop();
+       
+            if ( topEntry.isStatement == false ) {
+                // If it has a return value, take it and insert it as callResult into new top
+                var newTop = this.execStack[this.execStack.length-1];
+                if ( newTop ) {
+                    newTop.callResult = topEntry.returnValue;
+                }
+            } else {
+                // Execute the next statement
+                var nextBlock = topEntry.block.getNextBlock();
+                if ( nextBlock ) {
+                    var newEntry = new ExecStackEntry(nextBlock,true);
+                    this.execStack.push(newEntry);
+                }
+            }
+            topEntry = this.execStack[this.execStack.length-1];
+        }
+        
+    } else {
+        // Remove empty entry
+        this.execStack.pop();
+    }
+    
+    // Terminate if the stack is empty
+    if ( this.execStack.length == 0 ) {
+        this.terminate();
+    } 
+};
+
+
+
+Thread.prototype.terminate = function() {
+    this.terminated = true;
+    this.terminatedByError = false;
+}
+
+
+Thread.prototype.terminateByError = function() {
+    this.terminated = true;
+    this.terminatedByError = true;
+}
+
+
+Thread.prototype.isRunning = function() {
+    return !(this.terminated || this.terminatedByError);
+}
+
+Thread.prototype.errorOccurred = function() {
+    return this.terminatedByError;
+}
+
+Thread.prototype.atBreakpoint = function() {
+        var topEntry = this.execStack[this.execStack.length-1];
+        if ( topEntry && (topEntry.phase == 0 ) && ( topEntry.block.isBreakpoint) ) {
+            return true;
+        }
+        return false;
+}
+
+
+Thread.prototype.cleanUp = function() {
+    if ( this.highlightedBlock ) {
+        this.highlightedBlock.setHighlighted(false);
+        this.highlightedBlock = null;
+    }
+}
+
+Thread.prototype.callBlock = function(block) {
+    if ( !block ) return false;
+    
+    var entry = new ExecStackEntry(block);
+    this.execStack.push(entry);
+    return true;
+};
+
+Thread.prototype.callInput = function(block,name, enfType = null) {
+    if ( !block ) return false;
+    
+    if (block.getInput(name) == null) {
+        ErrorMgr.addError(block, _("err.NOINPUT"));
+        this.mode = this.MODE_ABORTED_BY_ERROR;
+        this.terminateByError();
+        return false;
+    }
+    var calledBlock = block.getInputTargetBlock(name);
+    if ( calledBlock == null ) {
+        ErrorMgr.addError(block, _("err.NOINPUT"));
+        this.mode = this.MODE_ABORTED_BY_ERROR;
+        this.terminateByError();
+        return false;        
+    }
+    
+    var entry = new ExecStackEntry(calledBlock,false,enfType);
+    if (( enfType == "NUMBER" ) || ( enfType == "DECIMAL")) {
+        entry.returnValue = Number(entry.returnValue);
+    } else if (( enfType == "STRING" ) || ( enfType == "TEXT")) {
+        entry.returnValue = String(entry.returnValue);
+    } else if ( enfType == "BOOLEAN" ) {
+        if ( typeof entry.returnValue == "string" ) {
+           entry.returnValue = ( entry.returnValue != "" );
+       } else if ( typeof entry.returnValue == "number") {
+           entry.returnValue = ( entry.returnValue != 0 );           
+       }
+    }
+    this.execStack.push(entry);
+    
+    return true;
+};
+
+
+Thread.prototype.callStatement = function(block,name = null ) {
+    if ( !block ) return false;
+    
+    var calledBlock;
+    if ( name != null ) {
+        calledBlock = block.getInputTargetBlock(name);    
+    } else {
+        calledBlock = block;
+    }
+    
+    if ( calledBlock == null) {
+        return false;
+    }
+    
+    var entry = new ExecStackEntry(calledBlock,true);
+    this.execStack.push(entry);
+    return true;
+};
+
+Thread.prototype.callFunction = function(block,parameters) {
+    if ( !block ) return false;
+    
+    var entry;
+    if ( block.rettype != "VOID" ) {
+        entry = new ExecStackEntry(block,false);
+    } else {
+        entry = new ExecStackEntry(block,true);
+    }
+    entry.args = parameters;
+    
+    this.execStack.push(entry);
+    return true;
+};
+
+
+Thread.prototype.endFunctionCall = function(returnEntry) {
+    while ( (this.execStack.length > 0) && (this.execStack[this.execStack.length-1].block.type != "func_decl" )) {
+        this.execStack.pop();
+    }
+    if ( this.execStack.length > 0 ) {
+        var funcEntry = this.execStack[this.execStack.length-1];
+        if ((funcEntry.block.rettype == "STRING") || (funcEntry.block.rettype == "TEXT")) {
+            funcEntry.returnValue = String(returnEntry.returnValue);
+        } else if ((funcEntry.block.rettype == "NUMBER") || (funcEntry.block.rettype == "DECIMAL")) {
+            funcEntry.returnValue = Number(returnEntry.returnValue);
+        } else if ( funcEntry.block.rettype == "BOOLEAN" ) {
+            if ( typeof entry.returnValue == "string" ) {
+                funcEntry.returnValue = ( returnEntry.returnValue != "" );
+            } else if ( typeof entry.returnValue == "number") {
+                funcEntry.returnValue = ( returnEntry.returnValue != 0 );           
+            }
+        } else {
+            funcEntry.returnValue = returnEntry.returnValue;
+        }
+        funcEntry.finished();
+    }
+};
+
+
+Thread.prototype.setLocalSymbol = function(key,value, dim = null) {
+    if ( this.localSymbols.length == 0 ) return null;
+
+    var symbols = this.localSymbols[this.localSymbols.length-1];
+    if ( dim == null ) {
+        symbols[key] = value;
+    } else {    
+        var ar = this.globalSymbols[key];
+        for ( var i = 0; i < dim.length-1; i++) {
+            ar = ar[dim[i]];
+        }
+        ar[dim[dim.length-1]] = value;        
+    }
+};
+
+
+Thread.prototype.getLocalSymbol = function(key) {
+    if ( this.localSymbols.length == 0 ) return null;
+
+    var symbols = this.localSymbols[this.localSymbols.length-1];
+    return symbols[key];
+};

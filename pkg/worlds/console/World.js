@@ -19,23 +19,17 @@
  * 
  * @type type
  */
-var World = {
-    splitter: null,
-    mycon: null,
-    
-    init : function() {
-        this.splitter = new Splitter(document.getElementById('splitter'), "");
-        this.mycon = new Console(document.getElementById('.topleft'));
-        
-        this.mycon.println("Willkommen!");
-    },
-    
-    getId : function() {
-        return "console";
-    }
-    
-    
+var World = new AbbozzaWorld("console");
+console.log(World);
+
+World.init = function() {
+    this.mycon = new Console(document.getElementById('.topleft'));
+    this.mycon.println("Willkommen!");
 }
+
+World.reset  = function() {
+    this.mycon.clear();
+};
 
 
 /**

@@ -8,6 +8,7 @@ import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.core.AbbozzaServerException;
 import de.uos.inf.did.abbozza.core.AbbozzaSplashScreen;
 import de.uos.inf.did.abbozza.handler.JarDirHandler;
+import de.uos.inf.did.abbozza.tools.XMLTool;
 import de.uos.inf.did.abbozza.worlds.handler.WorldFeatureHandler;
 import de.uos.inf.did.abbozza.worlds.handler.WorldHandler;
 import java.awt.AWTException;
@@ -30,6 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -37,8 +39,6 @@ import org.xml.sax.SAXException;
  *
  * @author michael
  */
-
-
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     protected TrayIcon trayIcon;
@@ -46,7 +46,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     protected String globalWorldPath;
     protected WorldManager worldManager;
     protected World currentWorld;
-    
+
     /**
      * @param args the command line arguments
      */
@@ -55,8 +55,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         abbozza.init("worlds", args);
     }
 
-    
-        /**
+    /**
      * The general initialization of an calliope abbozza! server.
      *
      * @param system The system id
@@ -65,7 +64,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     public void init(String system, String args[]) {
 
         AbbozzaSplashScreen.showSplashScreen("de/uos/inf/did/abbozza/worlds/icons/abbozza-worlds-splash.png");
-        
+
         super.init(system, args);
 
         worldManager = new WorldManager(this);
@@ -77,8 +76,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
         frame.open();
-        mainFrame = frame;       
-        
+        mainFrame = frame;
+
         // Try to start server on given port
         int serverPort = config.getServerPort();
         try {
@@ -109,7 +108,6 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             System.exit(1);
         }
 
-
         try {
             if (SystemTray.isSupported()) {
                 AbbozzaLogger.info("Setting system tray icon");
@@ -118,7 +116,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
                 MenuItem item = new MenuItem(AbbozzaLocale.entry("gui.startBrowser"));
                 item.addActionListener((ActionEvent e) -> {
                     // startBrowser(system + ".html");
-                    startBrowser("worlds.html");
+                    startBrowser("abbozza/world/" + currentWorld.getId() + "/");
+                    // startBrowser("worlds.html");
                 });
                 trayMenu.add(item);
                 item = new MenuItem(AbbozzaLocale.entry("gui.showFrame"));
@@ -155,12 +154,11 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         // initialize the server
         init(system, null);
     }
-    
-    
+
     public WorldManager getWorldManager() {
         return worldManager;
     }
-    
+
     /**
      * Set additional paths.
      */
@@ -169,7 +167,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         globalPluginPath = abbozzaPath + "/plugins";
         localWorldPath = userPath + "/worlds";
         globalWorldPath = abbozzaPath + "/worlds";
-        
+
         AbbozzaLogger.info("jarPath = " + jarPath);
         AbbozzaLogger.info("runtimePath = " + abbozzaPath);
         AbbozzaLogger.info("userPath = " + userPath);
@@ -182,7 +180,6 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         AbbozzaLogger.info("browserPath = " + config.getBrowserPath());
     }
 
-
     @Override
     public void handle(HttpExchange he) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -190,8 +187,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     @Override
     public void registerSystemHandlers() {
-        httpServer.createContext("/abbozza/features", new WorldFeatureHandler(this));        
-        httpServer.createContext("/abbozza/world", new WorldHandler(this,"/abbozza/world"));        
+        httpServer.createContext("/abbozza/features", new WorldFeatureHandler(this));
+        httpServer.createContext("/abbozza/world", new WorldHandler(this, "/abbozza/world/"));
     }
 
     @Override
@@ -201,13 +198,16 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     @Override
-    public void toolToBack() {}
+    public void toolToBack() {
+    }
 
     @Override
-    public void toolSetCode(String code) {}
+    public void toolSetCode(String code) {
+    }
 
     @Override
-    public void toolIconify() {}
+    public void toolIconify() {
+    }
 
     @Override
     public int compileCode(String code) {
@@ -238,87 +238,136 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     public void installUpdate(String version, String updateUrl) {
     }
 
-    private void quit() {}
-    
-    
+    private void quit() {
+    }
+
     public TrayIcon getTrayIcon() {
         return trayIcon;
     }
- 
+
+    /**
+     * Wherw the options.xml lies
+     *
+     * @return
+     */
     public String getOptionsPath() {
-        return "/worlds/" + currentWorld.getId() + "/options.xml";
-    }    
+        return "/js/abbozza/worlds/options.xml";
+    }
+
+    /**
+     * Construct the origianl option tree. Then add options for all worlds.
+     *
+     */
+    @Override
+    public Document getOptionTree() {
+        Document optionXml = super.getOptionTree();
+        Node worldOptions;
+
+        Node worldNode = null;
+        NodeList groupNodes = optionXml.getElementsByTagName("group");
+        int idx = 0;
+        while ((idx < groupNodes.getLength()) && (worldNode == null)) {
+            if (groupNodes.item(idx).getAttributes().getNamedItem("name").getTextContent().equals("gui.worlds")) {
+                worldNode = groupNodes.item(idx);
+            }
+            idx++;
+        }
+
+        if (worldNode != null) {
+            for (World world : worldManager.getWorlds()) {
+                worldOptions = world.getOptions();
+                if (worldOptions != null) {
+                    Element parent = optionXml.createElement("group");
+                    parent.setAttribute("name", world.toString());
+                    worldNode.appendChild(parent);
+                    NodeList children = worldOptions.getChildNodes();
+                    for (idx = 0; idx < children.getLength(); idx++) {
+                        Node child = children.item(idx);
+                        Node clone = child.cloneNode(true);
+                        optionXml.adoptNode(clone);
+                        parent.appendChild(clone);
+                    }
+                }
+                // Node newNode = worldOptions.cloneNode(true);
+            }
+        }
+
+        AbbozzaLogger.err(XMLTool.documentToString(optionXml));
+
+        return optionXml;
+    }
 
     public void setWorld(World world) {
         currentWorld = world;
-        AbbozzaLocale.setLocale( this.config.getLocale() );
-        this.startBrowser("worlds.html");
+        AbbozzaLocale.setLocale(this.config.getLocale());
+        this.startBrowser("abbozza/world/" + world.getId() + "/");
         // @TODO
     }
 
-    
     public String getWorldId() {
         return currentWorld.getId();
     }
-    
+
     public World getWorld() {
         return currentWorld;
     }
-    
+
     public World getWorld(String id) {
         return worldManager.getWorld(id);
     }
 
-
     public String getGlobalWorldPath() {
         return this.globalWorldPath;
     }
-    
+
     public String getLocalWorldPath() {
         return this.localWorldPath;
     }
 
     /**
      * Add additonal locale entries.
-     * 
+     *
      * @param locale The locale
      * @param root The Element ot which the entries should be added
      */
     public void addAdditionalLocale(String locale, Element root) {
-        if ( getWorld() == null ) return;
-        
-        InputStream is = getWorld().getStream(locale + ".xml");
-        if ( is != null ) {
-            
-            try {
-                Document locDoc;
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                locDoc = builder.parse(is);
-        
-                Element foundElement = null;
-                NodeList languages = locDoc.getElementsByTagName("language");
-                for ( int i = 0; i < languages.getLength(); i++ ) {
-                    Element element = (Element) languages.item(i);
-                    if ( (foundElement == null) || (locale.equals(element.getAttribute("id"))) ) {
-                        foundElement = element;
+        if (getWorld() == null) {
+            return;
+        }
+
+        for (World world : worldManager.getWorlds()) {
+            InputStream is = world.getStream(locale + ".xml");
+            if (is != null) {
+
+                try {
+                    Document locDoc;
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    locDoc = builder.parse(is);
+
+                    Element foundElement = null;
+                    NodeList languages = locDoc.getElementsByTagName("language");
+                    for (int i = 0; i < languages.getLength(); i++) {
+                        Element element = (Element) languages.item(i);
+                        if ((foundElement == null) || (locale.equals(element.getAttribute("id")))) {
+                            foundElement = element;
+                        }
                     }
+
+                    if (foundElement != null) {
+                        root.getOwnerDocument().adoptNode(foundElement);
+                        root.appendChild(foundElement);     
+                    }
+                } catch (ParserConfigurationException ex) {
+                    Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SAXException ex) {
+                    Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
-                if ( foundElement != null ) {
-                    root.getOwnerDocument().adoptNode(foundElement);
-                    root.appendChild(foundElement);
-                    // locDoc.setAttribute("id", ... + "_" + locale);                
-                }
-            } catch (ParserConfigurationException ex) {
-                Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SAXException ex) {
-                Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
+
             }
-                       
         }
     }
-    
+
 }

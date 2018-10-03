@@ -6,5 +6,8 @@ Programmiere Programme, die Text einlesen und ausgeben können.
        
 Sehr gut für Berechnungen und Wortspielereien.
    </description>
+   <options>
+       <item name="test" option="test" default="false"/>
+   </options>
 </world>
 

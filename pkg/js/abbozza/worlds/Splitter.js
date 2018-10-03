@@ -140,6 +140,7 @@ Splitter.prototype.updateViews = function () {
         topleft.style.height = (this.handle.offsetTop + this.currentSize / 2) + "px";
         this.minTop = Math.max(this.minTop, topleft.style.minHeight.replace("px",""));
         this.minLeft = Math.max(this.minLeft, topleft.style.minWidth.replace("px",""));
+        this.checkSize(topleft);
     }
 
     // Resize top right
@@ -152,6 +153,7 @@ Splitter.prototype.updateViews = function () {
         topright.style.height = (this.handle.offsetTop + this.currentSize / 2) + "px";
         this.minTop = Math.max (this.minTop, topright.style.minHeight.replace("px",""));
         this.minRight = Math.max (this.minRight, topright.style.minWidth.replace("px",""));
+        this.checkSize(topright);
     }
 
     // Resize bottom left
@@ -164,6 +166,7 @@ Splitter.prototype.updateViews = function () {
         bottomleft.style.bottom = "0px";
         this.minBottom = Math.max (this.minBottom, bottomleft.style.minHeight.replace("px",""));
         this.minLeft = Math.max (this.minLeft, bottomleft.style.minWidth.replace("px",""));
+        this.checkSize(bottomleft);
     }
 
     // Resize bottom right
@@ -176,6 +179,7 @@ Splitter.prototype.updateViews = function () {
         bottomright.style.bottom = "0px";
         this.minBottom = Math.max (this.minBottom, bottomright.style.minHeight.replace("px",""));
         this.minRight = Math.max (this.minRight, bottomright.style.minWidth.replace("px",""));
+        this.checkSize(bottomright);
     }
 
     // Resize left
@@ -187,6 +191,7 @@ Splitter.prototype.updateViews = function () {
         left.style.width = (this.handle.offsetLeft + this.currentSize / 2) + "px";
         left.style.bottom = "0px";
         this.minLeft = Math.max (this.minLeft, left.style.minWidth.replace("px",""));
+        this.checkSize(left);
     }
 
     // Resize right
@@ -198,6 +203,7 @@ Splitter.prototype.updateViews = function () {
         right.style.right = "0px";
         right.style.bottom = "0px";
         this.minRight = Math.max (this.minRight, right.style.minWidth.replace("px",""));
+        this.checkSize(right);
     }
 
     // Resize top
@@ -209,6 +215,7 @@ Splitter.prototype.updateViews = function () {
         top.style.right = "0px";
         top.style.height = (this.handle.offsetTop + this.currentSize / 2) + "px";
         this.minTop = Math.max (this.minTop, top.style.minHeight.replace("px",""));
+        this.checkSize(top);
     }
 
     // Resize bottom
@@ -220,10 +227,21 @@ Splitter.prototype.updateViews = function () {
         bottom.style.right = "0px";
         bottom.style.top = (this.handle.offsetTop + this.currentSize / 2) + "px";
         this.minBottom = Math.max (this.minBottom, bottom.style.minHeight.replace("px",""));
+        this.checkSize(bottom);
     }
     
     this.parent.dispatchEvent(new CustomEvent("splitter_resize"));
 }
+
+Splitter.prototype.checkSize = function(element) {
+    if ((element.offsetWidth < 100) || ( element.offsetHeight <100) ) {
+            element.style.visibility = "hidden";
+        } else {
+            element.style.visibility = "visible";            
+        }
+
+}
+
 
 // Grow splitter icon
 Splitter.prototype.grow = function () {

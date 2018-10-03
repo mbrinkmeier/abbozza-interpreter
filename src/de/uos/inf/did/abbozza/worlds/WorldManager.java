@@ -3,6 +3,7 @@ package de.uos.inf.did.abbozza.worlds;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
 
@@ -60,7 +61,7 @@ public class WorldManager implements ComboBoxModel<World> {
         listeners.remove(l);
     }
 
-    World getWorld(String id) {
+    public World getWorld(String id) {
         if ( id == null ) return this.selectedWorld;
         for ( World context : worlds ) {
             if ( context.getId().equals(id) ) {
@@ -70,4 +71,7 @@ public class WorldManager implements ComboBoxModel<World> {
         return this.selectedWorld;
     }
     
+    public List<World> getWorlds() {
+        return worlds;
+    }
 }

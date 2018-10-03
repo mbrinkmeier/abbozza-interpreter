@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <options>
     <group name="gui.blocks">
         <item name="gui.advanced" option="advanced" default="false">
@@ -14,6 +13,7 @@
         </group> 
         <!-- item name="gui.teacher" option="teacher"/-->
     </group>
+    <group name="gui.worlds"></group>
     <group name="gui.misc">
         <group name="gui.colorize">
             <choice name="gui.color_default" option ="colorDefault" default="true"/>

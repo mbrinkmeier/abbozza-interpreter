@@ -51,30 +51,41 @@ public class WorldFeatureHandler extends AbstractHandler {
     @Override
     protected void handleRequest(HttpExchange exchg) throws IOException {
         World context = ((AbbozzaWorlds) _abbozzaServer).getWorld();
-        sendResponse(exchg, 200, "text/xml", XMLTool.documentToString(getFeatures(context)));
+        sendResponse(exchg, 200, "text/xml", XMLTool.documentToString(getFeatures(exchg.getRequestURI().getPath())));
     }
 
     
     
-    private Document getFeatures(World context) {
-        
+    private Document getFeatures(String path) {
         // Read the xml file for the global feature
         Document featureXml = null;
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        
-        try {
-            InputStream stream = context.getStream("features.xml");
-            builder = factory.newDocumentBuilder();
-            StringBuilder xmlStringBuilder = new StringBuilder();
-            featureXml = builder.parse(stream);
-        } catch (Exception ex) {
-            AbbozzaLogger.stackTrace(ex);
+       String prefix = "/abbozza/features/";        
+        World world = null;
+        String worldId = null;
+        int len = prefix.length();
+
+        // Extract world id from path
+        int start = path.indexOf(prefix);
+        if ( start >= 0 ) {
+            start = start + len;
+            int end = path.indexOf("/",start);
+            worldId = path.substring(start,end);
+            world = ((AbbozzaWorlds) this._abbozzaServer).getWorld(worldId);
+            path = path.substring(end+1);
         }
-        
+        if ( world == null) {
+            world = ((AbbozzaWorlds) this._abbozzaServer).getWorld("console");
+            path = null;
+        }
+
+        featureXml = world.getFeatures();
+  
         AbbozzaServer.getPluginManager().mergeFeatures(featureXml);
 
+       
+        // Get the world id from the path
+        
         return featureXml;
     }
 }
