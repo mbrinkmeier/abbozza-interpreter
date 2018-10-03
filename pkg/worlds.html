@@ -104,19 +104,14 @@
                 Abbozza.init('worlds',true,'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
                 ToolboxMgr.rebuild();
                 Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");                
-                World.init();
                 AbbozzaInterpreter.init();
                 AbbozzaInterpreter.setSpeed(75);
                 var tabs = new TabPane(document.getElementById('tabs'));
                 var infoPane = tabs.addPane(_("gui.information"),document.getElementById("worldinfo"));
-                infoPane.innerHTML = World.getInfo();
                 var debugPane = tabs.addPane(_("gui.debug"),document.getElementById("debug"));
                 tabs.openTab(infoPane);
-                document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
-                // splitter.parent.addEventListener("splitter_resize", function(event) {
-                //    Blockly.mainWorkspace.resize();
-                // });
-            }
+                World.init();
+           }
         </script>
     </head>
 
@@ -140,7 +135,9 @@
                 <div id="tabs" style="position:absolute; width: 100%; height:100%;">
                 </div>
                 <div id="debug"></div>
-                <div id="worldinfo">Information</div>
+                <div id="worldinfo">
+                    <iframe id="info" src="Infos.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
             </div>
             <div id=".right" style="min-height: 50px; min-width: 100px">
                 <div id="workspace" style="position: fixed"></div>                
@@ -150,8 +147,7 @@
                 <div class="topButton" id="new" title="Neuer Sketch" onclick="AbbozzaInterpreter.newSketch()"><img width=50 height=50  src="img/new.png"></div>
                 <div class="topButton" id="load" title="Lade Sketch" onclick="Abbozza.loadSketch()"><img width=50 height=50  src="img/load.png"></div>
                 <div class="topButton" id="save" title="Speichere Sketch" onclick="Abbozza.saveSketch()"><img width=50 height=50  src="img/save.png"></div>
-                <div class="topButton" id="tools" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>	
-                <div class="topButton" id="config" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>	
+                <div class="topButton" id="config" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>		
                 <div class="topButton" id="info" title="Informationen"><div class="toolButton" id="serial" onclick="Abbozza.openTaskWindow()"><img width=50 height=50  src="img/info.png"></div></div>
                 <div class="license_div">
                     Based on <a href="https://developers.google.com/blockly/">Blockly</a>, 

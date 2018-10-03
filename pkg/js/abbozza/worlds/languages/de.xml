@@ -7,6 +7,7 @@
     </categories>
     <gui>
         <msg id="gui.worlds">Welten</msg> 
+        <msg id="gui.toggle_breakpoint">Setze/Lösche Breakpoint</msg> 
         <msg id="gui.information">Informationen</msg>
         <msg id="gui.debug">Debugger</msg>        
         <msg id="gui.QUIT">Beenden</msg> 

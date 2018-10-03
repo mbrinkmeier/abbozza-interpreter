@@ -24,7 +24,6 @@ console.log(World);
 
 World.init = function() {
     this.mycon = new Console(document.getElementById('.topleft'));
-    this.mycon.println("Willkommen!");
 }
 
 World.reset  = function() {

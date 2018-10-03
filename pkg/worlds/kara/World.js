@@ -24,19 +24,40 @@ var World = new AbbozzaWorld("kara");
 
 World.init = function() {
     this.kara = new Kara(document.getElementById('.topleft'));
+    
+    document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
+    var info = document.getElementById("info");
+    info.contentDocument.getElementById("width").value = World.kara.width;
+    info.contentDocument.getElementById("height").value = World.kara.height;
+    info.contentDocument.getElementById("size").value = World.kara.squareSize;
+    
+    info.contentDocument.getElementById("width").oninput = function(event) {
+        World.kara.setWidth(info.contentDocument.getElementById("width").value);
+    }
+    
+    info.contentDocument.getElementById("height").oninput = function(event) {
+        World.kara.setHeight(info.contentDocument.getElementById("height").value);
+    }
+    
+    info.contentDocument.getElementById("size").oninput = function(event) {
+        World.kara.setSize(info.contentDocument.getElementById("size").value);
+    }
 };
 
 World.toDom = function() {
     return this.kara.toDom();
 };
 
-World.fromDom = function() {
-    this.kara.fromDom();
+World.fromDom = function(xml) {
+    this.kara.fromDom(xml);
 };
     
 World.reset = function () {
-    this.kara.reset;
+    this.widzh = 20;
+    this.height = 20;
+    this.kara.reset();
 };
+
 
 var svgNS = "http://www.w3.org/2000/svg";
 
@@ -117,14 +138,14 @@ Kara.MUSHROOM = -2;
 Kara.TREE = -3;
 Kara.SHAMROCK = 1;
 
-Kara.prototype.reset = function () {
 
+Kara.prototype.reset = function () {
     this.karaX = 0;
     this.karaY = 0;
     this.karaDir = 0;
     this.karaDX = 1;
     this.karaDY = 0;
-    this.squareSize = 40;    
+    // this.squareSize = 40;    
 
     this.field = [];
     for (var x = 0; x < this.width; x++) {
@@ -155,6 +176,23 @@ Kara.prototype.reset = function () {
     }
 };
 
+Kara.prototype.setWidth = function(w) {
+    this.width = w;
+    this.reset();
+    this.redraw();
+}
+
+Kara.prototype.setHeight = function(w) {
+    this.height = w;
+    this.reset();
+    this.redraw();
+}
+
+Kara.prototype.setSize = function(w) {
+    this.squareSize = w;
+    this.reset();
+    this.redraw();
+}
 
 Kara.prototype.redraw = function () {
     for (var x = 0; x < this.width; x++) {

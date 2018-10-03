@@ -94,7 +94,7 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("abbozza! Interpreter");
+        setTitle("abbozza! Worlds");
 
         worldBox.setModel(abbozza.getWorldManager());
         worldBox.setSelectedIndex(0);

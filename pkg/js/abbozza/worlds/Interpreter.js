@@ -30,7 +30,7 @@ AbbozzaInterpreter.init = function() {
 
 AbbozzaInterpreter.newSketch = function() {
     Abbozza.newSketch();
-    if ( World.reset) World.reset();
+    if (World.reset) World.reset();
     threads = [];
     this.globslSymbols = [];
 };

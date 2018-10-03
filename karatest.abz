@@ -7,13 +7,13 @@
 <data>main</data>
 </block>
 <description/>
-<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=true,option.noArrays=false}</options>
+<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.advanced=true,option.colorCategory=false,option.noArrays=false}</options>
 <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
 <world height="10" width="10">
 <kara dir="2" x="6" y="2"/>
 <mushroom x="2" y="0"/>
 <tree x="2" y="1"/>
-<shamrock count="10" x="4" y="1"/>
+<shamrock count="11" x="4" y="1"/>
 <rock x="2" y="2"/>
 </world>
 <system>worlds</system>

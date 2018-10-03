@@ -1,25 +1,25 @@
 #step {
-    right: 420px;
-}
-
-#run {
     right: 370px;
 }
 
-#stop {
+#run {
     right: 320px;
 }
 
-#new {
+#stop {
     right: 270px;
 }
 
-#load {
+#new {
     right: 220px;
 }
 
-#save {
+#load {
     right: 170px;
+}
+
+#save {
+    right: 120px;
 }
 
 #tools {
