@@ -67,8 +67,11 @@ public class WorldHandler extends AbstractHandler {
         OutputStream os = exchg.getResponseBody();
         if (is != null) {
             exchg.sendResponseHeaders(200,0);
+            byte buf[] = new byte[1024];
+            int count;
             while ( is.available() > 0 ) {
-                os.write(is.read());
+                count = is.read(buf,0,1024);
+                os.write(buf,0,count);
             }
             os.flush();
             is.close();

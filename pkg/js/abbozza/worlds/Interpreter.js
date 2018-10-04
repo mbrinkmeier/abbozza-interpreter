@@ -12,6 +12,7 @@ var AbbozzaInterpreter = {
     breakLoop: false,
     threads : [],
     activeThread : null,
+    atBreakpoint : false,
     exec: []
 };
 
@@ -120,50 +121,51 @@ AbbozzaInterpreter.executeStep = function() {
     if ( (this.threads.length == 0) && (this.mode == this.MODE_STOPPED) ) {
         this.setupThreads();
     }
-       
-    // If the execution stack is empty, the status becomes TERMINATED
-    var running = false;
-    var breakpoint = false;
-    for ( var idx = 0; idx < this.threads.length ; idx++) {
-        if ( this.threads[idx] ) {
-            running = running || this.threads[idx].isRunning();
-            breakpoint = breakpoint || this.threads[idx].atBreakpoint();
-        }
-    }
-    if ( !running ) {
-        this.terminating();
-        return;
-    }
     
-    if ( breakpoint ) {
-        this.mode = this.MODE_PAUSED;
+    
+    if ( this.atBreakpoint && (this.mode == AbbozzaInterpreter.MODE_RUNNING) ) {
+        this.mode = AbbozzaInterpreter.MODE_PAUSED;
         var newEvent = new CustomEvent("abz_breakpoint");
         document.dispatchEvent(newEvent);
+        this.atBreakpoint = false;
+        for ( var i = 0; i < this.threads.length; i++) {
+            if ( this.threads[i] ) {
+                this.threads[i].highlightTop();
+                if ( this.threads[i].state == Thread.STATE_BREAKPOINT ) {
+                    this.threads[i].state = Thread.STATE_OK;
+                }
+            }
+        }
         return;
     }
     
+    var state = Thread.STATE_FINISHED;
     for ( var idx = 0; idx < this.threads.length; idx++) {
-        if ( this.threads[idx] && this.threads[idx].isRunning() ) this.threads[idx].executeStep();
+        if ( this.threads[idx] && this.threads[idx].state < Thread.STATE_FINISHED ) {
+            this.threads[idx].executeStep();
+            var tstate = this.threads[idx].state;
+            if ( (tstate == Thread.STATE_BREAKPOINT) && (state != Thread.STATE_ABORTED)) {
+                state = Thread.STATE_BREAKPOINT;
+            } else if ( tstate == Thread.STATE_ABORTED ) {
+                state = Thread.STATE_ABORTED;
+            } else if ( (tstate == Thread.STATE_OK) && (state == Thread.STATE_FINISHED ) ) {
+                state = Thread.STATE_OK;
+            }
+        }
     }
     var newEvent = new CustomEvent("abz_step");
     document.dispatchEvent(newEvent);
 
-    // Check if all threads teminated or one terminated due to an error.
-    running = false;
-    var error = false;
-    for ( var idx = 0; idx < this.threads.length; idx++) {
-        if ( this.threads[idx] ) {
-            running = running || this.threads[idx].isRunning();
-            error = error || this.threads[idx].errorOccurred();
-        }
-    }
-    
-    // If all threaeds ended or an error occurred, terminat the whole process
-    if ( !running || error ) {
-        if ( error ) 
-            this.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERROR;
+    // All Threads finished 
+    if ( state == Thread.STATE_FINISHED ) {
+        this.mode = AbbozzaInterpreter.MODE_TERMINATED;
         this.terminating();
-    } 
+    } else if ( state == Thread.STATE_ABORTED ) {
+        this.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERRROR;        
+        this.terminating();
+    } else if ( state == Thread.STATE_BREAKPOINT ) {
+        this.atBreakpoint = true;
+    }
 };
 
 
@@ -505,14 +507,17 @@ Thread = function() {
     this.execStack = [];
     this.localSymbols = [];
     this.highlightedBlock = null;
+    this.state = 0;
 }
 
+Thread.STATE_OK = 0;
+Thread.STATE_BREAKPOINT = 1;
+Thread.STATE_FINISHED = 2;
+Thread.STATE_ABORTED = 3;
 
 Thread.prototype.setup = function(block) {
     this.execStack = [];
     this.localSymbols = [];
-    this.terminated = false;
-    this.terminatedByError = false;
 
     // Create an entry for the start block
     newEntry = new ExecStackEntry(block,true);
@@ -530,11 +535,10 @@ Thread.prototype.executeStep = function() {
        
     AbbozzaInterpreter.activeThread = this;
     
-    this.terminated = false;
-    this.terminatedByError = false;
-    
+    this.state = Thread.STATE_OK;
+      
     if ( this.execStack.length == 0) {
-        this.terminate();
+        this.state = Thread.STATE_FINISHED;
         return;
     }
     
@@ -547,7 +551,13 @@ Thread.prototype.executeStep = function() {
         this.highlightedBlock = topEntry.block;
         this.highlightedBlock.setHighlighted(true);
         
-        if ( topEntry.phase >= 0 ) topEntry.execute();
+        if ( topEntry.phase >= 0 ) {
+            topEntry.execute();
+            // ERROR hnadling!!! Stop everything
+            if ( this.state == Thread.STATE_ABORTED ) {
+                return;
+            }
+        }
         
         // After execution, check if block is finished
         if ( topEntry.phase < 0 ) {
@@ -576,32 +586,31 @@ Thread.prototype.executeStep = function() {
         this.execStack.pop();
     }
     
+    // Check for breakpoint
+    topEntry = this.execStack[this.execStack.length-1];
+    if ( this.atBreakpoint() ) {
+        this.state = Thread.STATE_BREAKPOINT;
+    }
+    
     // Terminate if the stack is empty
     if ( this.execStack.length == 0 ) {
-        this.terminate();
+        this.state = Thread.STATE_FINISHED;
     } 
 };
 
-
-
-Thread.prototype.terminate = function() {
-    this.terminated = true;
-    this.terminatedByError = false;
-}
-
-
-Thread.prototype.terminateByError = function() {
-    this.terminated = true;
-    this.terminatedByError = true;
-}
-
-
-Thread.prototype.isRunning = function() {
-    return !(this.terminated || this.terminatedByError);
-}
-
-Thread.prototype.errorOccurred = function() {
-    return this.terminatedByError;
+Thread.prototype.highlightTop = function() {
+    if ( this.highlightedBlock ) {
+        this.highlightedBlock.setHighlighted(false);
+        this.highlightedBlock = null;
+    }
+    var topEntry = this.execStack[this.execStack.length-1];
+    if (topEntry) { 
+        if ( (this.highlightedBlock != null) && (this.highlightedBlock != topEntry.block) ) {
+            this.highlightedBlock.setHighlighted(false);
+        }
+        this.highlightedBlock = topEntry.block;
+        this.highlightedBlock.setHighlighted(true);
+    }
 }
 
 Thread.prototype.atBreakpoint = function() {
@@ -620,6 +629,7 @@ Thread.prototype.cleanUp = function() {
     }
 }
 
+
 Thread.prototype.callBlock = function(block) {
     if ( !block ) return false;
     
@@ -628,20 +638,19 @@ Thread.prototype.callBlock = function(block) {
     return true;
 };
 
+
 Thread.prototype.callInput = function(block,name, enfType = null) {
     if ( !block ) return false;
     
     if (block.getInput(name) == null) {
         ErrorMgr.addError(block, _("err.NOINPUT"));
-        this.mode = this.MODE_ABORTED_BY_ERROR;
-        this.terminateByError();
+        this.state = Thread.STATE_ABORTED;
         return false;
     }
     var calledBlock = block.getInputTargetBlock(name);
     if ( calledBlock == null ) {
         ErrorMgr.addError(block, _("err.NOINPUT"));
-        this.mode = this.MODE_ABORTED_BY_ERROR;
-        this.terminateByError();
+        this.state = Thread.STATE_ABORTED;
         return false;        
     }
     

@@ -254,6 +254,10 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         return "/js/abbozza/worlds/options.xml";
     }
 
+    public String getSystemPath() {
+        return "abbozza/world/" + currentWorld.getId() + "/";
+    }
+    
     /**
      * Construct the origianl option tree. Then add options for all worlds.
      *
@@ -273,6 +277,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             idx++;
         }
 
+        if ( worldManager == null ) return optionXml;
+        
         if (worldNode != null) {
             for (World world : worldManager.getWorlds()) {
                 worldOptions = world.getOptions();
