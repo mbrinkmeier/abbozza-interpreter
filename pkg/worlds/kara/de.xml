@@ -12,10 +12,12 @@
         <msg id="kara.is_empty">Ist vorne leer?</msg>
         <msg id="kara.is_on_shamrock">Ist auf Kleeblatt?</msg>
         <msg id="kara.is_forward">Ist vorne ein</msg>
+        <msg id="kara.moved">Hat sich bewegt?</msg>
         <msg id="kara.MUSHROOM">Pilz</msg>
         <msg id="kara.TREE">Baumstumpf</msg>
         <msg id="kara.ROCK">Stein</msg>
         <msg id="kara.collision">Kollision mit</msg>
         <msg id="kara.no_shamrock">Kein Kleeblatt!</msg>
+        <msg id="kara.bumped_stone">Kara ist vor einen Stein gelaufen!</msg>
     </blocks>
 </language>

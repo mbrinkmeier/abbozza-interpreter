@@ -140,6 +140,7 @@
         
         <category id="cat.KARA" color="#00A000">
             <block type="kara_forward"/>
+            <block type="kara_moved"/>
             <block type="kara_turn_left"/>
             <block type="kara_turn_right"/>
             <block type="kara_pick_up"/>

@@ -25,7 +25,7 @@ AbbozzaInterpreter.MODE_ABORTED = 4;
 AbbozzaInterpreter.MODE_ABORTED_BY_ERROR = 5;
 
 AbbozzaInterpreter.init = function() {
-    this.mode = this.MODE_STOPPED;
+    AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
 };
 
 
@@ -33,7 +33,7 @@ AbbozzaInterpreter.newSketch = function() {
     Abbozza.newSketch();
     if (World.reset) World.reset();
     threads = [];
-    this.globslSymbols = [];
+    this.globalSymbols = [];
 };
 
 
@@ -43,15 +43,13 @@ AbbozzaInterpreter.newSketch = function() {
  * @returns {undefined}
  */
 AbbozzaInterpreter.step = function() {
-    if ( (this.mode == this.MODE_TERMINATED) || (this.mode >= this.MODE_ABORTED) ) {
-        // Kill all threads 
-        this.threads = [];
+    if ( (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_TERMINATED) || (AbbozzaInterpreter.mode >= AbbozzaInterpreter.MODE_ABORTED) ) {
         // Go to mode STOPPED to start new execution
-        this.mode = this.MODE_STOPPED;
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
     }
     this.executeStep();
-    if ( this.mode < this.MODE_TERMINATED ) {
-        this.mode = this.MODE_PAUSED;
+    if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_TERMINATED ) {
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_PAUSED;
     }
 };
 
@@ -61,17 +59,16 @@ AbbozzaInterpreter.step = function() {
  * @returns {undefined}
  */
 AbbozzaInterpreter.run = function() {
-    if ( this.mode == this.MODE_RUNNING ) {
-        this.mode = this.MODE_PAUSED;
+    if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING ) {
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_PAUSED;
         return;
     }
-    if ( (this.mode == this.MODE_TERMINATED) || (this.mode >= this.MODE_ABORTED) ) {
-       this.threads = [];
-       this.mode = this.MODE_STOPPED;
+    if ( (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_TERMINATED) || (AbbozzaInterpreter.mode >= AbbozzaInterpreter.MODE_ABORTED) ) {
+       AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
     }
     this.executeStep();
-    if ( this.mode < this.MODE_TERMINATED ) {
-       this.mode = this.MODE_RUNNING;
+    if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_TERMINATED ) {
+       AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_RUNNING;
        this.worker = window.setTimeout( AbbozzaInterpreter.doStep , AbbozzaInterpreter.delay );
     }
 };
@@ -83,15 +80,18 @@ AbbozzaInterpreter.run = function() {
  */
 AbbozzaInterpreter.stop = function() {
     // Immediately abort the execution and wait for a step
-    this.mode = this.MODE_ABORTED;
+    AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_ABORTED;
     ErrorMgr.clearErrors();
     for ( var idx = 0; idx < this.threads.length; idx++) {
         if ( this.threads[idx] ) {
             this.threads[idx].cleanUp();
         }
     }   
-    this.threads = [];
+    // this.threads = [];
+    World._onStop();
     var newEvent = new CustomEvent("abz_aborted");
+    this.dispatchEvent(newEvent);
+
 };
 
 
@@ -116,15 +116,20 @@ AbbozzaInterpreter.doStep = function() {
  */  
 AbbozzaInterpreter.executeStep = function() {
         
+    var threadMsgs = [];
+    
     // If the thread list is empty and the mode is STOPPED, setup threads
     // for all top-blocks with prefix "main". 
-    if ( (this.threads.length == 0) && (this.mode == this.MODE_STOPPED) ) {
+    if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_STOPPED ) {
+        World._onStart();
+        for ( var i = 0; i < this.threads.length; i++) {
+            this.threads[i].cleanUp();
+        }
         this.setupThreads();
     }
     
-    
-    if ( this.atBreakpoint && (this.mode == AbbozzaInterpreter.MODE_RUNNING) ) {
-        this.mode = AbbozzaInterpreter.MODE_PAUSED;
+    if ( this.atBreakpoint && (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING) ) {
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_PAUSED;
         var newEvent = new CustomEvent("abz_breakpoint");
         document.dispatchEvent(newEvent);
         this.atBreakpoint = false;
@@ -151,17 +156,26 @@ AbbozzaInterpreter.executeStep = function() {
             } else if ( (tstate == Thread.STATE_OK) && (state == Thread.STATE_FINISHED ) ) {
                 state = Thread.STATE_OK;
             }
+            if ( this.threads[idx].stateMsg != null ) {
+                threadMsgs.push(this.threads[idx].stateMsg);
+            }
         }
     }
+    World._onStep();
     var newEvent = new CustomEvent("abz_step");
     document.dispatchEvent(newEvent);
 
+    for (idx = 0; idx < threadMsgs.length; idx++ ) {
+        var msg = threadMsgs[idx];
+        window.setTimeout(function() { alert(_(msg)) }, 1);
+    }
+    
     // All Threads finished 
     if ( state == Thread.STATE_FINISHED ) {
-        this.mode = AbbozzaInterpreter.MODE_TERMINATED;
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_TERMINATED;
         this.terminating();
     } else if ( state == Thread.STATE_ABORTED ) {
-        this.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERRROR;        
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERROR;        
         this.terminating();
     } else if ( state == Thread.STATE_BREAKPOINT ) {
         this.atBreakpoint = true;
@@ -205,17 +219,19 @@ AbbozzaInterpreter.setupThreads = function() {
 AbbozzaInterpreter.terminating = function() {
     // window.clearInterval(this.worker);    
 
-    if ( this.mode < this.MODE_ABORTED ) {
+    if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_ABORTED ) {
+        World._onStop();
         var newEvent = new CustomEvent("abz_terminated");
         document.dispatchEvent(newEvent);
-        this.mode = this.MODE_TERMINATED;
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_TERMINATED;
         for ( var idx = 0; idx < this.threads.length; idx++) {
             if ( this.threads[idx] ) {
                 this.threads[idx].cleanUp();
             }
         }        
         alert("Execution finished!");
-    } else if ( this.mode == this.MODE_ABORTED ) {
+    } else if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_ABORTED ) {
+        World._onStop();
         var newEvent = new CustomEvent("abz_aborted");
         document.dispatchEvent(newEvent);
         for ( var idx = 0; idx < this.threads.length; idx++) {
@@ -224,7 +240,8 @@ AbbozzaInterpreter.terminating = function() {
             }
         }        
     } else {
-        var newEvent = new CustomEvent("abz_aborted_by_error");        
+        var newEvent = new CustomEvent("abz_aborted_by_error");
+        World._onError();
         document.dispatchEvent(newEvent);
         // Do NOT clean up
     }
@@ -471,6 +488,8 @@ function ExecStackEntry(block,isStatement, enfType = null) {
     this.returnValue = null;
     this.callResult = null;
     this.enfType = enfType;
+    this.state = 0 ; // Entry ok
+    this.stateMsg = null; // No message
 };
 
 
@@ -480,6 +499,9 @@ function ExecStackEntry(block,isStatement, enfType = null) {
 ExecStackEntry.prototype.execute = function() {
     if ( !this.block ) return false;
 
+    this.state = 0;
+    this.stateMsg = null;
+    
     if ( this.block.execute ) {
         // Call the blocks own execute function.
         this.block.execute(this);
@@ -508,6 +530,7 @@ Thread = function() {
     this.localSymbols = [];
     this.highlightedBlock = null;
     this.state = 0;
+    this.stateMsg = null;
 }
 
 Thread.STATE_OK = 0;
@@ -536,7 +559,8 @@ Thread.prototype.executeStep = function() {
     AbbozzaInterpreter.activeThread = this;
     
     this.state = Thread.STATE_OK;
-      
+    this.stateMsg = null;
+    
     if ( this.execStack.length == 0) {
         this.state = Thread.STATE_FINISHED;
         return;
@@ -553,8 +577,12 @@ Thread.prototype.executeStep = function() {
         
         if ( topEntry.phase >= 0 ) {
             topEntry.execute();
-            // ERROR hnadling!!! Stop everything
-            if ( this.state == Thread.STATE_ABORTED ) {
+            // Execution of entry ended in error
+            if ( topEntry.state != 0 ) {
+                this.state = Thread.STATE_ABORTED;
+                this.stateMsg = topEntry.stateMsg;
+                return;
+            } else if ( this.state == Thread.STATE_ABORTED ) {
                 return;
             }
         }
@@ -597,6 +625,8 @@ Thread.prototype.executeStep = function() {
         this.state = Thread.STATE_FINISHED;
     } 
 };
+
+
 
 Thread.prototype.highlightTop = function() {
     if ( this.highlightedBlock ) {

@@ -9,8 +9,13 @@ Abbozza.KaraForward = {
             .appendField(_("kara.forward"));
         this.setTooltip('');
     },
+    
     execute : function(entry) {
-        World.kara.forward();
+        var res = World.kara.forward();
+        if ( res != 0 ) {
+            entry.state = 1;
+            entry.stateMsg = "kara.bumped_stone";
+        } else 
         entry.finished();
         return true;    
     }    
@@ -118,6 +123,26 @@ Abbozza.KaraIsEmpty = {
     }    
 }
 Blockly.Blocks['kara_is_empty'] = Abbozza.KaraIsEmpty;
+
+Abbozza.KaraMoved = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.KARA"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(true, "BOOLEAN");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldImage("kara.png",16,16))
+            .appendField(_("kara.moved"));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        entry.returnValue = World.kara.steppedForward();
+        entry.finished();
+        return true;    
+    }    
+}
+Blockly.Blocks['kara_moved'] = Abbozza.KaraMoved;
 
 
 

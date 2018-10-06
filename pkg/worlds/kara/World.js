@@ -58,6 +58,10 @@ World.reset = function () {
     this.kara.reset();
 };
 
+World.onStart = function() {
+    this.kara.onStart();
+}
+
 
 var svgNS = "http://www.w3.org/2000/svg";
 
@@ -97,6 +101,10 @@ function Kara(view) {
     this.pic_kara_down_.style.display = "none";
     this.pic_kara_down_.src = "kara_down.png";
 
+    this.pic_collision_ = document.createElement("img");
+    this.pic_collision_.style.display = "none";
+    this.pic_collision_.src = "collision.png";
+
     this.pic_rock_ = document.createElement("img");
     this.pic_rock_.style.display = "none";
     this.pic_rock_.src = "rock.png";
@@ -126,10 +134,15 @@ function Kara(view) {
     this.karaDir = 0;
     this.karaDX = 1;
     this.karaDY = 0;
+    this.moved = false;
+    this.collX = 0;
+    this.collY = 0;
+    this.collX2 = 0;
+    this.collY2 = 0;
 
     this.reset();
     
-    this.put(Kara.MUSHROOM,2,0);
+    this.put(Kara.ROCK,2,0);
 };
 
 Kara.EMPTY = 0;
@@ -147,17 +160,32 @@ Kara.prototype.reset = function () {
     this.karaDY = 0;
     // this.squareSize = 40;    
 
+    this.hideCollision();
+    this.collX = 0;
+    this.collY = 0;
+    this.collX2 = 0;
+    this.collY2 = 0;
+
+    var oldField = this.field;
+    
     this.field = [];
     for (var x = 0; x < this.width; x++) {
         var line = []
         for (var y = 0; y < this.height; y++) {
-            line.push(0);
+            if ( oldField && oldField[x] && oldField[x][y] ) {
+                line.push(oldField[x][y]);
+            } else {
+                line.push(0);
+            }
         }
         this.field.push(line);
     }
 
     this.view_.width = this.width * this.squareSize;
     this.view_.height = this.height * this.squareSize;
+
+    this.view_.onclick = this.clicked;
+    this.view_.oncontextmenu = this.rightclicked;
 
     // draw fields
     this.context_.strokeStyle = "#0fff0f";
@@ -176,20 +204,25 @@ Kara.prototype.reset = function () {
     }
 };
 
+Kara.prototype.onStart = function() {
+    this.hideCollision();
+}
+
+
 Kara.prototype.setWidth = function(w) {
-    this.width = w;
+    this.width = Number(w);
     this.reset();
     this.redraw();
 }
 
 Kara.prototype.setHeight = function(w) {
-    this.height = w;
+    this.height = Number(w);
     this.reset();
     this.redraw();
 }
 
 Kara.prototype.setSize = function(w) {
-    this.squareSize = w;
+    this.squareSize = Number(w);
     this.reset();
     this.redraw();
 }
@@ -206,8 +239,11 @@ Kara.prototype.drawSquare = function (x, y) {
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
     // Draw empty square as basis
+    this.context_.fillStyle = "#0fff0f";
+    this.context_.fillRect(x * this.squareSize, y * this.squareSize,
+            this.squareSize, this.squareSize
+            );
     this.context_.fillStyle = "#d0ffd0";
-    // this.context_.fillStyle = "#d0d0d0";
     this.context_.fillRect(
             x * this.squareSize + 1, y * this.squareSize + 1,
             this.squareSize - 2, this.squareSize - 2
@@ -262,6 +298,28 @@ Kara.prototype.drawSquare = function (x, y) {
     }
 };
 
+
+Kara.prototype.showCollision = function() {
+    // Upper left corner of collision
+    var x = this.karaX * this.squareSize + this.karaDX * this.squareSize/2+1;
+    var y = this.karaY * this.squareSize + this.karaDY * this.squareSize/2+1;
+    this.collX = this.karaX;
+    this.collY = this.karaY;
+    this.collX2 = this.karaX + this.karaDX;
+    this.collY2 = this.karaY + this.karaDY;    
+    var siz = this.squareSize-2;
+    
+    this.context_.drawImage(this.pic_collision_, x, y, siz, siz);
+}
+
+Kara.prototype.hideCollision = function() {
+    if ( this.collX ) {
+        this.drawSquare(this.collX,this.collY);
+        this.drawSquare(this.collX2,this.collY2);
+    }
+}
+
+
 Kara.prototype.put = function (type, x, y) {
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
@@ -285,6 +343,7 @@ Kara.prototype.turnLeft = function () {
     this.drawSquare(this.karaX, this.karaY);
 };
 
+
 Kara.prototype.forward = function () {
     var oldX = this.karaX;
     var oldY = this.karaY;
@@ -301,23 +360,40 @@ Kara.prototype.forward = function () {
                 this.drawSquare(newX,newY);
                 this.karaX = newX;
                 this.karaY = newY;
+                this.moved = true;
             } else {
-                // Collision!!
+                // Collision without abort!
                 this.collision();
-                return;
+                this.moved = false;
+                return 0;
             }
-        } else {
-            // Collision!!
+        } else if ( this.field[newX][newY] == Kara.TREE ) {
+            // Collision with out abort!
             this.collision();
-            return;
+            this.moved = false;
+            return 0;
+        } else {
+            // Collision with abort
+            this.collision();
+            this.showCollision();
+            this.moved = false;
+            return 2;
         }
     } else {
         this.karaX = newX;
         this.karaY = newY;
+        this.moved = true;
     }
     this.drawSquare(oldX, oldY);
     this.drawSquare(this.karaX, this.karaY);
+    
+    return 0;
 };
+
+
+Kara.prototype.steppedForward = function() {
+   return this.moved;
+}
 
 
 Kara.prototype.isEmpty = function(x,y) {
@@ -368,6 +444,7 @@ Kara.prototype.clicked = function(event) {
     var kara = World.kara;
     var x = Math.floor(event.offsetX/kara.squareSize);
     var y = Math.floor(event.offsetY/kara.squareSize);
+    kara.hideCollision();
     
     if ( event.ctrlKey && (kara.field[x][y] > 0)) {
         kara.field[x][y]++;
@@ -383,10 +460,11 @@ Kara.prototype.clicked = function(event) {
 };
 
 
-Kara.prototype.rightclicked = function(event) {
+Kara.prototype.rightclicked = function(event) { 
     var kara = World.kara;
     var x = Math.floor(event.offsetX/kara.squareSize);
     var y = Math.floor(event.offsetY/kara.squareSize);
+    kara.hideCollision();
     
     if (( x != kara.karaX ) || ( y != kara.karaY )) {
         var oldX = kara.karaX;
@@ -395,6 +473,9 @@ Kara.prototype.rightclicked = function(event) {
         kara.karaY = y;
         kara.put(Kara.EMPTY,x,y);
         kara.drawSquare(oldX,oldY);
+        kara.drawSquare(x,y);
+    } else {
+        kara.turnRight();
         kara.drawSquare(x,y);
     }
     
