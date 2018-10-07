@@ -7,30 +7,32 @@
 <data>main</data>
 </block>
 <description/>
-<options apply="no" protected="no">{}</options>
-<task height="384" width="585">&lt;page&gt;&lt;script class="page"&gt;
-Page.onShow = function() {
-console.log("HIER");
+<options apply="no" protected="no">{option.operations=false,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=true}</options>
+<task height="400" width="600">&lt;taskscript&gt;Task.onShow = function() {
+   alert("Task geladen");
 }
-Page.onHide = function(){
-console.log("DA");
-} 
 
-&lt;/script&gt;&lt;script class="task"&gt;
-Task.onShow = function(){
-console.log("Task");
-} 
 Task.onHide = function() {
-console.log("Task beendet");
-}
-&lt;/script&gt;&lt;/page&gt;&lt;page&gt;&lt;script class="page"&gt;
+   alert("Task verlassen");
+}&lt;/taskscript&gt;&lt;page&gt;&lt;pagescript&gt;// Seite 1
 Page.onShow = function() {
-   console.log("Seite 2");
+  alert("Seite 1");
 }
 
 Page.onHide = function() {
-   console.log("Seite 2 verlassen");
+  alert("Seite 1 verlassen");
+}&lt;/pagescript&gt;&lt;/page&gt;&lt;page&gt;&lt;pagescript&gt;// Seite 2
+Page.onShow = function() {
+  alert("Seite 2");
 }
-&lt;/script&gt;&lt;/page&gt;</task>
+
+Page.onHide = function() {
+  alert("Seite 2 verlassen");
+}
+&lt;/pagescript&gt;&lt;/page&gt;</task>
+<world height="20" width="20">
+<kara dir="0" x="0" y="0"/>
+<rock x="2" y="0"/>
+</world>
 <system>worlds</system>
 </xml>

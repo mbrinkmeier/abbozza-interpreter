@@ -1,0 +1,18 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=false,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.advanced=false,option.colorCategory=false,option.noArrays=true}</options>
+<task height="400" width="600">&lt;page&gt;&lt;script class="page"&gt;&lt;/script&gt;
+&lt;/page&gt;</task>
+<world height="20" width="20">
+<kara dir="0" x="0" y="0"/>
+<rock x="2" y="0"/>
+</world>
+<system>worlds</system>
+</xml>
