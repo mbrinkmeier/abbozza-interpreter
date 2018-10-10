@@ -20,14 +20,13 @@
         }    
             
         var worldId = getIdFromPath(window.location.href);
-        console.log(worldId);
         </script>
         
 	<!--link rel="stylesheet" href="samples.css"-->
         <!-- link rel="stylesheet" href="js/SCEditor/themes/default.min.css" id="theme-style" /-->
+        <link rel="stylesheet" type="text/css" href="/lib/codemirror/lib/codemirror.css">
         <link rel="stylesheet" type="text/css" href="/css/abbozza.css">
         <link rel="stylesheet" type="text/css" href="/css/worlds.css">
-        <link rel="stylesheet" type="text/css" href="/lib/codemirror/lib/codemirror.css">
         <link rel="stylesheet" type="text/css" href="World.css">
         
         <script src="/js/polyfill/CustomElements.js"></script>
@@ -120,6 +119,7 @@
                     lineNumbers : true,
                     styleSelectedText : true
                     });
+                Abbozza.sourceEditor.setSize(null,"100%");
                 Abbozza.sourceEditor.setValue("// Javascript source code");
                 tabs.openTab(infoPane);
                 World.init();
@@ -154,7 +154,7 @@
                         <span class="sourcebutton" onclick="Abbozza.runSource()">Run</span>
                         <span class="sourcebutton" onclick="Abbozza.stopSource()">Stop</span>
                     </div>
-                    <div class="sourcewrapper" id="sourcewrapper">
+                    <div class="sourcewrapper">
                     <textarea class="sourceeditor" id="sourceeditor"></textarea>
                     </div>
                 </div>     

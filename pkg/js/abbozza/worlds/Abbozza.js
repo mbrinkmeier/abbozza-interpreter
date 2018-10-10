@@ -117,20 +117,23 @@ Abbozza.stopSource = function() {
 }
 
 Abbozza.doSourceStep = function() {
-    var stepped = Abbozza.sourceInterpreter.step();
-    var state = Abbozza.sourceInterpreter.stateStack[Abbozza.sourceInterpreter.stateStack.length - 1];
-    var spos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.start);
-    var epos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.end);
-    if ( Abbozza.lastMark ) Abbozza.lastMark.clear();
-    if ( stepped ) {
+    try {
+        var state = Abbozza.sourceInterpreter.stateStack[Abbozza.sourceInterpreter.stateStack.length - 1];
+        var spos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.start);
+        var epos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.end);
+        if ( Abbozza.lastMark ) Abbozza.lastMark.clear();
         Abbozza.lastMark = Abbozza.sourceEditor.getDoc().markText(spos,epos, { className: "sourceMarker" });
-    }
-    if ( stepped && (Abbozza.sourceState == Abbozza.SOURCE_RUNNING) ) {
-        window.setTimeout(Abbozza.doSourceStep,0);          
-    } else {
-        if (!stepped) {
-            Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
-            alert("Finished");
+        var stepped = Abbozza.sourceInterpreter.step();
+        if ( stepped && (Abbozza.sourceState == Abbozza.SOURCE_RUNNING) ) {
+            window.setTimeout(Abbozza.doSourceStep,0);          
+        } else {
+            if (!stepped) {
+                Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
+                alert("Finished");
+            }
         }
+    } catch (e) {
+        console.log(e);
+        console.log(Abbozza.sourceInterpreter);
     }
 }
