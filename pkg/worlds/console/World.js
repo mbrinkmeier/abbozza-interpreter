@@ -30,7 +30,6 @@ World.reset  = function() {
     this.mycon.clear();
 };
 
-
 /**
  * The console as view for the context.
  */
@@ -208,3 +207,44 @@ Console.prototype.keydown = function (event) {
     }
     event.preventDefault();
 };
+
+
+
+/**
+ * The initialization for the source interpreter
+ * 
+ * @param {type} interpreter
+ * @param {type} scope
+ * @returns {undefined}
+ */
+World.initSourceInterpreter = function(interpreter,scope) {
+    interpreter.setProperty(scope,"println",interpreter.createNativeFunction(World.printlnWrapper));
+    interpreter.setProperty(scope,"print",interpreter.createNativeFunction(World.printWrapper));
+    interpreter.setProperty(scope,"readkey",interpreter.createAsyncFunction(World.readkeyWrapper));
+    interpreter.setProperty(scope,"readline",interpreter.createAsyncFunction(World.readlineWrapper));    
+    interpreter.setProperty(scope,"clear",interpreter.createNativeFunction(World.clearWrapper));    
+}
+
+World.printWrapper = function(text) {
+    World.mycon.print(text);
+}
+
+World.printlnWrapper = function(text) {
+    World.mycon.println(text);
+}
+
+World.clearWrapper = function() {
+    World.mycon.clear();
+}
+
+World.readkeyWrapper = function(callback) {
+    return World.mycon.readkey( function(text) {
+        callback(text);
+    });
+}
+
+World.readlineWrapper = function(callback) {
+    return World.mycon.readline( function(text) {
+        callback(text);
+    });
+}

@@ -18,9 +18,8 @@ Abbozza.ConsolePrint = {
             entry.finished();
         }        
         return true;    
-    }    
+    }
 }
-
 
 Abbozza.ConsolePrintln = {
     init : function() {
@@ -109,7 +108,7 @@ Abbozza.ConsoleReadLine = {
         }
         return true;    
     }    
-}
+};
 
 
 Blockly.Blocks['console_clear'] = Abbozza.ConsoleClear;
@@ -118,3 +117,8 @@ Blockly.Blocks['console_println'] = Abbozza.ConsolePrintln;
 Blockly.Blocks['console_readkey'] = Abbozza.ConsoleReadKey;
 Blockly.Blocks['console_readline'] = Abbozza.ConsoleReadLine;
 
+AbbozzaCode['console_clear'] = [ 'clear();',[]];
+AbbozzaCode['console_print'] = [ 'print(#);',["V_TEXT"]];
+AbbozzaCode['console_println'] = [ 'println(#);',["V_TEXT"]];
+AbbozzaCode['console_readkey'] = [ 'readkey()',[]];
+AbbozzaCode['console_readline'] = [ 'readline()',[]];

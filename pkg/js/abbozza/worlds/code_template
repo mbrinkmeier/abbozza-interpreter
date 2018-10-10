@@ -1,0 +1,15 @@
+###globalvars###
+
+// Vorbereitung
+###inithook###
+
+// Die Operationen
+###blocks###
+
+// Das Hauptprogramm
+function main() {
+###setuphook###
+###main###
+}
+
+main();

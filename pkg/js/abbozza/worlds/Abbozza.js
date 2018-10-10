@@ -73,3 +73,64 @@ Blockly.BlockSvg.prototype.addSystemContextMenuItems = function(menuOptions) {
     };
     menuOptions.push(breakpointOption);
 };
+
+
+Abbozza.sourceInterpreter = null;
+Abbozza.SOURCE_STOPPED = 0;
+Abbozza.SOURCE_PAUSED = 1;
+Abbozza.SOURCE_RUNNING = 2;
+Abbozza.SOURCE_ABORTED = 3;
+
+Abbozza.sourceState = 0; 
+
+
+Abbozza.generateSource = function() {
+    Abbozza.openOverlay(_("msg.generate_sketch"));
+    var code = this.Generator.workspaceToCode();
+    Abbozza.sourceEditor.setValue(code);
+    if (!ErrorMgr.hasErrors()) {
+        Abbozza.appendOverlayText(_("msg.code_generated"));
+    }
+    Abbozza.closeOverlay();
+}
+
+Abbozza.runSource = function() {
+    if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) || (Abbozza.sourceState == Abbozza.SOURCE_ABORTED) ) {      
+        var code = Abbozza.sourceEditor.getValue();
+        Abbozza.sourceInterpreter = new Interpreter(code,World.initSourceInterpreter);
+    }
+    Abbozza.sourceState = Abbozza.SOURCE_RUNNING;
+    window.setTimeout(Abbozza.doSourceStep,0);    
+}
+
+Abbozza.stepSource = function() {
+    if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) || (Abbozza.sourceState == Abbozza.SOURCE_ABORTED) ) {      
+        var code = Abbozza.sourceEditor.getValue();
+        Abbozza.sourceInterpreter = new Interpreter(code,World.initSourceInterpreter);
+    }
+    Abbozza.sourceState = Abbozza.SOURCE_PAUSED;
+    window.setTimeout(Abbozza.doSourceStep,0);
+}
+
+Abbozza.stopSource = function() {
+    Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
+}
+
+Abbozza.doSourceStep = function() {
+    var stepped = Abbozza.sourceInterpreter.step();
+    var state = Abbozza.sourceInterpreter.stateStack[Abbozza.sourceInterpreter.stateStack.length - 1];
+    var spos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.start);
+    var epos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.end);
+    if ( Abbozza.lastMark ) Abbozza.lastMark.clear();
+    if ( stepped ) {
+        Abbozza.lastMark = Abbozza.sourceEditor.getDoc().markText(spos,epos, { className: "sourceMarker" });
+    }
+    if ( stepped && (Abbozza.sourceState == Abbozza.SOURCE_RUNNING) ) {
+        window.setTimeout(Abbozza.doSourceStep,0);          
+    } else {
+        if (!stepped) {
+            Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
+            alert("Finished");
+        }
+    }
+}
