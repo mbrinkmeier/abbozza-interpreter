@@ -2,17 +2,37 @@
 <block deletable="false" id="main" inline="false" type="main" x="100" y="20">
 <mutation>
 <title>&lt;title&gt;</title>
-<symbols/>
+<symbols>
+<symbol name="weite" symboltype="0" type="NUMBER"/>
+</symbols>
 </mutation>
 <data>main</data>
+<statement name="STATEMENTS">
+<block id=";JS5pgR1GZpCsJ@LW3p5" type="var_assign">
+<value name="LEFT">
+<block id="TsceIC~icc9kjyq=RPqv" type="var_block">
+<field name="NAME">weite</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id=".O`9(vt21l^;5XlM.PmJ" type="math_number">
+<field name="VALUE">100</field>
+</block>
+</value>
+<next>
+<block id="(aAwQXf!#HPw*`Huk:=M" type="turtle_forward">
+<value name="VALUE">
+<block id="f+roihMUerv)XYNK|D7`" type="var_block">
+<field name="NAME">weite</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
 </block>
 <description/>
-<options apply="no" protected="no">{option.operations=false,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.advanced=false,option.colorCategory=false,option.noArrays=true}</options>
-<task height="400" width="600">&lt;page&gt;&lt;script class="page"&gt;&lt;/script&gt;
-&lt;/page&gt;</task>
-<world height="20" width="20">
-<kara dir="0" x="0" y="0"/>
-<rock x="2" y="0"/>
-</world>
+<options apply="no" protected="no">{option.operations=false,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=false}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
 <system>worlds</system>
 </xml>

@@ -134,19 +134,18 @@ Turtle.prototype.setTurtlePos = function(x,y) {
 }
 
 Turtle.prototype.setTurtleDir = function(dir) {
-    console.log(this.turtle_dir + " " + this.turtle_dx + "," + this.turtle_dy);
     this.turtle_dir = dir;
     while ( this.turtle_dir < 0 ) 
         this.turtle_dir = this.turtle_dir + 360;
     this.turtle_dir = this.turtle_dir % 360;
     this.turtle_dx = Math.cos(this.turtle_dir * Math.PI / 180);
     this.turtle_dy = Math.sin(this.turtle_dir * Math.PI / 180);
-    console.log(this.turtle_dir + " " + this.turtle_dx + "," + this.turtle_dy);
     
     this.updateTurtle();
 }
 
 Turtle.prototype.setTurtleColor = function(color) {
+    this.turtle_color = color;
     this.updateTurtle();
 }
 
@@ -216,6 +215,13 @@ Turtle.prototype.setColor = function(color) {
     this.setTurtleColor(color);
 }
 
+Turtle.prototype.setRGBColor = function(red,green,blue) {
+    var color = "rgb(" + red + "," + green + "," + blue + ")";
+    console.log(color);
+    this.turtle_color = color;
+    this.newPath();
+    this.setTurtleColor(color);
+}
 
 Turtle.prototype.penUp = function() {
     this.newPath();
@@ -271,7 +277,7 @@ Turtle.prototype.getColor = function() {
     return this.turtle_color;
 }
 
-Turtle.prototype.ishidden = function() {
+Turtle.prototype.isHidden = function() {
     return this.turtle_hidden;
 }
 
@@ -289,5 +295,37 @@ Turtle.prototype.getPixelGreen = function() {
 
 Turtle.prototype.getPixelBlue = function() {
     var pixel = this.context_.getImageData(this.turtle_x,this.turtle_y,1,1)[2];
+}
+
+
+World.wrapper = function(func,arg) {
+    func.call(World.turtle,arg);
+}
+
+World.createWrapper = function(func) {
+    return function(arg) {
+        World.wrapper(World.turtle[func],arg);        
+    }
+}
+
+World.initSourceInterpreter = function(interpreter,scope) {
+    var funcs = [
+      'reset','clear','forward','turn','setDirection','setColor','penUp','penDown',
+      'hide','show','setWidth','setColor','getX','getY','getDirection','getWidth',
+      'getColor','isHidden','isPenDown','getPixelRed','getPixelGreen',
+      'getPixelBlue'
+    ];
+    for ( var i = 0; i < funcs.length; i++ ) {
+        interpreter.setProperty(scope,funcs[i],
+            interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
+        );        
+    }
+    interpreter.setProperty(scope,'setRGBColor',
+            interpreter.createNativeFunction( World.setRGBColorWrapper )
+    );        
+}
+
+World.setRGBColorWrapper = function(red,green,blue) {
+    World.turtle.setRGBColor(red,green,blue);
 }
 

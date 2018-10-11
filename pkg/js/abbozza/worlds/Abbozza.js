@@ -97,7 +97,7 @@ Abbozza.generateSource = function() {
 Abbozza.runSource = function() {
     if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) || (Abbozza.sourceState == Abbozza.SOURCE_ABORTED) ) {      
         var code = Abbozza.sourceEditor.getValue();
-        Abbozza.sourceInterpreter = new Interpreter(code,World.initSourceInterpreter);
+        Abbozza.sourceInterpreter = new Interpreter(code,World._initSourceInterpreter);
     }
     Abbozza.sourceState = Abbozza.SOURCE_RUNNING;
     window.setTimeout(Abbozza.doSourceStep,0);    
@@ -106,7 +106,7 @@ Abbozza.runSource = function() {
 Abbozza.stepSource = function() {
     if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) || (Abbozza.sourceState == Abbozza.SOURCE_ABORTED) ) {      
         var code = Abbozza.sourceEditor.getValue();
-        Abbozza.sourceInterpreter = new Interpreter(code,World.initSourceInterpreter);
+        Abbozza.sourceInterpreter = new Interpreter(code,World._initSourceInterpreter);
     }
     Abbozza.sourceState = Abbozza.SOURCE_PAUSED;
     window.setTimeout(Abbozza.doSourceStep,0);

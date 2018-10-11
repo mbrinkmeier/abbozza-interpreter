@@ -204,7 +204,7 @@ Abbozza.TurtleSetRGBColor = {
                 entry.phase = 3;
                 break;
             case 3 :
-                World.turtle.setColor("rgb(" + entry.red + "," + entry.green + "," + entry.callResult + ")");
+                World.turtle.setRGBColor(entry.red , entry.green , entry.callResult);
                 entry.finished();
                 break;
                 
@@ -426,3 +426,23 @@ Abbozza.TurtleGetBlue = {
 }
 
 Blockly.Blocks['turtle_get_blue'] = Abbozza.TurtleGetBlue;
+
+AbbozzaCode['turtle_clear'] = [ 'clear();',[]];
+AbbozzaCode['turtle_reset'] = [ 'reset();',[]];
+AbbozzaCode['turtle_forward'] = [ 'forward(#);',["V_VALUE"]];
+AbbozzaCode['turtle_turn'] = [ 'turn(#);',["V_VALUE"]];
+AbbozzaCode['turtle_set_direction'] = [ 'setDirection(#);',["V_VALUE"]];
+AbbozzaCode['turtle_set_width'] = [ 'setWidth(#);',["V_VALUE"]];
+AbbozzaCode['turtle_set_color'] = [ 'setColor(#);',["V_COLOR"]];
+AbbozzaCode['turtle_set_rgb_color'] = [ 'setRGBColor(#,#,#);',["V_RED","V_GREEN","V_BLUE"]];
+AbbozzaCode['turtle_penup'] = [ 'penUp();',[]];
+AbbozzaCode['turtle_pendown'] = [ 'penDown();',[]];
+AbbozzaCode['turtle_hide'] = [ 'hide();',[]];
+AbbozzaCode['turtle_show'] = [ 'show();',[]];
+AbbozzaCode['turtle_getx'] = [ 'getX()',[]];
+AbbozzaCode['turtle_gety'] = [ 'getY()',[]];
+AbbozzaCode['turtle_get_dir'] = [ 'getDir()',[]];
+AbbozzaCode['turtle_get_red'] = [ 'getPixelRed()',[]];
+AbbozzaCode['turtle_get_green'] = [ 'getPixelGreen()',[]];
+AbbozzaCode['turtle_get_blue'] = [ 'getPixelBlue()',[]];
+

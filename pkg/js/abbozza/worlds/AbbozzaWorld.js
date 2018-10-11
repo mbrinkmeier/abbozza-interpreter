@@ -37,4 +37,9 @@ AbbozzaWorld.prototype._onStep = function() {
     if ( Task && Task.onStep ) Task.onStep(this);
 };
 
-AbbozzaWorld.prototype.initSourceInterpreter = function(interpreter,scope) {}
+AbbozzaWorld.prototype._initSourceInterpreter = function(interpreter,scope) {
+    // Do global initialization of interpreter
+    if ( World.initSourceInterpreter) {
+        World.initSourceInterpreter(interpreter,scope);
+    }
+}
