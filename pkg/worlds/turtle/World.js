@@ -121,8 +121,8 @@ Turtle.prototype.updateTurtle = function() {
     this.turtle_svg_.setAttribute("d",path);
     this.turtle_svg_.setAttribute("stroke",this.turtle_color);
     var transform = "";
-    transform = transform + " translate(" + this.turtle_x + "," + this.turtle_y + ")";
-    transform = transform + " rotate(" + (this.turtle_dir) + ")";
+    transform = transform + " translate(" + Number(this.turtle_x) + "," + Number(this.turtle_y) + ")";
+    transform = transform + " rotate(" + Number(this.turtle_dir) + ")";
     this.turtle_svg_.setAttribute("transform", transform);
 }
 
@@ -258,11 +258,11 @@ Turtle.prototype.setWidth = function (width) {
 
 
 Turtle.prototype.getX = function() {
-    return this.turtle_x;
+    return Math.round(this.turtle_x);
 }
 
 Turtle.prototype.getY = function() {
-    return this.turtle_y;
+    return Math.round(this.turtle_y);
 }
 
 Turtle.prototype.getDirection = function() {
@@ -299,12 +299,13 @@ Turtle.prototype.getPixelBlue = function() {
 
 
 World.wrapper = function(func,arg) {
-    func.call(World.turtle,arg);
+    var val = func.call(World.turtle,arg);
+    return val;
 }
 
 World.createWrapper = function(func) {
     return function(arg) {
-        World.wrapper(World.turtle[func],arg);        
+        return World.wrapper(World.turtle[func],arg);        
     }
 }
 

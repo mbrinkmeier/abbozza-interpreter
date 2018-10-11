@@ -8,6 +8,24 @@
 </mutation>
 <data>main</data>
 <statement name="STATEMENTS">
+<block id="@v[pPq%,aQV+)Qxb-;D0" type="turtle_reset">
+<next>
+<block id="(9D|rEmO}#!A+oaa!J(q" type="turtle_set_rgb_color">
+<value name="RED">
+<block id="jwV9qy1uEjG.1zAX(OC(" type="math_number">
+<field name="VALUE">0</field>
+</block>
+</value>
+<value name="GREEN">
+<block id="/q)[9!q_QBXG:iLyFuwn" type="turtle_getx"/>
+</value>
+<value name="BLUE">
+<block id="p;x)CS*/k8PeYU7i]fze" type="math_number">
+<mutation confirmed="false"/>
+<field name="VALUE">0</field>
+</block>
+</value>
+<next>
 <block id=";JS5pgR1GZpCsJ@LW3p5" type="var_assign">
 <value name="LEFT">
 <block id="TsceIC~icc9kjyq=RPqv" type="var_block">
@@ -26,6 +44,10 @@
 <field name="NAME">weite</field>
 </block>
 </value>
+</block>
+</next>
+</block>
+</next>
 </block>
 </next>
 </block>
