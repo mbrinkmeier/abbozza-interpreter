@@ -74,7 +74,7 @@
 </block>
 </value>
 <value name="RIGHT">
-<block id="5}U7tJ8oUZ4rMyRh3++N" type="func_call">
+<block id="5}U7tJ8oUZ4rMyRh3++N" inline="false" type="func_call">
 <mutation name="fakultaet" type="NUMBER">
 <par name="wert" type="NUMBER"/>
 </mutation>
@@ -108,7 +108,7 @@
 </block>
 </value>
 </block>
-<block id="^[W~U/ZA|zdkGRo=kFD-" type="var_block" x="312.96946716308594" y="462">
+<block id="^[W~U/ZA|zdkGRo=kFD-" type="var_block" x="312" y="462">
 <field name="NAME">wert</field>
 </block>
 <block id="tn8#Zs5b.::#~|Cinb=V" type="var_assign" x="71" y="518">
@@ -119,7 +119,7 @@
 </value>
 </block>
 <description/>
-<options apply="no" protected="no">{option.operations=true,option.colorDefault=false,option.multArrays=false,option.localVars=true,option.linArrays=false,option.colorType=false,option.colorCategory=false,option.advanced=true,option.noArrays=false}</options>
+<options apply="no" protected="no">{option.operations=false,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=false}</options>
 <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
-<system>interpreter</system>
+<system>worlds</system>
 </xml>

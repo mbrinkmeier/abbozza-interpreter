@@ -170,7 +170,7 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_worldBoxActionPerformed
 
     private void selectWorldButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectWorldButtonActionPerformed
-        abbozza.setWorld((World) worldBox.getSelectedItem());
+        abbozza.setWorld((World) worldBox.getSelectedItem(),true);
     }//GEN-LAST:event_selectWorldButtonActionPerformed
 
 

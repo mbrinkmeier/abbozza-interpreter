@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -108,6 +109,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             System.exit(1);
         }
 
+        startBrowser("abbozza/world/" + currentWorld.getId() + "/");
+
         try {
             if (SystemTray.isSupported()) {
                 AbbozzaLogger.info("Setting system tray icon");
@@ -194,7 +197,12 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     @Override
     public void findJarsAndDirs(JarDirHandler jarHandler) {
         jarHandler.addDir(jarPath + "/", "Dir");
-        jarHandler.addJar(jarPath + "/abbozza-worlds.jar", "Jar");
+        try {
+            jarHandler.addJar(AbbozzaWorlds.class.getProtectionDomain().getCodeSource().getLocation().toURI(),"Jar");
+        } catch (URISyntaxException ex) {
+            AbbozzaLogger.err("Could not find jar file by class");
+            jarHandler.addJar(jarPath + "/abbozza-worlds.jar", "Jar");
+        } 
     }
 
     @Override
@@ -303,10 +311,16 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         return optionXml;
     }
 
+    public void setWorld(World world, boolean browser) {
+        currentWorld = world;
+        AbbozzaLocale.setLocale(this.config.getLocale());
+        if ( browser) this.startBrowser("abbozza/world/" + world.getId() + "/");
+        // @TODO
+    }
+
     public void setWorld(World world) {
         currentWorld = world;
         AbbozzaLocale.setLocale(this.config.getLocale());
-        this.startBrowser("abbozza/world/" + world.getId() + "/");
         // @TODO
     }
 
