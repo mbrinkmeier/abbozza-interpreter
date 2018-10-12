@@ -138,6 +138,14 @@
             </block>
         </category>     
         
+        <category id="cat.KEYBOARD" color="#00A0A0">
+            <block type="key_get_pressed"/>
+            <block type="key_get_last"/>
+            <block type="key_const"/>
+        </category>
+        
+
+        
         <category id="cat.KARA" color="#00A000">
             <block type="kara_forward"/>
             <block type="kara_moved"/>

@@ -138,6 +138,12 @@
             </block>
         </category>     
         
+        <category id="cat.KEYBOARD" color="#00A0A0">
+            <block type="key_get_pressed"/>
+            <block type="key_get_last"/>
+            <block type="key_const"/>
+        </category>
+        
         <category id="cat.CONSOLE" color="#00A000">
             <block type="console_clear"/>
             <block type="console_print">

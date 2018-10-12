@@ -2,7 +2,10 @@ function AbbozzaWorld(id) {
     this.id = id;
 };
 
-AbbozzaWorld.prototype.init = function() {    
+AbbozzaWorld.prototype._init = function() {
+    if ( this.init ) {
+        this.init();
+    }
 };
 
 AbbozzaWorld.prototype.getId = function() {
@@ -38,8 +41,48 @@ AbbozzaWorld.prototype._onStep = function() {
 };
 
 AbbozzaWorld.prototype._initSourceInterpreter = function(interpreter,scope) {
+    interpreter.setProperty(scope,"getPressedKey",interpreter.createNativeFunction(World.getPressedKey));
+    interpreter.setProperty(scope,"getLastKey",interpreter.createNativeFunction(World.getLastKey));
+
     // Do global initialization of interpreter
     if ( World.initSourceInterpreter) {
         World.initSourceInterpreter(interpreter,scope);
     }
+}
+
+
+AbbozzaWorld.prototype._activateKeyboard = function(view) {
+    World.curKey = "";
+    World.lastKey = "";
+    view.addEventListener("keydown", this.onKeyDown);
+    view.addEventListener("keyup", this.onKeyUp);
+}
+
+AbbozzaWorld.prototype.onKeyDown = function(event) {
+    World.curKey = World.getKeyString(event);
+}
+
+AbbozzaWorld.prototype.onKeyUp = function(event) {
+    World.lastKey = World.curKey; 
+    World.curKey = "";
+}
+
+
+AbbozzaWorld.prototype.getKeyString = function(event) {
+    var val = event.key;
+    if (event.shiftKey) val = "Shift+"+val;
+    if (event.metaKey) val = "Meta+"+val;
+    if (event.ctrlKey) val = "Ctrl+"+val;
+    if (event.altKey) val = "Alt+"+val;
+    return val;
+}
+
+AbbozzaWorld.prototype.getPressedKey = function() {
+    return World.curKey;
+}
+
+AbbozzaWorld.prototype.getLastKey = function() {
+    var val = World.lastKey;
+    World.lastKey = "";
+    return val;
 }

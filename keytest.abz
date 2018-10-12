@@ -1,0 +1,59 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol name="taste" symboltype="0" type="STRING"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="qn|6eb1MlE(_#?*a7iGI" type="loop_endless">
+<statement name="STATEMENTS">
+<block id="qVLF3URF=D/zBW:BmerV" type="var_assign">
+<value name="LEFT">
+<block id="m|7x?*1~#]DRoT`kUSiy" type="var_block">
+<field name="NAME">taste</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="[~6=r0mb[64}3.w~l2`D" type="key_get_last"/>
+</value>
+<next>
+<block id="gIJm3,g=KN9l11Xw~KkV" type="cond_if">
+<value name="CONDITION">
+<block id="jHFi+A0Qe_3*P;{87~-H" type="logic_compare">
+<field name="OP">EQUALS</field>
+<value name="LEFT">
+<block id="iCj^DB8c+m)K7ta^m*bc" type="var_block">
+<field name="NAME">taste</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id=":JS6?`VRFOcmU=|zi!_{" type="key_const">
+<field name="KEY">ArrowRight</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="STATEMENTS">
+<block id="U0JCd-J!(mfuH7xJjdaq" type="console_println">
+<value name="TEXT">
+<block id="FW6tc_%MzZXnn%ArCNBK" type="text_const">
+<field name="CONTENT">Rechts</field>
+</block>
+</value>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=false,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=true}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<system>worlds</system>
+</xml>

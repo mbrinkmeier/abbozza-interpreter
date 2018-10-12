@@ -86,6 +86,7 @@
 
         <!-- world specific blocks -->
         <script src="/js/abbozza/worlds/blocks/Main.js" type="text/javascript"></script>
+        <script src="/js/abbozza/worlds/blocks/Keyboard.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Execs.js" type="text/javascript"></script>
         <script src="Blocks.js" type="text/javascript"></script>
         
@@ -120,9 +121,8 @@
                     styleSelectedText : true
                     });
                 Abbozza.sourceEditor.setSize(null,"100%");
-                Abbozza.sourceEditor.setValue("// Javascript source code");
                 tabs.openTab(infoPane);
-                World.init();
+                World._init();
            }
         </script>
     </head>
@@ -155,7 +155,7 @@
                         <span class="sourcebutton" onclick="Abbozza.stopSource()">Stop</span>
                     </div>
                     <div class="sourcewrapper">
-                    <textarea class="sourceeditor" id="sourceeditor"></textarea>
+                        <textarea class="sourceeditor" id="sourceeditor"></textarea>
                     </div>
                 </div>     
                 <div id="worldinfo">

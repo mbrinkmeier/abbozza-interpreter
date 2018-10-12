@@ -20,10 +20,10 @@
  * @type type
  */
 var World = new AbbozzaWorld("console");
-console.log(World);
 
 World.init = function() {
     this.mycon = new Console(document.getElementById('.topleft'));
+    this._activateKeyboard(this.mycon.parent_);
 }
 
 World.reset  = function() {

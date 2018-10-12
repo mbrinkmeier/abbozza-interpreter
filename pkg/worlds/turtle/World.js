@@ -23,7 +23,8 @@ var World = new AbbozzaWorld("turtle");
 
 World.init = function() {
     this.turtle = new Turtle(document.getElementById('.topleft'));
-    Abbozza.splitter.addEventListener("splitter_resize", this.resize);        
+    Abbozza.splitter.addEventListener("splitter_resize", this.resize);
+    this._activateKeyboard(this.turtle.parent_);   
 };
     
 World.resize = function(event) { 
@@ -298,21 +299,25 @@ Turtle.prototype.getPixelBlue = function() {
 }
 
 
-World.wrapper = function(func,arg) {
-    var val = func.call(World.turtle,arg);
-    return val;
+World.wrapper = function(func,args) {
+    return func.apply(World.turtle,args);
 }
+
 
 World.createWrapper = function(func) {
     return function(arg) {
-        return World.wrapper(World.turtle[func],arg);        
+        var args= [];
+        for ( var i = 0 ; i < arguments.length; i++ ) {
+            args[i] = arguments[i];
+        }
+        return World.wrapper(World.turtle[func],args);        
     }
 }
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
       'reset','clear','forward','turn','setDirection','setColor','penUp','penDown',
-      'hide','show','setWidth','setColor','getX','getY','getDirection','getWidth',
+      'hide','show','setWidth','setColor','setRGBColor','getX','getY','getDirection','getWidth',
       'getColor','isHidden','isPenDown','getPixelRed','getPixelGreen',
       'getPixelBlue'
     ];
@@ -321,9 +326,11 @@ World.initSourceInterpreter = function(interpreter,scope) {
             interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
         );        
     }
+    /*
     interpreter.setProperty(scope,'setRGBColor',
             interpreter.createNativeFunction( World.setRGBColorWrapper )
-    );        
+    );
+    */        
 }
 
 World.setRGBColorWrapper = function(red,green,blue) {

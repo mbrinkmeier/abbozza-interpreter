@@ -24,6 +24,7 @@ var World = new AbbozzaWorld("kara");
 
 World.init = function() {
     this.kara = new Kara(document.getElementById('.topleft'));
+    this._activateKeyboard(this.kara.parent_);
     
     document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
     var info = document.getElementById("info");
