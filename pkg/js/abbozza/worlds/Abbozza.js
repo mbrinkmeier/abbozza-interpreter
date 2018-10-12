@@ -100,6 +100,7 @@ Abbozza.runSource = function() {
         Abbozza.sourceInterpreter = new Interpreter(code,World._initSourceInterpreter);
     }
     Abbozza.sourceState = Abbozza.SOURCE_RUNNING;
+    console.log(AbbozzaInterpreter.delay);
     window.setTimeout(Abbozza.doSourceStep,0);    
 }
 
@@ -125,7 +126,7 @@ Abbozza.doSourceStep = function() {
         Abbozza.lastMark = Abbozza.sourceEditor.getDoc().markText(spos,epos, { className: "sourceMarker" });
         var stepped = Abbozza.sourceInterpreter.step();
         if ( stepped && (Abbozza.sourceState == Abbozza.SOURCE_RUNNING) ) {
-            window.setTimeout(Abbozza.doSourceStep,0);          
+            window.setTimeout(Abbozza.doSourceStep,AbbozzaInterpreter.delay);          
         } else {
             if (!stepped) {
                 Abbozza.sourceState = Abbozza.SOURCE_STOPPED;

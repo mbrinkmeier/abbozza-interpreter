@@ -24,6 +24,7 @@ var World = new AbbozzaWorld("kara");
 
 World.init = function() {
     this.kara = new Kara(document.getElementById('.topleft'));
+    this.kara.parent_.tabIndex="0";
     this._activateKeyboard(this.kara.parent_);
     
     document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
@@ -54,7 +55,7 @@ World.fromDom = function(xml) {
 };
     
 World.reset = function () {
-    this.widzh = 20;
+    this.width = 20;
     this.height = 20;
     this.kara.reset();
 };
@@ -69,6 +70,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 /**
  * The turtle as view for the context.
  */
+
 
 function Kara(view) {
 
@@ -89,61 +91,74 @@ function Kara(view) {
     this.pic_kara_up_ = document.createElement("img");
     this.pic_kara_up_.style.display = "none";
     this.pic_kara_up_.src = "kara.png";
+    this.pic_kara_up_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_kara_right_ = document.createElement("img");
     this.pic_kara_right_.style.display = "none";
     this.pic_kara_right_.src = "kara_right.png";
+    this.pic_kara_right_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_kara_left_ = document.createElement("img");
     this.pic_kara_left_.style.display = "none";
     this.pic_kara_left_.src = "kara_left.png";
+    this.pic_kara_left_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_kara_down_ = document.createElement("img");
     this.pic_kara_down_.style.display = "none";
     this.pic_kara_down_.src = "kara_down.png";
+    this.pic_kara_down_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_collision_ = document.createElement("img");
     this.pic_collision_.style.display = "none";
     this.pic_collision_.src = "collision.png";
+    this.pic_collision_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_rock_ = document.createElement("img");
     this.pic_rock_.style.display = "none";
     this.pic_rock_.src = "rock.png";
+    this.pic_rock_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_shamrock_ = document.createElement("img");
     this.pic_shamrock_.style.display = "none";
     this.pic_shamrock_.src = "shamrock.png";
+    this.pic_shamrock_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_mushroom_ = document.createElement("img");
     this.pic_mushroom_.style.display = "none";
     this.pic_mushroom_.src = "mushroom.png";
+    this.pic_mushroom_.onload = function (event) {
+        World.kara.redraw();
+    };
 
     this.pic_tree_ = document.createElement("img");
     this.pic_tree_.style.display = "none";
+    this.pic_tree_.src = "tree.png";
     this.pic_tree_.onload = function (event) {
         World.kara.redraw();
     };
-    this.pic_tree_.src = "tree.png";
 
     this.width = 20;
     this.height = 20;
     this.squareSize = 40;
 
-
-    this.karaX = 0;
-    this.karaY = 0;
-    this.karaDir = 0;
-    this.karaDX = 1;
-    this.karaDY = 0;
-    this.moved = false;
-    this.collX = 0;
-    this.collY = 0;
-    this.collX2 = 0;
-    this.collY2 = 0;
-
     this.reset();
     
     this.put(Kara.ROCK,2,0);
+    this.redraw();
 };
 
 Kara.EMPTY = 0;
@@ -160,7 +175,7 @@ Kara.prototype.reset = function () {
     this.karaDX = 1;
     this.karaDY = 0;
     // this.squareSize = 40;    
-
+    this.moved = false;
     this.hideCollision();
     this.collX = 0;
     this.collY = 0;
@@ -203,6 +218,7 @@ Kara.prototype.reset = function () {
         this.context_.lineTo(this.view_.width, this.squareSize * i);
         this.context_.stroke();
     }
+    this.redraw();    
 };
 
 Kara.prototype.onStart = function() {
@@ -327,6 +343,9 @@ Kara.prototype.put = function (type, x, y) {
     this.field[x][y] = type;
     this.drawSquare(x, y);
 };
+
+
+
 
 Kara.prototype.turnRight = function () {
     this.karaDir = (this.karaDir + 3) % 4;
@@ -552,3 +571,33 @@ Kara.prototype.fromDom = function(xml) {
     }
     this.redraw();
 };
+
+
+World.wrapper = function(func,args) {
+    return func.apply(World.kara,args);
+}
+
+
+World.createWrapper = function(func) {
+    return function(arg) {
+        var args= [];
+        for ( var i = 0 ; i < arguments.length; i++ ) {
+            args[i] = arguments[i];
+        }
+        return World.wrapper(World.kara[func],args);        
+    }
+}
+
+World.initSourceInterpreter = function(interpreter,scope) {
+    var funcs = [
+      'turnRight','turnLeft','forward','steppedForward',
+      'isOnShamrock','pickUpShamrock','dropShamrock','isForwardEmpty',
+      'isForward'
+    ];
+    for ( var i = 0; i < funcs.length; i++ ) {
+        interpreter.setProperty(scope,funcs[i],
+            interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
+        );        
+    }
+}
+

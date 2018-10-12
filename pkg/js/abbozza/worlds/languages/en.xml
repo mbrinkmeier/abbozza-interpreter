@@ -13,6 +13,22 @@
         <msg id="gui.source">Sourcecode</msg>
         <msg id="gui.QUIT">Quit</msg> 
         <msg id="gui.SET_WORLD">Start World</msg> 
-        <msg id="gui.close_and_quit">abbozza! is not terminated by closing the window!</msg> 
+        <msg id="gui.close_and_quit">abbozza! is not terminated by closing the window!</msg>
+        <msg id="cat.KEYBOARD">KEyboard</msg>
+        <msg id="keyboard.GET_PRESSED">Pressed key</msg>
+        <msg id="keyboard.GET_LAST">last pressed key</msg>
+        <msg id="key.RIGHT">Arrow right</msg>
+        <msg id="key.LEFT">Arrow left</msg>
+        <msg id="key.UP">Arrow up</msg>
+        <msg id="key.DOWN">Arrow down</msg>
+        <msg id="key.PGUP">Page up</msg>
+        <msg id="key.PGDOWN">Page down</msg>
+        <msg id="key.BACKSPACE">Backspace</msg>
+        <msg id="key.DELETE">Delete (Del)</msg>
+        <msg id="key.END">End</msg>
+        <msg id="key.HOME">Home</msg>
+        <msg id="key.TAB">Tabulator</msg>
+        <msg id="key.INSERT">Insert</msg>        
+        <msg id="key.ESCAPE">Escape (Esc)</msg>
     </gui>
 </language>    

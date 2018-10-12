@@ -14,5 +14,21 @@
         <msg id="gui.QUIT">Beenden</msg> 
         <msg id="gui.SET_WORLD">Starte Welt</msg> 
         <msg id="gui.close_and_quit">abbozza! wird durch das Schließen des Fensters nicht beendet!</msg> 
+        <msg id="cat.KEYBOARD">Tastatur</msg>
+        <msg id="keyboard.GET_PRESSED">Gedrückte Taste</msg>
+        <msg id="keyboard.GET_LAST">Zuletzt gedrückte Taste</msg>
+        <msg id="key.RIGHT">Pfeil nach rechts</msg>
+        <msg id="key.LEFT">Pfeil nach links</msg>
+        <msg id="key.UP">Pfeil hoch</msg>
+        <msg id="key.DOWN">Pfeil runter</msg>
+        <msg id="key.PGUP">Seite hoch</msg>
+        <msg id="key.PGDOWN">Seite runter</msg>
+        <msg id="key.BACKSPACE">Backspace</msg>
+        <msg id="key.DELETE">Entfernen (Entf)</msg>
+        <msg id="key.END">Ende</msg>
+        <msg id="key.HOME">Pos 1</msg>
+        <msg id="key.TAB">Tabulator</msg>
+        <msg id="key.INSERT">Einfügen</msg>
+        <msg id="key.ESCAPE">Escape (Esc)</msg>
     </gui>
 </language>    

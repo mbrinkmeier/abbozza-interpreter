@@ -90,7 +90,7 @@ AbbozzaInterpreter.stop = function() {
     // this.threads = [];
     World._onStop();
     var newEvent = new CustomEvent("abz_aborted");
-    this.dispatchEvent(newEvent);
+    document.dispatchEvent(newEvent);
 
 };
 

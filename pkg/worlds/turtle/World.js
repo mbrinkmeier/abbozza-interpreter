@@ -24,7 +24,8 @@ var World = new AbbozzaWorld("turtle");
 World.init = function() {
     this.turtle = new Turtle(document.getElementById('.topleft'));
     Abbozza.splitter.addEventListener("splitter_resize", this.resize);
-    this._activateKeyboard(this.turtle.parent_);   
+    this.turtle.parent_.tabIndex="0";
+    this._activateKeyboard(this.turtle.parent_);
 };
     
 World.resize = function(event) { 
@@ -42,6 +43,7 @@ var svgNS = "http://www.w3.org/2000/svg";
  */
 
 function Turtle(view) {
+    this.wrapper_ = view;
     
     this.parent_ = document.createElement("div");
     this.parent_.className = "turtleParent";
@@ -326,14 +328,5 @@ World.initSourceInterpreter = function(interpreter,scope) {
             interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
         );        
     }
-    /*
-    interpreter.setProperty(scope,'setRGBColor',
-            interpreter.createNativeFunction( World.setRGBColorWrapper )
-    );
-    */        
-}
-
-World.setRGBColorWrapper = function(red,green,blue) {
-    World.turtle.setRGBColor(red,green,blue);
 }
 

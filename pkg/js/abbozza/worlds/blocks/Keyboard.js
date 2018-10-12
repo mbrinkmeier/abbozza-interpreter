@@ -75,14 +75,13 @@ Abbozza.KeyConst = {
             [_("key.END"), "End"],
             [_("key.HOME"), "Home"], 
             [_("key.TAB"), "Tab"], 
-            [_("logic.FALSE"), "FALSE"]
+            [_("key.INSERT"), "Insert"]
         ]), "KEY");
     this.setOutput(true,"STRING");
     this.setTooltip('');
   },
     execute : function(entry) {
         entry.returnValue = this.getFieldValue("KEY");
-        console.log(entry.returnValue);
         entry.finished();
         return true;    
     }

@@ -20,7 +20,6 @@ Abbozza.KaraForward = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_forward'] = Abbozza.KaraForward;
 
 
 Abbozza.KaraTurnLeft = {
@@ -40,7 +39,6 @@ Abbozza.KaraTurnLeft = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_turn_left'] = Abbozza.KaraTurnLeft;
 
 
 Abbozza.KaraTurnRight = {
@@ -60,7 +58,6 @@ Abbozza.KaraTurnRight = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_turn_right'] = Abbozza.KaraTurnRight;
 
 
 Abbozza.KaraPickUp = {
@@ -80,7 +77,6 @@ Abbozza.KaraPickUp = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_pick_up'] = Abbozza.KaraPickUp;
 
 
 Abbozza.KaraDrop = {
@@ -100,7 +96,6 @@ Abbozza.KaraDrop = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_drop'] = Abbozza.KaraDrop;
 
 
 
@@ -122,7 +117,6 @@ Abbozza.KaraIsEmpty = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_is_empty'] = Abbozza.KaraIsEmpty;
 
 Abbozza.KaraMoved = {
     init : function() {
@@ -142,7 +136,6 @@ Abbozza.KaraMoved = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_moved'] = Abbozza.KaraMoved;
 
 
 
@@ -164,7 +157,6 @@ Abbozza.KaraIsOnShamrock = {
         return true;    
     }    
 }
-Blockly.Blocks['kara_is_on_shamrock'] = Abbozza.KaraIsOnShamrock;
 
 
 
@@ -193,4 +185,26 @@ Abbozza.KaraIsForward = {
         return true;    
     }    
 }
+
+
+
+Blockly.Blocks['kara_forward'] = Abbozza.KaraForward;
+Blockly.Blocks['kara_turn_left'] = Abbozza.KaraTurnLeft;
+Blockly.Blocks['kara_turn_right'] = Abbozza.KaraTurnRight;
+Blockly.Blocks['kara_pick_up'] = Abbozza.KaraPickUp;
+Blockly.Blocks['kara_drop'] = Abbozza.KaraDrop;
+Blockly.Blocks['kara_is_empty'] = Abbozza.KaraIsEmpty;
+Blockly.Blocks['kara_moved'] = Abbozza.KaraMoved;
+Blockly.Blocks['kara_is_on_shamrock'] = Abbozza.KaraIsOnShamrock;
 Blockly.Blocks['kara_is_forward'] = Abbozza.KaraIsForward;
+
+
+AbbozzaCode['kara_forward'] = [ 'forward();',[]];
+AbbozzaCode['kara_turn_left'] = [ 'turnLeft();',[]];
+AbbozzaCode['kara_turn_right'] = [ 'turnRight();',[]];
+AbbozzaCode['kara_pick_up'] = [ 'pickUpShamrock();',[]];
+AbbozzaCode['kara_drop'] = [ 'dropShamrock();',[]];
+AbbozzaCode['kara_is_empty'] = [ 'isForwardEmpty()',[]];
+AbbozzaCode['kara_moved'] = [ 'steppedForward()',[]];
+AbbozzaCode['kara_is_on_shamrock'] = [ 'isOnShamrock()',[]];
+AbbozzaCode['kara_is_forward'] = [ 'isForward(#)',["F_TYPE"]];
