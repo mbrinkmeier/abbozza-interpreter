@@ -9,30 +9,11 @@
 <description/>
 <options apply="no" protected="no">{option.operations=false,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=true}</options>
 <task height="400" width="600">&lt;taskscript&gt;Task.onShow = function() {
-   alert("Task geladen");
+  alert("Hier");
 }
 
 Task.onHide = function() {
-   alert("Task verlassen");
-}&lt;/taskscript&gt;&lt;page&gt;&lt;pagescript&gt;// Seite 1
-Page.onShow = function() {
-  alert("Seite 1");
-}
-
-Page.onHide = function() {
-  alert("Seite 1 verlassen");
-}&lt;/pagescript&gt;&lt;/page&gt;&lt;page&gt;&lt;pagescript&gt;// Seite 2
-Page.onShow = function() {
-  alert("Seite 2");
-}
-
-Page.onHide = function() {
-  alert("Seite 2 verlassen");
-}
-&lt;/pagescript&gt;&lt;/page&gt;</task>
-<world height="20" width="20">
-<kara dir="0" x="0" y="0"/>
-<rock x="2" y="0"/>
-</world>
+  alert("Da");
+}&lt;/taskscript&gt;&lt;page&gt;Dies ist ein Tasktest&lt;/page&gt;</task>
 <system>worlds</system>
 </xml>
