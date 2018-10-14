@@ -132,13 +132,17 @@
     position: absolute;
     left: 0px;
     right:0px;
-    top: 10px;
+    top: 5px;
     height: 30px;
 }
 
 .sourcebutton {
-    border: 1px solid black;
-    padding: 5px;
+    border: none;
+    border-radis: 5px;
+    background-color: #e0e0e0;
+    padding: 0px;
+    width: 30px;
+    height: 30px;
 }
 
 .sourcebutton:hover {

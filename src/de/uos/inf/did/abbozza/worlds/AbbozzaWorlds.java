@@ -9,6 +9,8 @@ import de.uos.inf.did.abbozza.core.AbbozzaServerException;
 import de.uos.inf.did.abbozza.core.AbbozzaSplashScreen;
 import de.uos.inf.did.abbozza.handler.JarDirHandler;
 import de.uos.inf.did.abbozza.tools.XMLTool;
+import de.uos.inf.did.abbozza.worlds.handler.LoadSourceHandler;
+import de.uos.inf.did.abbozza.worlds.handler.SaveSourceHandler;
 import de.uos.inf.did.abbozza.worlds.handler.WorldFeatureHandler;
 import de.uos.inf.did.abbozza.worlds.handler.WorldHandler;
 import java.awt.AWTException;
@@ -190,6 +192,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     @Override
     public void registerSystemHandlers() {
+        httpServer.createContext("/abbozza/savesource", new SaveSourceHandler(this));
+        httpServer.createContext("/abbozza/loadsource", new LoadSourceHandler(this));
         httpServer.createContext("/abbozza/features", new WorldFeatureHandler(this));
         httpServer.createContext("/abbozza/world", new WorldHandler(this, "/abbozza/world/"));
     }

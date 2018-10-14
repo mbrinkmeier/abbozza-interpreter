@@ -149,10 +149,12 @@
                 <div id="debug"></div>
                 <div id="source">
                     <div class="sourcebuttons">
-                        <span class="sourcebutton" onclick="Abbozza.generateSource()">Generate</span>
-                        <span class="sourcebutton" onclick="Abbozza.stepSource()">Step</span>
-                        <span class="sourcebutton" onclick="Abbozza.runSource()">Run</span>
-                        <span class="sourcebutton" onclick="Abbozza.stopSource()">Stop</span>
+                        <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>
+                        <img class="sourcebutton" onclick="Abbozza.stepSource()" src="/img/step.png"/>
+                        <img class="sourcebutton" onclick="Abbozza.runSource()" src="/img/run.png"/>
+                        <img class="sourcebutton" onclick="Abbozza.stopSource()" src="/img/stop.png"/>
+                        <img class="sourcebutton" onclick="Abbozza.loadSource()" src="/img/load.png"/>
+                        <img class="sourcebutton" onclick="Abbozza.saveSource()" src="/img/save.png"/>
                     </div>
                     <div class="sourcewrapper">
                         <textarea class="sourceeditor" id="sourceeditor"></textarea>

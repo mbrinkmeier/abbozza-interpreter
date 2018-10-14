@@ -75,11 +75,13 @@ Blockly.BlockSvg.prototype.addSystemContextMenuItems = function(menuOptions) {
 };
 
 
+
 Abbozza.sourceInterpreter = null;
 Abbozza.SOURCE_STOPPED = 0;
 Abbozza.SOURCE_PAUSED = 1;
 Abbozza.SOURCE_RUNNING = 2;
 Abbozza.SOURCE_ABORTED = 3;
+Abbozza.SOURCE_ABORTED_BY_ERROR = 4;
 
 Abbozza.sourceState = 0; 
 
@@ -92,20 +94,23 @@ Abbozza.generateSource = function() {
         Abbozza.appendOverlayText(_("msg.code_generated"));
     }
     Abbozza.closeOverlay();
+    Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
 }
 
 Abbozza.runSource = function() {
-    if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) || (Abbozza.sourceState == Abbozza.SOURCE_ABORTED) ) {      
+    if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) 
+         || (Abbozza.sourceState >= Abbozza.SOURCE_ABORTED) ) {      
         var code = Abbozza.sourceEditor.getValue();
         Abbozza.sourceInterpreter = new Interpreter(code,World._initSourceInterpreter);
+        Abbozza.sourceState == Abbozza.SOURCE_STOPPED;
     }
     Abbozza.sourceState = Abbozza.SOURCE_RUNNING;
-    console.log(AbbozzaInterpreter.delay);
     window.setTimeout(Abbozza.doSourceStep,0);    
 }
 
 Abbozza.stepSource = function() {
-    if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) || (Abbozza.sourceState == Abbozza.SOURCE_ABORTED) ) {      
+    if ( (Abbozza.sourceState == Abbozza.SOURCE_STOPPED) 
+            || (Abbozza.sourceState >= Abbozza.SOURCE_ABORTED) ) {      
         var code = Abbozza.sourceEditor.getValue();
         Abbozza.sourceInterpreter = new Interpreter(code,World._initSourceInterpreter);
     }
@@ -117,7 +122,21 @@ Abbozza.stopSource = function() {
     Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
 }
 
+
 Abbozza.doSourceStep = function() {
+    Abbozza.executeSourceStep();
+    if ( Abbozza.sourceState == Abbozza.SOURCE_RUNNING )
+        window.setTimeout(Abbozza.doSourceStep, AbbozzaInterpreter.delay );
+}
+
+
+Abbozza.executeSourceStep = function() {
+    if ( Abbozza.sourceState == Abbozza.SOURCE_STOPPED ) {
+        World._onStart();
+        var code = Abbozza.sourceEditor.getValue();
+        Abbozza.sourceInterpreter = new Interpreter(code,World._initSourceInterpreter);        
+    }
+    
     try {
         var state = Abbozza.sourceInterpreter.stateStack[Abbozza.sourceInterpreter.stateStack.length - 1];
         var spos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.start);
@@ -125,16 +144,54 @@ Abbozza.doSourceStep = function() {
         if ( Abbozza.lastMark ) Abbozza.lastMark.clear();
         Abbozza.lastMark = Abbozza.sourceEditor.getDoc().markText(spos,epos, { className: "sourceMarker" });
         var stepped = Abbozza.sourceInterpreter.step();
-        if ( stepped && (Abbozza.sourceState == Abbozza.SOURCE_RUNNING) ) {
-            window.setTimeout(Abbozza.doSourceStep,AbbozzaInterpreter.delay);          
-        } else {
-            if (!stepped) {
-                Abbozza.sourceState = Abbozza.SOURCE_STOPPED;
-                alert("Finished");
-            }
+        World._onStep();
+        
+        if (!stepped) {
+            Abbozza.sourceState = Abbozza.SOURCE_ABORTED;
+            if ( Abbozza.lastMark ) Abbozza.lastMark.clear();            
+            Abbozza.openOverlay(_("gui.finished"));
+            Abbozza.overlayWaitForClose();
         }
     } catch (e) {
-        console.log(e);
-        console.log(Abbozza.sourceInterpreter);
+        Abbozza.sourceState = Abbozza.SOURCE_ABORTED_BY_ERROR;
+        if ( Abbozza.lastMark ) {
+            Abbozza.lastMark.clear();
+            Abbozza.lastMark = Abbozza.sourceEditor.getDoc().markText(spos,epos, { className: "sourceErrorMarker" });
+        }
+        Abbozza.openOverlay(_("gui.aborted_by_error"));
+        Abbozza.appendOverlayText("\n");
+        Abbozza.appendOverlayText(e);
+        Abbozza.overlayWaitForClose();
+
     }
+}
+
+
+
+
+Abbozza.loadSource = function() {
+    Abbozza.openOverlay(_("msg.load_source"));
+    var sketch = Connection.getText("/abbozza/loadsource",
+            function (code, xhttp) {
+                Abbozza.closeOverlay();
+                Abbozza.sourceEditor.setValue(code);
+            },
+            function (response) {
+                Abbozza.closeOverlay();
+            }
+    );
+}
+
+
+Abbozza.saveSource = function() {
+    var source = Abbozza.sourceEditor.getValue();
+    Abbozza.openOverlay(_("msg.save_source"));
+    Connection.sendText("/abbozza/savesource", source,
+            function (response, xhttp) {
+                Abbozza.closeOverlay();
+            },
+            function (response, xhttp) {
+                Abbozza.closeOverlay();
+            }
+    );
 }

@@ -1,17 +1,13 @@
 
 package de.uos.inf.did.abbozza.worlds.handler;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
-import de.uos.inf.did.abbozza.core.AbbozzaLogger;
-import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.handler.AbstractHandler;
 import de.uos.inf.did.abbozza.worlds.AbbozzaWorlds;
 import de.uos.inf.did.abbozza.worlds.World;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  *

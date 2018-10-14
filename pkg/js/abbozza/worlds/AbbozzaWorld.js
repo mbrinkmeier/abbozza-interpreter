@@ -19,26 +19,56 @@ AbbozzaWorld.prototype.getInfo = function() {
 AbbozzaWorld.prototype.reset = function() {    
 };
 
-
+/**
+ * This handler is called if the excution of a program starts.
+ * 
+ * @returns {undefined}
+ */
 AbbozzaWorld.prototype._onStart = function() {
-    if ( this.onStart ) this.onStart();
-    if ( Task && Task.onStart ) Task.onStart(this);
+    if ( World.onStart ) World.onStart();
+    if ( Task && Task.onStart ) Task.onStart();
+    if ( Page && Page.onStart ) Page.onStart();
+    document.dispatchEvent(new CustomEvent("abz_start"));
 };
 
+/**
+ * This handler is called if the execution of a program terminated regularly
+ * 
+ * @returns {undefined}
+ */
 AbbozzaWorld.prototype._onStop = function() {
-    if ( this.onStop ) this.onStop();
-    if ( Task && Task.onStop ) Task.onStop(this);
+    if ( World.onStop ) World.onStop();
+    if ( Task && Task.onStop ) Task.onStop();
+    if ( Page && Page.onStop ) Page.onStop();
+    document.dispatchEvent(new CustomEvent("abz_stop"));
 };
 
+/**
+ * This handler is called if the execution of a programm way ended by an error
+ * 
+ * @returns {undefined}
+ */
 AbbozzaWorld.prototype._onError = function() {
-    if ( this.onError ) this.onError();
-    if ( Task && Task.onError ) Task.onError(this);
+    if ( World.onError ) World.onError();
+    if ( Task && Task.onError ) Task.onError();
+    if ( Page && Page.onError ) Page.onError();
+    document.dispatchEvent(new CustomEvent("abz_error"));
 };
 
+/**
+ * This handler is callex after a step of an execution was performed
+ * @returns {undefined}
+ */
 AbbozzaWorld.prototype._onStep = function() {
-    if ( this.onStep ) this.onStep();
-    if ( Task && Task.onStep ) Task.onStep(this);
+    var result = true;
+    if ( World.onStep ) result = result && World.onStep();
+    if ( Task && Task.onStep ) result = result && Task.onStep();
+    if ( Page && Page.onStep ) result = result && Page.onStep();
+    document.dispatchEvent(new CustomEvent("abz_step"));
+    return result;
 };
+
+
 
 AbbozzaWorld.prototype._initSourceInterpreter = function(interpreter,scope) {
     interpreter.setProperty(scope,"getPressedKey",interpreter.createNativeFunction(World.getPressedKey));

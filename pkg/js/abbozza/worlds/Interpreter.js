@@ -24,11 +24,21 @@ AbbozzaInterpreter.MODE_TERMINATED = 3;
 AbbozzaInterpreter.MODE_ABORTED = 4;
 AbbozzaInterpreter.MODE_ABORTED_BY_ERROR = 5;
 
+/**
+ * Initialize the interpreter
+ * 
+ * @returns {undefined}
+ */
 AbbozzaInterpreter.init = function() {
     AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
 };
 
 
+/**
+ * Remove all blocks from the workspace
+ * 
+ * @returns {undefined}
+ */
 AbbozzaInterpreter.newSketch = function() {
     Abbozza.newSketch();
     if (World.reset) World.reset();
@@ -43,11 +53,14 @@ AbbozzaInterpreter.newSketch = function() {
  * @returns {undefined}
  */
 AbbozzaInterpreter.step = function() {
-    if ( (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_TERMINATED) || (AbbozzaInterpreter.mode >= AbbozzaInterpreter.MODE_ABORTED) ) {
+    if ( (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_TERMINATED) 
+         || (AbbozzaInterpreter.mode >= AbbozzaInterpreter.MODE_ABORTED) ) {
         // Go to mode STOPPED to start new execution
         AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
     }
     this.executeStep();
+    
+    // Check if the execution was terminated
     if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_TERMINATED ) {
         AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_PAUSED;
     }
@@ -121,6 +134,7 @@ AbbozzaInterpreter.executeStep = function() {
     // If the thread list is empty and the mode is STOPPED, setup threads
     // for all top-blocks with prefix "main". 
     if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_STOPPED ) {
+        // Call the onStart hook
         World._onStart();
         for ( var i = 0; i < this.threads.length; i++) {
             this.threads[i].cleanUp();
@@ -162,8 +176,6 @@ AbbozzaInterpreter.executeStep = function() {
         }
     }
     World._onStep();
-    var newEvent = new CustomEvent("abz_step");
-    document.dispatchEvent(newEvent);
 
     for (idx = 0; idx < threadMsgs.length; idx++ ) {
         var msg = threadMsgs[idx];
@@ -221,7 +233,7 @@ AbbozzaInterpreter.terminating = function() {
 
     if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_ABORTED ) {
         World._onStop();
-        var newEvent = new CustomEvent("abz_terminated");
+        var newEvent = new CustomEvent("abz_stop");
         document.dispatchEvent(newEvent);
         AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_TERMINATED;
         for ( var idx = 0; idx < this.threads.length; idx++) {
@@ -229,10 +241,11 @@ AbbozzaInterpreter.terminating = function() {
                 this.threads[idx].cleanUp();
             }
         }        
-        alert("Execution finished!");
+        Abbozza.openOverlay(_("gui.finished"));
+        Abbozza.overlayWaitForClose();
     } else if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_ABORTED ) {
         World._onStop();
-        var newEvent = new CustomEvent("abz_aborted");
+        var newEvent = new CustomEvent("abz_stop");
         document.dispatchEvent(newEvent);
         for ( var idx = 0; idx < this.threads.length; idx++) {
             if ( this.threads[idx] ) {
@@ -240,7 +253,7 @@ AbbozzaInterpreter.terminating = function() {
             }
         }        
     } else {
-        var newEvent = new CustomEvent("abz_aborted_by_error");
+        var newEvent = new CustomEvent("abz_error");
         World._onError();
         document.dispatchEvent(newEvent);
         // Do NOT clean up
