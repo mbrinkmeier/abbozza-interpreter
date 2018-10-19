@@ -13,7 +13,9 @@ var AbbozzaInterpreter = {
     threads : [],
     activeThread : null,
     atBreakpoint : false,
-    exec: []
+    exec: [],
+    executedSteps : 0,
+    executedBlocks : 0
 };
 
 
@@ -140,6 +142,8 @@ AbbozzaInterpreter.executeStep = function() {
             this.threads[i].cleanUp();
         }
         this.setupThreads();
+        this.executedteps = 0;
+        this.executedBlocks = 0;
     }
     
     if ( this.atBreakpoint && (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING) ) {
@@ -515,6 +519,11 @@ ExecStackEntry.prototype.execute = function() {
     this.state = 0;
     this.stateMsg = null;
     
+    if ( this.phase == 0 ) {
+        AbbozzaInterpreter.executedBlocks++;            
+    }
+    AbbozzaInterpreter.executedSteps++;
+
     if ( this.block.execute ) {
         // Call the blocks own execute function.
         this.block.execute(this);
@@ -522,6 +531,8 @@ ExecStackEntry.prototype.execute = function() {
         // Call the function given externally
         AbbozzaInterpreter.exec[this.block.type].call(this.block,this);
     } else {
+        AbbozzaInterpreter.executedSteps--;
+        AbbozzaInterpreter.executedBlocks--;
         ErrorMgr.addError(this.block, _("err.NO_EXECUTE"));
         this.finished();
     }    

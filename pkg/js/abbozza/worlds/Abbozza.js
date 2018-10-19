@@ -195,3 +195,21 @@ Abbozza.saveSource = function() {
             }
     );
 }
+
+
+Abbozza.initDebugger = function(debugPane) {
+    document.getElementById("stepLabel").textContent = _("gui.executed_steps")+ " ";
+    document.getElementById("blockLabel").textContent = _("gui.executed_blocks")+ " ";
+    
+    // Register event handlers
+    document.addEventListener("abz_start", function(event) { Abbozza.updateDebugger(debugPane); });
+    document.addEventListener("abz_step", function(event) { Abbozza.updateDebugger(debugPane); });
+    document.addEventListener("abz_stop", function(event) { Abbozza.updateDebugger(debugPane); });
+    document.addEventListener("abz_error", function(event) { Abbozza.updateDebugger(debugPane); });    
+}
+
+
+Abbozza.updateDebugger = function(debugPane) {
+    document.getElementById("stepCounter").textContent = AbbozzaInterpreter.executedSteps;
+    document.getElementById("blockCounter").textContent = AbbozzaInterpreter.executedBlocks;
+}

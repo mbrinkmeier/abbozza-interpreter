@@ -113,8 +113,21 @@
                 AbbozzaInterpreter.setSpeed(75);
                 var tabs = new TabPane(document.getElementById('tabs'));
                 var infoPane = tabs.addPane(_("gui.information"),document.getElementById("worldinfo"));
-                var debugPane = tabs.addPane(_("gui.debug"),document.getElementById("debug"));
-                var sourcePane = tabs.addPane(_("gui.source"),document.getElementById("source"));
+                var debugPane;
+                if ( Configuration.getParameter("option.debug") == "true" ) {
+                    debugPane = tabs.addPane(_("gui.debug"),document.getElementById("debug"));
+                    Abbozza.initDebugger(debugPane);
+                } else {
+                    debugPane = document.getElementById("debug");
+                    debugPane.style.display="none";
+                }
+                var sourcePane;
+                if ( Configuration.getParameter("option.source") == "true" ) {
+                     sourcePane = tabs.addPane(_("gui.source"),document.getElementById("source"));
+                } else {
+                    sourcePane = document.getElementById("source");
+                    sourcePane.style.display="none";
+                 }
                 Abbozza.sourceEditor = CodeMirror.fromTextArea(document.getElementById("sourceeditor"), {
                     mode: "javascript",
                     lineNumbers : true,
@@ -146,7 +159,15 @@
             <div id=".bottomleft" style="min-height: 50px; min-width: 50px">
                 <div id="tabs" style="position:absolute; width: 100%; height:100%;">
                 </div>
-                <div id="debug"></div>
+                <div id="debug">
+                    <div id="debug.headline">
+                        <span id="stepLabel">Schritte: </span><span id="stepCounter">0</span>
+                        &nbsp;&nbsp;
+                        <span id="blockLabel">Blöcke: </span><span id="blockCounter">0</span>
+                        <span id="debug.addWatch">+</span>
+                    </div>
+                    
+                </div>
                 <div id="source">
                     <div class="sourcebuttons">
                         <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>

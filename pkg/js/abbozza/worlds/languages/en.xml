@@ -9,7 +9,10 @@
         <msg id="gui.words">Worlds</msg>
         <msg id="gui.toggle_breakpoint">Setze/Lösche Breakpoint</msg>         
         <msg id="gui.information">Informations</msg>        
+        <msg id="gui.tools">Tools</msg> 
         <msg id="gui.debug">Debugger</msg>
+        <msg id="gui.executed_steps">Executed steps</msg>        
+        <msg id="gui.executed_blocks">Executed Blocks</msg>                
         <msg id="gui.source">Sourcecode</msg>
         <msg id="gui.QUIT">Quit</msg> 
         <msg id="gui.finished">Programm finished!</msg>        

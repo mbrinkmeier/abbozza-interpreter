@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <options>
+    <group name="gui.tools">
+        <item name="gui.debug" option="debug" default="false"/>
+        <item name="gui.source" option="source" default="false"/>
+    </group>
     <group name="gui.blocks">
         <item name="gui.advanced" option="advanced" default="false">
         </item>
