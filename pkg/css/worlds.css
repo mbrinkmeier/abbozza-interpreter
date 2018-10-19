@@ -163,7 +163,7 @@
 }
 
 
-#debug.addWatch {
+#debug_addWatch {
     float: right;
     border: 1px solid black;
     font-size : 16px;
@@ -172,7 +172,7 @@
     background-color: #e0e0e0;
 }
 
-#debug.addWatch:hover {
+#debug_addWatch:hover {
     float: right;
     border: 1px solid black;
     font-size : 16px;

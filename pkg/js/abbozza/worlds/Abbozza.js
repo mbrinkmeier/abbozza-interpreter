@@ -198,8 +198,8 @@ Abbozza.saveSource = function() {
 
 
 Abbozza.initDebugger = function(debugPane) {
-    document.getElementById("stepLabel").textContent = _("gui.executed_steps")+ " ";
-    document.getElementById("blockLabel").textContent = _("gui.executed_blocks")+ " ";
+    document.getElementById("stepLabel").textContent = _("gui.executed_steps") + " ";
+    document.getElementById("blockLabel").textContent = _("gui.executed_blocks") + " ";
     
     // Register event handlers
     document.addEventListener("abz_start", function(event) { Abbozza.updateDebugger(debugPane); });
