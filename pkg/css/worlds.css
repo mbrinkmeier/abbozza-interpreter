@@ -170,13 +170,10 @@
     height: 20px;
     width: 20px;
     background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
 }
 
 #debug_addWatch:hover {
-    float: right;
-    border: 1px solid black;
-    font-size : 16px;
-    height: 20px;
-    width: 20px;
     background-color: #d0d0d0;
 }
