@@ -1,0 +1,33 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="108" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols>
+<symbol name="wert" symboltype="0" type="NUMBER"/>
+</symbols>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="!@w]F1I[=xPLVw+jFt9t" type="var_assign">
+<value name="LEFT">
+<block id=":SyNVL0`jB[tr}x}qX(l" type="var_block">
+<field name="NAME">wert</field>
+</block>
+</value>
+<value name="RIGHT">
+<block id="Xax}F4NWOX6J^kN_wE}S" type="math_number">
+<field name="VALUE">42</field>
+</block>
+</value>
+</block>
+</statement>
+</block>
+<description/>
+<options apply="no" protected="no">{option.operations=true,option.source=true,option.colorDefault=false,option.multArrays=false,option.localVars=true,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.advanced=false,option.colorCategory=false,option.noArrays=false}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+<world height="20" width="20">
+<kara dir="0" x="0" y="0"/>
+<rock x="2" y="0"/>
+</world>
+<system>worlds</system>
+</xml>

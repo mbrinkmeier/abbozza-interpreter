@@ -6,8 +6,10 @@
     <blocks>
         <msg id="turtle.clear">Lösche Zeichnung</msg>
         <msg id="turtle.reset">Setze zurück</msg>
-        <msg id="turtle.forward">Vorwärts</msg>
-        <msg id="turtle.turn">Drehe</msg>
+        <msg id="turtle.forward">Gehe vorwärts</msg>
+        <msg id="turtle.backward">Gehe rückwärts</msg>
+        <msg id="turtle.left">Drehe nach links</msg>
+        <msg id="turtle.right">Drehe nach rechts</msg>
         <msg id="turtle.set_dir">Setze Richtung auf</msg>
         <msg id="turtle.set_width">Setze Strichbreite auf</msg>
         <msg id="turtle.set_color">Setze Farbe</msg>

@@ -197,6 +197,8 @@ Abbozza.saveSource = function() {
 }
 
 
+
+
 Abbozza.initDebugger = function(debugPane) {
     document.getElementById("stepLabel").textContent = _("gui.executed_steps") + " ";
     document.getElementById("blockLabel").textContent = _("gui.executed_blocks") + " ";
@@ -212,4 +214,54 @@ Abbozza.initDebugger = function(debugPane) {
 Abbozza.updateDebugger = function(debugPane) {
     document.getElementById("stepCounter").textContent = AbbozzaInterpreter.executedSteps;
     document.getElementById("blockCounter").textContent = AbbozzaInterpreter.executedBlocks;
+    
+    if ( !Abbozza.debugViews ) return;
+    
+    for ( var i = 0; i < Abbozza.debugViews.length; i++ ) {
+        var view = Abbozza.debugViews[i];
+        var name = view.nameField.value;
+        var value = view.valueField;
+        var symbol = AbbozzaInterpreter.getSymbol(name);
+        value.textContent = String(symbol);
+    }
+}
+
+
+
+Abbozza.addDebugView = function() {
+    if ( !Abbozza.debugViews ) {
+        Abbozza.debugViews = [];
+    }
+    var view = new DebugView();
+    var views = document.getElementById("debugViews");
+    views.appendChild(view.view);
+    Abbozza.debugViews.push(view);
+}
+
+
+
+function DebugView() {
+    this.view = document.createElement("div");
+    this.view.className = "debugView";
+    
+    this.nameField = document.createElement("input");
+    this.nameField.setAttribute("type","text");
+    this.nameField.className = "debugViewName";
+    this.nameField.placeholder = "<Name>";
+    this.view.appendChild(this.nameField);
+    
+    this.valueField = document.createElement("span");
+    this.valueField.className = "debugViewValue";
+    this.view.appendChild(this.valueField);
+    
+    this.button = document.createElement("span");
+    this.button.className = "debugViewButton";
+    this.button.textContent = "-";
+    var parent = document.getElementById("debugViews");
+    var child = this.view;
+    this.button.onclick = function(event) {
+        parent.removeChild(child);
+        // TODO
+    }
+    this.view.appendChild(this.button);
 }

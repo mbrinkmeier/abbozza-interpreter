@@ -62,15 +62,14 @@ Abbozza.TurtleForward = {
 
 Blockly.Blocks['turtle_forward'] = Abbozza.TurtleForward;
 
-
-Abbozza.TurtleTurn = {
+Abbozza.TurtleBackward = {
     init : function() {
         this.setHelpUrl(Abbozza.HELP_URL);
         this.setColour(ColorMgr.getCatColor("cat.TURTLE"));
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
         this.appendValueInput("VALUE")
-            .appendField(_("turtle.turn"))
+            .appendField(_("turtle.backward"))
             .setCheck("NUMBER");
         this.setTooltip('');
     },
@@ -79,14 +78,67 @@ Abbozza.TurtleTurn = {
             AbbozzaInterpreter.callInput(this,"VALUE","NUMBER");
             entry.phase = 1;
         } else {
-            World.turtle.turn(entry.callResult);
+            World.turtle.backward(entry.callResult);
             entry.finished();
         }        
         return true;    
     }    
 }
 
-Blockly.Blocks['turtle_turn'] = Abbozza.TurtleTurn;
+Blockly.Blocks['turtle_backward'] = Abbozza.TurtleBackward;
+
+
+Abbozza.TurtleTurnLeft = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.TURTLE"));
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");            
+        this.appendValueInput("VALUE")
+            .appendField(_("turtle.left"))
+            .setCheck("NUMBER");
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        if ( entry.phase == 0 ) {
+            AbbozzaInterpreter.callInput(this,"VALUE","NUMBER");
+            entry.phase = 1;
+        } else {
+            World.turtle.turnLeft(entry.callResult);
+            entry.finished();
+        }        
+        return true;    
+    }    
+}
+
+Blockly.Blocks['turtle_turn'] = Abbozza.TurtleTurnLeft;
+Blockly.Blocks['turtle_turn_left'] = Abbozza.TurtleTurnLeft;
+
+
+Abbozza.TurtleTurnRight = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.TURTLE"));
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");            
+        this.appendValueInput("VALUE")
+            .appendField(_("turtle.right"))
+            .setCheck("NUMBER");
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        if ( entry.phase == 0 ) {
+            AbbozzaInterpreter.callInput(this,"VALUE","NUMBER");
+            entry.phase = 1;
+        } else {
+            World.turtle.turnRight(entry.callResult);
+            entry.finished();
+        }        
+        return true;    
+    }    
+}
+
+Blockly.Blocks['turtle_turn_right'] = Abbozza.TurtleTurnRight;
 
 
 Abbozza.TurtleSetDirection = {
@@ -430,7 +482,10 @@ Blockly.Blocks['turtle_get_blue'] = Abbozza.TurtleGetBlue;
 AbbozzaCode['turtle_clear'] = [ 'clear();',[]];
 AbbozzaCode['turtle_reset'] = [ 'reset();',[]];
 AbbozzaCode['turtle_forward'] = [ 'forward(#);',["V_VALUE"]];
-AbbozzaCode['turtle_turn'] = [ 'turn(#);',["V_VALUE"]];
+AbbozzaCode['turtle_backward'] = [ 'backward(#);',["V_VALUE"]];
+AbbozzaCode['turtle_turn'] = [ 'turnLeft(#);',["V_VALUE"]];
+AbbozzaCode['turtle_turn_left'] = [ 'turnLeft(#);',["V_VALUE"]];
+AbbozzaCode['turtle_turn_right'] = [ 'turnRight(#);',["V_VALUE"]];
 AbbozzaCode['turtle_set_direction'] = [ 'setDirection(#);',["V_VALUE"]];
 AbbozzaCode['turtle_set_width'] = [ 'setWidth(#);',["V_VALUE"]];
 AbbozzaCode['turtle_set_color'] = [ 'setColor(#);',["V_COLOR"]];

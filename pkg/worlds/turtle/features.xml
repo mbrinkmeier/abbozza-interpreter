@@ -157,7 +157,23 @@
                     </block>
                 </value>
             </block>            
-            <block type="turtle_turn">
+            <block type="turtle_backward">
+                <value name="VALUE">
+                    <block type="math_number">
+                        <mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+            </block>            
+            <block type="turtle_turn_left">
+                <value name="VALUE">
+                    <block type="math_number">
+                        <mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+            </block>            
+            <block type="turtle_turn_right">
                 <value name="VALUE">
                     <block type="math_number">
                         <mutation confirmed="false"/>

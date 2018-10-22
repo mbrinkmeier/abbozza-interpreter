@@ -154,19 +154,6 @@ Turtle.prototype.setTurtleColor = function(color) {
 
 
 Turtle.prototype.newPath = function() {
-    /*
-    var newPath = document.createElementNS(svgNS,"path");
-    newPath.setAttribute("stroke-width",this.turtle_width);
-    newPath.setAttribute("stroke",this.turtle_color);
-    newPath.setAttribute("d","M " + (this.turtle_x) + " " +  (this.turtle_y));    
-    
-    this.svg_.insertBefore(newPath,this.currentPath_);
-    this.currentPath_ = newPath;
-    */
-    // this.context_.stroke();
-    // this.context_.strokeStyle = this.turtle_color;
-    // this.context_.lineWidth = this.turtle_width;
-    // this.context_.beginPath();
 }
 
 
@@ -201,10 +188,27 @@ Turtle.prototype.forward = function(dist) {
     this.updateTurtle();
 }
 
+
+Turtle.prototype.backward = function(dist) {
+    this.forward(-Number(dist));
+}
+
+
 Turtle.prototype.turn = function(angle) {
     this.setTurtleDir(this.turtle_dir-angle);
     this.updateTurtle();
 }
+
+Turtle.prototype.turnLeft = function(angle) {
+    this.setTurtleDir(this.turtle_dir-angle);
+    this.updateTurtle();
+}
+
+Turtle.prototype.turnRight = function(angle) {
+    this.setTurtleDir(this.turtle_dir+angle);
+    this.updateTurtle();
+}
+
 
 Turtle.prototype.setDirection = function(angle) {
     this.setTurtleDir(360-angle);
@@ -318,7 +322,7 @@ World.createWrapper = function(func) {
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
-      'reset','clear','forward','turn','setDirection','setColor','penUp','penDown',
+      'reset','clear','forward','backward','turn','turnLeft','turnRight','setDirection','setColor','penUp','penDown',
       'hide','show','setWidth','setColor','setRGBColor','getX','getY','getDirection','getWidth',
       'getColor','isHidden','isPenDown','getPixelRed','getPixelGreen',
       'getPixelBlue'
