@@ -2,7 +2,6 @@
 <world id="hanoi">
    <name>Die Türme von Hanoi</name>
    <description>
-       Die Türme von Hanoi sind ein sehr bekanntes Rätsel, für dessen Lösung
-       ein rekursiver Algorithmus benötigt wird.
+       Die Türme von Hanoi sind ein sehr bekanntes Rätsel, für dessen Lösung ein rekursiver Algorithmus benötigt wird.
    </description>
 </world>

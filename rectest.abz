@@ -10,6 +10,13 @@
 <statement name="STATEMENTS">
 <block id="-bd_VNo:{WM5([K{t)i+" type="console_clear">
 <next>
+<block id="w4yH5l~XC,!6mRf-Mn;7" type="console_print">
+<value name="TEXT">
+<block id="}-OofLAQYruumoaAc1Q=" type="text_const">
+<field name="CONTENT">Zahl eingeben: </field>
+</block>
+</value>
+<next>
 <block id="4{srXs@5ZjvZA`Z4Hp]K" type="console_println">
 <value name="TEXT">
 <block id=".p/)MXT`Gh{P.d*-Lk6L" inline="false" type="func_call">
@@ -18,12 +25,16 @@
 </mutation>
 <field name="NAME">fakultaet</field>
 <value name="PAR0">
-<block id="+]1@gVT=,qhiR=A)ra9n" type="math_number">
-<field name="VALUE">8</field>
-</block>
+<block id="fWg5WCr2t2R9Kf[`eg|4" type="text_to_number">
+<value name="TEXT">
+<block id="w?=[;(XGg]b;(8R8YWO_" type="console_readline"/>
 </value>
 </block>
 </value>
+</block>
+</value>
+</block>
+</next>
 </block>
 </next>
 </block>
@@ -108,18 +119,8 @@
 </block>
 </value>
 </block>
-<block id="^[W~U/ZA|zdkGRo=kFD-" type="var_block" x="312" y="462">
-<field name="NAME">wert</field>
-</block>
-<block id="tn8#Zs5b.::#~|Cinb=V" type="var_assign" x="71" y="518">
-<value name="LEFT">
-<block id="FjKL-~@pRv_I;)tQCfPw" type="var_block">
-<field name="NAME">wert</field>
-</block>
-</value>
-</block>
 <description/>
-<options apply="no" protected="no">{option.operations=false,option.colorDefault=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=false}</options>
+<options apply="no" protected="no">{option.operations=true,option.source=true,option.colorDefault=false,option.multArrays=false,option.localVars=true,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=false,option.noArrays=false}</options>
 <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
 <system>worlds</system>
 </xml>
