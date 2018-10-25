@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<world id="hanoi">
+   <name>Die Türme von Hanoi</name>
+   <description>
+       Die Türme von Hanoi sind ein sehr bekanntes Rätsel, für dessen Lösung
+       ein rekursiver Algorithmus benötigt wird.
+   </description>
+</world>

@@ -1,3 +1,20 @@
+/**
+ * @license abbozza!
+ *
+ * Copyright 2018 Michael Brinkmeier ( michael.brinkmeier@uni-osnabrueck.de )
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package de.uos.inf.did.abbozza.worlds;
 
 import de.uos.inf.did.abbozza.core.AbbozzaLogger;
@@ -6,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,7 +46,6 @@ public class World {
     private Node options;
     private String infoPane;
     
-    
     public World(String path) {
         basePath = path;
         baseURL = null;
@@ -52,6 +66,13 @@ public class World {
         this.id = id;
     }
     
+    /**
+     * Get a file from the world directory as InputStream
+     * 
+     * @param path The path of the file, relative to the world directory.
+     * 
+     * @return The Input Stream of the file
+     */
     public InputStream getStream(String path) {   
         InputStream is;
         if ( basePath == null ) {
@@ -74,14 +95,27 @@ public class World {
         return is;
     }
     
+    /**
+     * Get the id of then world.
+     * 
+     * @return 
+     */
     public String getId() {
         return id;
     }
     
+    /**
+     * Get the display name of the world.
+     * 
+     * @return 
+     */
     public String toString() {
         return displayName;
     }
     
+    /**
+     * Read the world from the file world.xml in the world directory.
+     */
     private void readXML() {
         InputStream is = this.getStream(null);
         Document contextXml = null;
@@ -90,10 +124,7 @@ public class World {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             contextXml = builder.parse(is);
-        } catch (ParserConfigurationException ex) {
-            contextXml = null;
-            AbbozzaLogger.err("World: Could not parse " + basePath + "/world.xml");
-        } catch (SAXException ex) {
+        } catch (ParserConfigurationException | SAXException ex) {
             contextXml = null;
             AbbozzaLogger.err("World: Could not parse " + basePath + "/world.xml");
         } catch (IOException ex) {
@@ -126,16 +157,16 @@ public class World {
         
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
     
     
-    Node getOptions() {
+    public Node getOptions() {
         return options;
     }
     
-    
+     
     public Document getFeatures() {
         Document featureXml = null;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

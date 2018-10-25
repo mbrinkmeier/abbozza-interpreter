@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <categories>
+        <msg id="cat.HANOI">Die Türme von Hanoi</msg>
+    </categories>
+    <blocks>
+        <msg id="hanoi.move">Bewege Scheibe von # nach #</msg>
+        <msg id="hanoi.reset">Setze Türme zurück</msg>
+        <msg id="hanoi.number_of_discs">Anzahl der Scheiben</msg>
+        <msg id="hanoi.get_Size">Größe der obersten Scheibe bei</msg>
+    </blocks>
+</language>

@@ -135,7 +135,7 @@
                     });
                 Abbozza.sourceEditor.setSize(null,"100%");
                 tabs.openTab(infoPane);
-                World._init();
+                World._init(document.getElementById(".topleft"));
            }
         </script>
     </head>
@@ -158,34 +158,33 @@
             <div id=".topleft" style="min-height: 50px; min-width: 50px"></div>
             <div id=".bottomleft" style="min-height: 50px; min-width: 50px">
                 <div id="tabs" style="position:absolute; width: 100%; height:100%;">
-                </div>
-                <div id="debug">
-                    <div id="debug.headline">
-                        <span id="stepLabel">Schritte: </span><span id="stepCounter">0</span>
-                        &nbsp;&nbsp;
-                        <span id="blockLabel">Blöcke: </span><span id="blockCounter">0</span>
-                        <div id="debug_addWatch" onclick="Abbozza.addDebugView()">+</div>
+                    <div id="debug">
+                        <div id="debug.headline">
+                            <span id="stepLabel">Schritte: </span><span id="stepCounter">0</span>
+                            &nbsp;&nbsp;
+                            <span id="blockLabel">Blöcke: </span><span id="blockCounter">0</span>
+                            <div id="debug_addWatch" onclick="Abbozza.addDebugView()">+</div>
+                        </div>
+                        <div id="debugViews">        
+                        </div>                   
                     </div>
-                    <div id="debugViews">
-                            
-                    </div>                   
-                </div>
-                <div id="source">
-                    <div class="sourcebuttons">
-                        <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>
-                        <img class="sourcebutton" onclick="Abbozza.stepSource()" src="/img/step.png"/>
-                        <img class="sourcebutton" onclick="Abbozza.runSource()" src="/img/run.png"/>
-                        <img class="sourcebutton" onclick="Abbozza.stopSource()" src="/img/stop.png"/>
-                        <img class="sourcebutton" onclick="Abbozza.loadSource()" src="/img/load.png"/>
-                        <img class="sourcebutton" onclick="Abbozza.saveSource()" src="/img/save.png"/>
+                    <div id="source">
+                        <div class="sourcebuttons">
+                            <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.stepSource()" src="/img/step.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.runSource()" src="/img/run.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.stopSource()" src="/img/stop.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.loadSource()" src="/img/load.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.saveSource()" src="/img/save.png"/>
+                        </div>
+                        <div class="sourcewrapper">
+                            <textarea class="sourceeditor" id="sourceeditor"></textarea>
+                        </div>
+                    </div>     
+                    <div id="worldinfo">
+                        <iframe id="info" src="Infos.html" style="width: 100%; height: 100%; border: none;"></iframe>
                     </div>
-                    <div class="sourcewrapper">
-                        <textarea class="sourceeditor" id="sourceeditor"></textarea>
-                    </div>
-                </div>     
-                <div id="worldinfo">
-                    <iframe id="info" src="Infos.html" style="width: 100%; height: 100%; border: none;"></iframe>
-                </div>
+                </div>                    
             </div>
             <div id=".right" style="min-height: 50px; min-width: 100px">
                 <div id="workspace" style="position: fixed"></div>                

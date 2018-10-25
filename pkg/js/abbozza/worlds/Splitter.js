@@ -66,7 +66,7 @@ function Splitter(parent = null, prefix = "") {
 
 // The large splitter icon
 Splitter.prototype.largeIcon = function () {
-    return "<svg>" +
+    return "<svg width='45px' height='45px'>" +
             "<circle cx='25' cy='25' r='17' fill='white' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<circle cx='25' cy='25' r='7' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<line x1='25' y1='15' x2='25' y2='35' stroke='white' stroke-width='1px'/>" +
@@ -75,7 +75,7 @@ Splitter.prototype.largeIcon = function () {
 };
 
 Splitter.prototype.largeIconTopLeft = function () {
-    return "<svg>" +
+    return "<svg width='45px' height='45px'>" +
             "<circle cx='25' cy='25' r='17' fill='white' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<circle cx='25' cy='25' r='7' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<line x1='25' y1='15' x2='25' y2='35' stroke='white' stroke-width='1px'/>" +
@@ -85,7 +85,7 @@ Splitter.prototype.largeIconTopLeft = function () {
 };
 
 Splitter.prototype.largeIconTopRight = function () {
-    return "<svg>" +
+    return "<svg  width='45px' height='45px'>" +
             "<circle cx='25' cy='25' r='17' fill='white' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<circle cx='25' cy='25' r='7' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<line x1='25' y1='15' x2='25' y2='35' stroke='white' stroke-width='1px'/>" +
@@ -95,7 +95,7 @@ Splitter.prototype.largeIconTopRight = function () {
 };
 
 Splitter.prototype.largeIconBottomRight = function () {
-    return "<svg>" +
+    return "<svg width='45px' height='45px'>" +
             "<circle cx='25' cy='25' r='17' fill='white' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<circle cx='25' cy='25' r='7' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<line x1='25' y1='15' x2='25' y2='35' stroke='white' stroke-width='1px'/>" +
@@ -105,11 +105,11 @@ Splitter.prototype.largeIconBottomRight = function () {
 };
 
 Splitter.prototype.largeIconBottomLeft = function () {
-    return "<svg>" +
+    return "<svg width='45px' height='45px'>" +
             "<circle cx='25' cy='25' r='17' fill='white' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<circle cx='25' cy='25' r='7' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<line x1='25' y1='15' x2='25' y2='35' stroke='white' stroke-width='1px'/>" +
-            "<line x1='15' y1='25' x2='35' y2='25' stroke='white' stroke-width='1px'/>" +
+            "<line x1='15' y1='25' x2=35' y2='25' stroke='white' stroke-width='1px'/>" +
             "<path d='M 25 25 L 25 42 A 17 17 0 0 1 8 25 Z' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "</svg>";
 };
@@ -117,7 +117,7 @@ Splitter.prototype.largeIconBottomLeft = function () {
 
 // The small splitter icon
 Splitter.prototype.smallIcon = function () {
-    return "<svg>" +
+    return "<svg width='20px' height='20px'>" +
             "<circle cx='10' cy='10' r='7' fill='" + this.color + "' stroke='" + this.color + "' stroke-width='2px'/>" +
             "<line x1='10' y1='0' x2='10' y2='20' stroke='white' stroke-width='1px'/>" +
             "<line x1='0' y1='10' x2='20' y2='10' stroke='white' stroke-width='1px'/>" +

@@ -1,3 +1,20 @@
+/**
+ * @license abbozza!
+ *
+ * Copyright 2018 Michael Brinkmeier ( michael.brinkmeier@uni-osnabrueck.de )
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package de.uos.inf.did.abbozza.worlds;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -74,7 +91,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         worldManager.registerWorld(new World("worlds/console"));
         worldManager.registerWorld(new World("worlds/kara"));
         worldManager.registerWorld(new World("worlds/turtle"));
-        this.setWorld(worldManager.getWorld("kara"));
+        worldManager.registerWorld(new World("worlds/hanoi"));
+        this.setWorld(worldManager.getWorld("hanoi"));
         
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
@@ -271,14 +289,14 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
     
     /**
-     * Construct the origianl option tree. Then add options for all worlds.
+     * Construct the original option tree. Then add options for all worlds.
      *
      */
     @Override
     public Document getOptionTree() {
         Document optionXml = super.getOptionTree();
         Node worldOptions;
-
+        
         Node worldNode = null;
         NodeList groupNodes = optionXml.getElementsByTagName("group");
         int idx = 0;

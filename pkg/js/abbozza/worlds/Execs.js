@@ -917,8 +917,13 @@ AbbozzaInterpreter.exec["func_decl"] = function(entry) {
             break;
         case 1 :
             // Finished since end of statements was reached
-            AbbozzaInterpreter.callInput(this,"RETURN",this.rettype);
-            entry.phase = 2;
+            if ( this.getInput("RETURN") ) {
+                AbbozzaInterpreter.callInput(this,"RETURN",this.rettype);
+                entry.phase = 2;
+            } else {
+                AbbozzaInterpreter.popLocalSymbols();
+                entry.finished();
+            }
             break;
         case 2 :
             entry.returnValue = entry.callResult;
@@ -934,8 +939,12 @@ AbbozzaInterpreter.exec["func_decl"] = function(entry) {
 AbbozzaInterpreter.exec["func_return"] = function(entry) {
     switch ( entry.phase ) {
         case 0 :
-            AbbozzaInterpreter.callInput(this,"VALUE");
-            entry.phase = 1;
+            if ( this.getInput("VALUE") ) {
+                AbbozzaInterpreter.callInput(this,"VALUE");
+                entry.phase = 1;
+            } else {
+                entry.finished();
+            }
             break;
         case 1 :
             entry.returnValue = entry.callResult;

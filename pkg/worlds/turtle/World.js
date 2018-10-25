@@ -21,8 +21,8 @@
  */
 var World = new AbbozzaWorld("turtle");
 
-World.init = function() {
-    this.turtle = new Turtle(document.getElementById('.topleft'));
+World.init = function(view) {
+    this.turtle = new Turtle(view);
     Abbozza.splitter.addEventListener("splitter_resize", this.resize);
     this.turtle.parent_.tabIndex="0";
     this._activateKeyboard(this.turtle.parent_);

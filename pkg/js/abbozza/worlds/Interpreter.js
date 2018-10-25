@@ -60,7 +60,7 @@ AbbozzaInterpreter.step = function() {
         // Go to mode STOPPED to start new execution
         AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
     }
-    this.executeStep();
+    this.doStep();
     
     // Check if the execution was terminated
     if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_TERMINATED ) {
@@ -81,7 +81,7 @@ AbbozzaInterpreter.run = function() {
     if ( (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_TERMINATED) || (AbbozzaInterpreter.mode >= AbbozzaInterpreter.MODE_ABORTED) ) {
        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_STOPPED;
     }
-    this.executeStep();
+    this.doStep();
     if ( AbbozzaInterpreter.mode < AbbozzaInterpreter.MODE_TERMINATED ) {
        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_RUNNING;
        this.worker = window.setTimeout( AbbozzaInterpreter.doStep , AbbozzaInterpreter.delay );
@@ -117,10 +117,14 @@ AbbozzaInterpreter.stop = function() {
  * @returns {undefined}
  */
 AbbozzaInterpreter.doStep = function() {
-    AbbozzaInterpreter.executeStep();
-    // If RUNNING automatically execute the next step
-    if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING )
-        window.setTimeout(AbbozzaInterpreter.doStep , AbbozzaInterpreter.delay);
+    if ( !Abbozza.waitingForAnimation ) {
+        AbbozzaInterpreter.executeStep();
+        // If RUNNING automatically execute the next step
+        if ( AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING )
+            window.setTimeout(AbbozzaInterpreter.doStep , AbbozzaInterpreter.delay);
+    } else {
+        window.setTimeout(AbbozzaInterpreter.doStep , 0);
+    }
 };
 
 
@@ -130,7 +134,7 @@ AbbozzaInterpreter.doStep = function() {
  * @returns {undefined}
  */  
 AbbozzaInterpreter.executeStep = function() {
-        
+    
     var threadMsgs = [];
     
     // If the thread list is empty and the mode is STOPPED, setup threads

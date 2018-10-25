@@ -21,8 +21,8 @@
  */
 var World = new AbbozzaWorld("console");
 
-World.init = function() {
-    this.mycon = new Console(document.getElementById('.topleft'));
+World.init = function(view) {
+    this.mycon = new Console(view);
     this._activateKeyboard(this.mycon.parent_);
 }
 

@@ -22,8 +22,8 @@
 var World = new AbbozzaWorld("kara");
 
 
-World.init = function() {
-    this.kara = new Kara(document.getElementById('.topleft'));
+World.init = function(view) {
+    this.kara = new Kara(view);
     this.kara.parent_.tabIndex="0";
     this._activateKeyboard(this.kara.parent_);
     
