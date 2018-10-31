@@ -22,6 +22,7 @@ var World = new AbbozzaWorld("hanoi");
 World.init = function(view) {
     this.hanoi = new Hanoi(view);
     var hanoi = this.hanoi;
+    Abbozza.splitter.addEventListener("splitter_resize", this.resize);
     
     var info = document.getElementById("info");
     info.contentDocument.getElementById("speed").value = (50-World.hanoi.duration/100);
@@ -37,7 +38,7 @@ World.init = function(view) {
 };
 
 World.resize = function(event) {
-    this.hanoi.draw();
+    World.hanoi.resize();
 };
 
 
@@ -122,15 +123,21 @@ Hanoi.prototype.ypos = function(j) {
     return height * (100 - this.thickness * (j+2))/100;
 }
 
+Hanoi.prototype.resize = function() {    
+    var width = this.view.offsetWidth;
+    var height = this.view.offsetHeight;
+    this.svg.setAttribute("width",width);
+    this.svg.setAttribute("height",height);
+
+    this.draw();
+};
+
 /**
  * Draw the towers
  * 
  * @returns {undefined}
  */
 Hanoi.prototype.draw = function() {
-    var width = this.view.offsetWidth;
-    var height = this.view.offsetHeight;
- 
     for ( i = 0; i <= 2; i++ ) {
         for ( var j = 0; j < this.stacks[i].length; j++ ) {
             var value = this.stacks[i][j];
