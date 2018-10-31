@@ -173,8 +173,21 @@ Hanoi.prototype.animate = function(from,to,callback) {
 
 Hanoi.prototype.moveDisc = function(from,to) {
     
-    if ( (from > 2) || (from < 0) || (to > 2) || (to < 0) || (from == to) ) return false;
+    if ( (from > 2) || (from < 0) ) {
+        Abbozza.throwException(1,_("err.from_illegal",[from]));
+        return false;
+    };
     
+    if ( (to > 2) || (to < 0) ) {
+        Abbozza.throwException(2,_("err.to_illegal",[to]));
+        return false;
+    };
+                
+    if (from == to) {
+        Abbozza.throwException(3,_("err.no_move"));
+        return false;
+    };
+
     var fromValue;
     var toValue;
     
@@ -189,7 +202,10 @@ Hanoi.prototype.moveDisc = function(from,to) {
         toValue = 0;
     }
     
-    if ( fromValue <= 0 ) return false;
+    if ( fromValue <= 0 ) {
+        Abbozza.throwException(4,_("err.empty_pos",[from]));
+        return false;
+    }
     
     if ( (fromValue <= toValue) || (toValue == 0) ) {
            var hanoi = this;
@@ -201,6 +217,7 @@ Hanoi.prototype.moveDisc = function(from,to) {
         return true;
     }
     
+    Abbozza.throwException(5,_("err.size",[from,to])); 
     return false;
 }
 
