@@ -46,6 +46,13 @@ AbbozzaInterpreter.MODE_TERMINATED = 3;
 AbbozzaInterpreter.MODE_ABORTED = 4;
 AbbozzaInterpreter.MODE_ABORTED_BY_ERROR = 5;
 
+AbbozzaInterpreter.sourceInterpreter = null;
+AbbozzaInterpreter.SOURCE_STOPPED = 0;
+AbbozzaInterpreter.SOURCE_PAUSED = 1;
+AbbozzaInterpreter.SOURCE_RUNNING = 2;
+AbbozzaInterpreter.SOURCE_ABORTED = 3;
+AbbozzaInterpreter.SOURCE_ABORTED_BY_ERROR = 4;
+AbbozzaInterpreter.sourceState = 0;
 /**
  * Initialize the interpreter
  * 
@@ -868,4 +875,82 @@ Thread.prototype.getLocalSymbol = function(key) {
 
 Thread.prototype.getCallList = function() {
     return this.callList;
+}
+
+
+
+/**
+ * Operations for the interpretation of source code
+ */
+AbbozzaInterpreter.runSource = function () {
+    if ((AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_STOPPED)
+            || (AbbozzaInterpreter.sourceState >= AbbozzaInterpreter.SOURCE_ABORTED)) {
+        var code = Abbozza.sourceEditor.getValue();
+        AbbozzaInterpreter.sourceInterpreter = new Interpreter(code, World._initSourceInterpreter);
+        AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_STOPPED;
+    }
+    AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_RUNNING;
+    window.setTimeout(AbbozzaInterpreter.doSourceStep, 0);
+}
+
+AbbozzaInterpreter.stepSource = function () {
+    if ((AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_STOPPED)
+            || (AbbozzaInterpreter.sourceState >= AbbozzaInterpreter.SOURCE_ABORTED)) {
+        var code = Abbozza.sourceEditor.getValue();
+        AbbozzaInterpreter.sourceInterpreter = new Interpreter(code, World._initSourceInterpreter);
+    }
+    AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
+    window.setTimeout(AbbozzaInterpreter.doSourceStep, 0);
+}
+
+AbbozzaInterpreter.stopSource = function () {
+    AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_STOPPED;
+}
+
+
+AbbozzaInterpreter.doSourceStep = function () {
+    if (!Abbozza.waitingForAnimation) {
+        AbbozzaInterpreter.executeSourceStep();
+        if (AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_RUNNING)
+            window.setTimeout(AbbozzaInterpreter.doSourceStep, AbbozzaInterpreter.delay);
+    } else {
+        window.setTimeout(AbbozzaInterpreter.doSourceStep, 0);
+    }
+}
+
+
+AbbozzaInterpreter.executeSourceStep = function () {
+    if (AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_STOPPED) {
+        World._onStart();
+        var code = Abbozza.sourceEditor.getValue();
+        AbbozzaInterpreter.sourceInterpreter = new Interpreter(code, World._initSourceInterpreter);
+    }
+
+    try {
+        var state = AbbozzaInterpreter.sourceInterpreter.stateStack[AbbozzaInterpreter.sourceInterpreter.stateStack.length - 1];
+        var spos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.start);
+        var epos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.end);
+        if (AbbozzaInterpreter.lastMark)
+            AbbozzaInterpreter.lastMark.clear();
+        AbbozzaInterpreter.lastMark = Abbozza.sourceEditor.getDoc().markText(spos, epos, {className: "sourceMarker"});
+        var stepped = AbbozzaInterpreter.sourceInterpreter.step();
+        World._onStep();
+        if (!stepped) {
+            AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_ABORTED;
+            if (AbbozzaInterpreter.lastMark)
+                AbbozzaInterpreter.lastMark.clear();
+            Abbozza.openOverlay(_("gui.finished"));
+            Abbozza.overlayWaitForClose();
+        }
+    } catch (e) {
+        AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_ABORTED_BY_ERROR;
+        if (AbbozzaInterpreter.lastMark) {
+            AbbozzaInterpreter.lastMark.clear();
+            AbbozzaInterpreter.lastMark = Abbozza.sourceEditor.getDoc().markText(spos, epos, {className: "sourceErrorMarker"});
+        }
+        Abbozza.openOverlay(_("gui.aborted_by_error"));
+        Abbozza.appendOverlayText("\n");
+        Abbozza.appendOverlayText(e);
+        Abbozza.overlayWaitForClose();
+    }
 }
