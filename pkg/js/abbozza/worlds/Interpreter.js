@@ -1,4 +1,24 @@
 /**
+ * @license
+ * abbozza!
+ *
+ * Copyright 2018 Michael Brinkmeier ( michael.brinkmeier@uni-osnabrueck.de )
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/**
  * The static object for the Interpreter
  * 
  */
@@ -15,9 +35,9 @@ var AbbozzaInterpreter = {
     atBreakpoint : false,
     exec: [],
     executedSteps : 0,
-    executedBlocks : 0
+    executedBlocks : 0,
+    exceptions : []
 };
-
 
 AbbozzaInterpreter.MODE_STOPPED  = 0;
 AbbozzaInterpreter.MODE_RUNNING  = 1;
@@ -46,6 +66,7 @@ AbbozzaInterpreter.newSketch = function() {
     if (World.reset) World.reset();
     threads = [];
     this.globalSymbols = [];
+    Abbozza.exceptions = [];
 };
 
 
@@ -110,7 +131,6 @@ AbbozzaInterpreter.stop = function() {
 };
 
 
-
 /**
  * This operation is executed by a timer to repeatedly execute steps.
  * 
@@ -146,8 +166,9 @@ AbbozzaInterpreter.executeStep = function() {
             this.threads[i].cleanUp();
         }
         this.setupThreads();
-        this.executedteps = 0;
+        this.executedSteps = 0;
         this.executedBlocks = 0;
+        Abbozza.exceptions = [];
     }
     
     if ( this.atBreakpoint && (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING) ) {
@@ -196,6 +217,10 @@ AbbozzaInterpreter.executeStep = function() {
         this.terminating();
     } else if ( state == Thread.STATE_ABORTED ) {
         AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERROR;        
+        this.terminating();
+    } else if ( Abbozza.exceptions.length > 0 ) {
+        // Check if there are thrown and untreated exceptions
+        AbbozzaInterpreter.mode = AbbozzaInterpreter.MODE_ABORTED_BY_ERROR;
         this.terminating();
     } else if ( state == Thread.STATE_BREAKPOINT ) {
         this.atBreakpoint = true;
@@ -261,9 +286,28 @@ AbbozzaInterpreter.terminating = function() {
             }
         }        
     } else {
-        var newEvent = new CustomEvent("abz_error");
-        World._onError();
-        document.dispatchEvent(newEvent);
+        var eventDetail = null;
+        var exception = null;
+        var newEvent;
+        if ( Abbozza.exceptions.length > 0 ) {
+            for ( var i = 0; i < Abbozza.exceptions.length; i++ ) {
+                exception = Abbozza.exceptions[i];
+                eventDetail = {
+                    detail: {
+                        code: exception[0],
+                        msg: exception[1]
+                    }
+                }
+                World._onError(exception);       
+                newEvent = new CustomEvent("abz_error", eventDetail);
+                document.dispatchEvent(newEvent);
+            }
+            Abbozza.exceptions = [];
+        } else {
+            World._onError();       
+            newEvent = new CustomEvent("abz_error", eventDetail);
+            document.dispatchEvent(newEvent);
+        }
         // Do NOT clean up
     }
 }
@@ -554,6 +598,7 @@ ExecStackEntry.prototype.finished = function() {
  * @returns {undefined}
  */
 Thread = function() {
+    this.callList = [];
     this.execStack = [];
     this.localSymbols = [];
     this.highlightedBlock = null;
@@ -567,6 +612,7 @@ Thread.STATE_FINISHED = 2;
 Thread.STATE_ABORTED = 3;
 
 Thread.prototype.setup = function(block) {
+    this.callList = [];
     this.execStack = [];
     this.localSymbols = [];
 
@@ -633,6 +679,10 @@ Thread.prototype.executeStep = function() {
                     var newEntry = new ExecStackEntry(nextBlock,true);
                     this.execStack.push(newEntry);
                 }
+            }
+            
+            if ( topEntry.block.type == "func_call") {
+                this.callList.push([AbbozzaInterpreter.executedSteps,null,null]);
             }
             topEntry = this.execStack[this.execStack.length-1];
         }
@@ -761,6 +811,8 @@ Thread.prototype.callFunction = function(block,parameters) {
     entry.args = parameters;
     
     this.execStack.push(entry);
+    this.callList.push([AbbozzaInterpreter.executedSteps,block,parameters]);
+    
     return true;
 };
 
@@ -786,6 +838,7 @@ Thread.prototype.endFunctionCall = function(returnEntry) {
         }
         funcEntry.finished();
     }
+    this.callList.push([AbbozzaInterpreter.executedSteps,null,null]);
 };
 
 
@@ -811,3 +864,8 @@ Thread.prototype.getLocalSymbol = function(key) {
     var symbols = this.localSymbols[this.localSymbols.length-1];
     return symbols[key];
 };
+
+
+Thread.prototype.getCallList = function() {
+    return this.callList;
+}

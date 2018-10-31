@@ -35,8 +35,27 @@ AbbozzaWorld.prototype.getInfo = function() {
     return this.id;
 };
 
-AbbozzaWorld.prototype.reset = function() {    
-};
+
+/**
+ * These operations can be overwritten to implement a standard behavior of the
+ * wordl.
+ * 
+ * reset() is called if th wolrd is loaded , even before sketch is started
+ * start() is called if a sketch is started
+ * step() is called every time a step os a sketch is executed
+ * stop() is called if the sketch terminates (either by error or regularly)
+ */
+AbbozzaWorld.prototype.reset = function() {};
+AbbozzaWorld.prototype.start = function() {};
+AbbozzaWorld.prototype.step = function() {};
+AbbozzaWorld.prototype.stop = function() {};
+
+AbbozzaWorld.prototype.error = function(exception) {
+    if (exception) {
+        Abbozza.openOverlay(exception[1]);
+        Abbozza.overlayWaitForClose();
+    }
+}
 
 /**
  * This handler is called if the excution of a program starts.
@@ -44,6 +63,7 @@ AbbozzaWorld.prototype.reset = function() {
  * @returns {undefined}
  */
 AbbozzaWorld.prototype._onStart = function() {
+    this.start();
     if ( World.onStart ) World.onStart();
     if ( Task && Task.onStart ) Task.onStart();
     if ( Page && Page.onStart ) Page.onStart();
@@ -56,6 +76,7 @@ AbbozzaWorld.prototype._onStart = function() {
  * @returns {undefined}
  */
 AbbozzaWorld.prototype._onStop = function() {
+    this.stop();
     if ( World.onStop ) World.onStop();
     if ( Task && Task.onStop ) Task.onStop();
     if ( Page && Page.onStop ) Page.onStop();
@@ -67,11 +88,14 @@ AbbozzaWorld.prototype._onStop = function() {
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onError = function() {
+AbbozzaWorld.prototype._onError = function(exception) {
     if ( World.onError ) World.onError();
     if ( Task && Task.onError ) Task.onError();
     if ( Page && Page.onError ) Page.onError();
     document.dispatchEvent(new CustomEvent("abz_error"));
+    if ( exception ) {
+        World.error(exception);
+    }    
 };
 
 /**
@@ -79,6 +103,7 @@ AbbozzaWorld.prototype._onError = function() {
  * @returns {undefined}
  */
 AbbozzaWorld.prototype._onStep = function() {
+    this.step();
     var result = true;
     if ( World.onStep ) result = result && World.onStep();
     if ( Task && Task.onStep ) result = result && Task.onStep();
