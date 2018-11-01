@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -91,12 +92,12 @@ public class LoadSourceHandler extends AbstractHandler {
 
         String result = "";
         File lastSketchFile = null;
-        URL last = _abbozzaServer.getLastSketchFile();
+        URI last = _abbozzaServer.getLastSketchFile();
         if (last == null) {
             lastSketchFile = new File(".");
         } else {
             try {
-                lastSketchFile = new File(last.toURI());
+                lastSketchFile = new File(last);
             } catch (Exception ex) {
                 lastSketchFile = new File(".");
             }

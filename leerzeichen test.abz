@@ -1,0 +1,13 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+</block>
+<system world="console">worlds</system>
+<description/>
+<options apply="no" protected="no">{option.operations=true,option.source=true,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=true,option.noArrays=true}</options>
+<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+</xml>

@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.JDialog;
@@ -54,19 +55,19 @@ public class SaveSourceHandler extends AbstractHandler {
     protected void handleRequest(HttpExchange exchg) throws IOException {
         String path;
         String contentLocation;
-        URL url = null;
+        URI uri = null;
         
         try {
             // Check if a query is given
             path = exchg.getRequestURI().getQuery();
             if ( path != null ) {
-                url = _abbozzaServer.expandSketchURL(path);
-                if ( (url == null) || (!"file".equals(url.getProtocol())) ) {
-                    url = null;
+                uri = _abbozzaServer.expandSketchURI(path);
+                if ( (uri == null) || (!"file".equals(uri.toURL().getProtocol())) ) {
+                    uri = null;
                 }
             }
             
-            contentLocation = saveSources(exchg.getRequestBody(), url);
+            contentLocation = saveSources(exchg.getRequestBody(), uri);
             if ( contentLocation != null) {
                exchg.getResponseHeaders().add("Content-Location", contentLocation);
                this.sendResponse(exchg, 200, "text/xml", "saved");
@@ -79,7 +80,7 @@ public class SaveSourceHandler extends AbstractHandler {
     }
        
     
-    public String saveSources(InputStream stream, URL url) throws IOException {
+    public String saveSources(InputStream stream, URI uri) throws IOException {
         if ( _abbozzaServer.isDialogOpen() ) return null;
         
         String location = null;
@@ -113,8 +114,8 @@ public class SaveSourceHandler extends AbstractHandler {
 
             // Prepare File filters
             chooser.setFileFilter(new FileNameExtensionFilter("abbozza! script(*.abs)", "abs", "ABS"));
-            if ( url != null ) {
-                chooser.setSelectedFile(new File(url.toURI()));
+            if ( uri != null ) {
+                chooser.setSelectedFile(new File(uri));
             } else {
                 if ( lastSourceFile.isDirectory() ) {
                     chooser.setCurrentDirectory(lastSourceFile);
@@ -156,7 +157,7 @@ public class SaveSourceHandler extends AbstractHandler {
                 lastSource = file.toURI().toURL();
                 location = file.toURI().toURL().toString();
             }
-        } catch (HeadlessException | IOException | URISyntaxException ex) {
+        } catch (HeadlessException | IOException ex) {
             AbbozzaLogger.err(ex.toString());
             ex.printStackTrace(System.err);
         }
