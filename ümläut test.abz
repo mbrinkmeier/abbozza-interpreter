@@ -9,7 +9,7 @@
 <block id="#|QMlyS5@489Q7Ox2x]w" type="hanoi_reset">
 <value name="DISCS">
 <block id="W8OMWE}n6D;YqPg)z.Ft" type="math_number">
-<field name="VALUE">5</field>
+<field name="VALUE">6</field>
 </block>
 </value>
 </block>
@@ -17,6 +17,6 @@
 </block>
 <system world="hanoi">worlds</system>
 <description/>
-<options apply="no" protected="no">{option.operations=true,option.source=true,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=true,option.noArrays=true}</options>
+<options apply="no" protected="no">{option.operations=false,option.source=true,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.advanced=false,option.colorCategory=false,option.noArrays=true}</options>
 <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
 </xml>

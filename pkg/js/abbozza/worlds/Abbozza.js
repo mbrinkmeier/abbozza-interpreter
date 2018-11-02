@@ -56,11 +56,11 @@ Abbozza.initWorlds = function () {
         sourcePane.style.display = "none";
     }
     var callsPane;
-    if (Configuration.getParameter("option.source") == "true") {
+    if (Configuration.getParameter("option.calls") == "true") {
         callsPane = tabs.addPane(_("gui.calls"), document.getElementById("calls"));
         Abbozza.initCallView(callsPane);
     } else {
-        callsPane = document.getElementById("callse");
+        callsPane = document.getElementById("calls");
         callsPane.style.display = "none";
     }
 
