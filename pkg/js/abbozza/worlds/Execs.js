@@ -304,20 +304,22 @@ AbbozzaInterpreter.exec["var_block"] = function(entry) {
 AbbozzaInterpreter.exec["var_assign"] = function(entry) {
     switch ( entry.phase ) {
         case 0 :
-            AbbozzaInterpreter.callInput(this,"LEFT","VAR");
+            AbbozzaInterpreter.callInput(this,"RIGHT");
             entry.phase = 1;
             break;
         case 1 :
-            entry.var = entry.callResult;
-            AbbozzaInterpreter.callInput(this,"RIGHT");
+            entry.value = entry.callResult;
+            AbbozzaInterpreter.callInput(this,"LEFT","VAR");
             entry.phase = 2;
             break;
         case 2 :
-            AbbozzaInterpreter.setSymbol(entry.var[0],entry.callResult,entry.var[1]);
+            entry.var = entry.callResult;
+            AbbozzaInterpreter.setSymbol(entry.var[0],entry.value,entry.var[1]);
             entry.finished();
             break;
     }
 };
+
 
 /*************************
  * MATH blocks
@@ -955,4 +957,199 @@ AbbozzaInterpreter.exec["func_return"] = function(entry) {
         default :
             entry.finished();
     }
-}
+};
+
+
+/*************************
+ * OBJECT blocks
+ *************************/
+
+/*** STACK ***/
+
+AbbozzaInterpreter.exec["stack_new"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var type = entry.block.getFieldValue("TYPE");
+            entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, [] );
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["stack_is_empty"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( !Array.isArray(stack) ) 
+                entry.returnValue = true;
+            else
+                entry.returnValue = ( stack.length == 0);
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["stack_push"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1:
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name,null);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( Array.isArray(stack) ) 
+                stack.push(entry.callResult);
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["stack_pop"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( (Array.isArray(stack))  && (stack.length > 0) ) 
+                entry.returnValue = stack.pop();
+            else {
+                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+            }
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["stack_top"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( (Array.isArray(stack)) && (stack.length > 0) ) 
+                entry.returnValue = stack[stack.length-1];
+            else {
+                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+            }
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+/*** QUEUE ***/
+
+AbbozzaInterpreter.exec["queue_new"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var type = entry.block.getFieldValue("TYPE");
+            entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, [] );
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["queue_is_empty"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var queue = AbbozzaInterpreter.getObjectValue(reference);
+            if ( !Array.isArray(queue) )
+                entry.returnValue = true;
+            else
+                entry.returnValue = ( queue.length == 0 );
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["queue_enqueue"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1:
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name,null);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( Array.isArray(stack) ) 
+                stack.push(entry.callResult);
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["queue_dequeue"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( (Array.isArray(stack))  && (stack.length > 0) ) {
+                entry.returnValue = stack[0];
+                stack = stack.splice(0,1);
+            } else {
+                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+            }
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["queue_head"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var stack = AbbozzaInterpreter.getObjectValue(reference);
+            if ( (Array.isArray(stack)) && (stack.length > 0) ) { 
+                entry.returnValue = stack[0];
+            } else {
+                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+            }
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+/*** LIST ***/
+
+AbbozzaInterpreter.exec["list_new"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var type = entry.block.getFieldValue("TYPE");
+            entry.returnValue = AbbozaInterpreter.createObject("LIST_" + type, [] );
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};

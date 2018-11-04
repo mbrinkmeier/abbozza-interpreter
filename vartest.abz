@@ -92,6 +92,19 @@
 </value>
 </block>
 </value>
+<next>
+<block id="Ec_mog%7B55aQo)CXyDG" type="console_println">
+<value name="TEXT">
+<block id="1:UUxHK2fa:=^i63av*U" type="text_from_number">
+<value name="VALUE">
+<block id="Wl_}sKNlE=C=3Y~:|UE]" type="var_block">
+<field name="NAME">zahl</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
 </block>
 </next>
 </block>
@@ -101,8 +114,8 @@
 </block>
 </statement>
 </block>
+<system world="null">worlds</system>
 <description/>
-<options apply="no" protected="no">{}</options>
+<options apply="no" protected="no">{option.operations=true,option.source=false,option.colorDefault=true,option.datastructures=true,option.multArrays=false,option.localVars=true,option.linArrays=false,option.debug=false,option.calls=false,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=true,option.noArrays=true}</options>
 <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
-<system>interpreter</system>
 </xml>

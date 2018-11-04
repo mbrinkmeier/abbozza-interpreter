@@ -36,7 +36,8 @@ var AbbozzaInterpreter = {
     exec: [],
     executedSteps : 0,
     executedBlocks : 0,
-    exceptions : []
+    exceptions : [],
+    objects : []
 };
 
 AbbozzaInterpreter.MODE_STOPPED  = 0;
@@ -71,9 +72,10 @@ AbbozzaInterpreter.init = function() {
 AbbozzaInterpreter.newSketch = function() {
     Abbozza.newSketch();
     if (World.reset) World.reset();
-    threads = [];
+    this.threads = [];
     this.globalSymbols = [];
     Abbozza.exceptions = [];
+    this.objects = [];
 };
 
 
@@ -176,6 +178,8 @@ AbbozzaInterpreter.executeStep = function() {
         this.executedSteps = 0;
         this.executedBlocks = 0;
         Abbozza.exceptions = [];
+        this.globalSymbols = [];
+        this.objects = [];
     }
     
     if ( this.atBreakpoint && (AbbozzaInterpreter.mode == AbbozzaInterpreter.MODE_RUNNING) ) {
@@ -412,6 +416,8 @@ AbbozzaInterpreter.getDefaultValue  = function(type, len) {
         } else {
             return false;
         }
+    } else if ( type.startsWith("#") ) {
+        return 0;
     } else {
         return null;
     }
@@ -517,6 +523,43 @@ AbbozzaInterpreter.getSpeed = function() {
     return 100 - Math.round(this.delay/10);    
 };
 
+
+/*** OBJECTS ***/
+
+AbbozzaInterpreter.createObject = function(cls,value) {
+    this.objects.push([cls,value]);
+    return this.objects.length;
+};
+
+AbbozzaInterpreter.getObject = function(reference) {
+    if ( (reference > 0) && ( this.objects.length >= reference ) ) {
+        return this.objects[reference-1];
+    } 
+    return null;
+}
+
+AbbozzaInterpreter.getObjectType = function(reference) {
+    if ( (reference > 0) && ( this.objects.length >= reference ) ) {
+        return this.objects[reference-1][0];
+    }
+    return "";
+};
+
+AbbozzaInterpreter.getObjectValue = function(reference) {
+    if ( (reference > 0) && ( this.objects.length >= reference ) ) {
+        return this.objects[reference-1][1];
+    } 
+    return null;
+};
+
+AbbozzaInterpreter.setObjectValue = function(reference, value) {
+    if ( (reference > 0) && ( this.objects.length >= reference ) ) {
+        this.objects[reference-1][1] = value;
+    } 
+};
+
+
+/*** MISC ***/
 
 Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
       if (!this.rendered) {

@@ -37,15 +37,7 @@ Abbozza.Main = {
         this.appendStatementInput("STATEMENTS")
                 .setCheck("STATEMENT");
         this.setTooltip('');
-        this.setMutator(new DynamicMutator(function () {
-            if (Configuration.getParameter("option.noArrays") == "true") {
-                return ['var_num_noconn', 'var_string_noconn', 'var_decimal_noconn', 'var_boolean_noconn'];
-            } else if (Configuration.getParameter("option.linArrays") == "true") {
-                return ['var_num', 'var_string', 'var_decimal', 'var_boolean', 'arr_dimension_noconn'];
-            } else {
-                return ['var_num', 'var_string', 'var_decimal', 'var_boolean', 'arr_dimension'];
-            }
-        }));
+        this.setMutator(new DynamicMutator( Configuration.getVariableBlocks ));
         this.setDeletable(false);
         this.data = "main";
     },

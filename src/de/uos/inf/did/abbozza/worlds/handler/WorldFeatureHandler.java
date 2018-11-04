@@ -28,15 +28,19 @@ import com.sun.net.httpserver.HttpExchange;
 import de.uos.inf.did.abbozza.core.AbbozzaLogger;
 import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.handler.AbstractHandler;
+import de.uos.inf.did.abbozza.plugin.Plugin;
 import de.uos.inf.did.abbozza.worlds.AbbozzaWorlds;
 import de.uos.inf.did.abbozza.worlds.World;
 import de.uos.inf.did.abbozza.tools.XMLTool;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -58,9 +62,26 @@ public class WorldFeatureHandler extends AbstractHandler {
     
     private Document getFeatures(String path) {
         // Read the xml file for the global feature
+        Document globalFeaturesXml = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        
+        String globalPath = "/js/abbozza/" + this._abbozzaServer.getSystem() + "/features.xml";
+                
+        try {
+            AbbozzaLogger.out("FeatureHandler: Loading global features from " + globalPath,AbbozzaLogger.INFO);
+            InputStream stream = this._abbozzaServer.getJarHandler().getInputStream(globalPath);
+            builder = factory.newDocumentBuilder();
+            StringBuilder xmlStringBuilder = new StringBuilder();
+            globalFeaturesXml = builder.parse(stream);
+        } catch (Exception ex) {
+            AbbozzaLogger.stackTrace(ex);
+        }
+        System.out.println(XMLTool.documentToString(globalFeaturesXml));        
+        // Get th worlds specific features
         Document featureXml = null;
-
-       String prefix = "/abbozza/features/";        
+        
+        String prefix = "/abbozza/features/";        
         World world = null;
         String worldId = null;
         int len = prefix.length();
@@ -77,15 +98,36 @@ public class WorldFeatureHandler extends AbstractHandler {
         if ( world == null) {
             world = ((AbbozzaWorlds) this._abbozzaServer).getWorld("console");
             path = null;
-        }
-
+        }       
         featureXml = world.getFeatures();
-  
-        AbbozzaServer.getPluginManager().mergeFeatures(featureXml);
-
-       
-        // Get the world id from the path
+        System.out.println(XMLTool.documentToString(featureXml));        
         
-        return featureXml;
+        // Merge featureXml into globalFeaturesXml
+        this.mergeFeatures(globalFeaturesXml, featureXml);
+        System.out.println(XMLTool.documentToString(globalFeaturesXml));        
+        
+        // Merge features from plugins
+        AbbozzaServer.getPluginManager().mergeFeatures(globalFeaturesXml);
+
+        return globalFeaturesXml;
     }
+    
+    
+    private void mergeFeatures(Document featureXml, Document addXml) {
+        NodeList roots = featureXml.getElementsByTagName("features");
+        if (roots.getLength() == 0) {
+            return;
+        }
+        Node root = roots.item(0);
+        
+        NodeList features = addXml.getElementsByTagName("feature");        
+        for (int i = 0; i < features.getLength() ; i++ ) {
+            Node feature = features.item(i);
+            featureXml.adoptNode(feature);
+            root.appendChild(feature);
+        }        
+    }
+
 }
+
+
