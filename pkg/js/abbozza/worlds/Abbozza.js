@@ -121,6 +121,8 @@ Abbozza.loadSketch = function () {
     );
 };
 
+
+
 Abbozza.worldFromDom = function (worldXml) {
     if (World.fromDom) {
         World.fromDom(worldXml);

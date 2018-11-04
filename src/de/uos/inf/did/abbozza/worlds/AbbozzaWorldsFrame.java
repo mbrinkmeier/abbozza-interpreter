@@ -9,7 +9,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -20,6 +24,7 @@ import javax.swing.JFrame;
 public class AbbozzaWorldsFrame extends javax.swing.JFrame {
 
     private AbbozzaWorlds abbozza;
+    private File lastSourceFile = null;
     
     /**
      * Creates new form AbbozzaInterpreterFrame
@@ -91,7 +96,9 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         selectWorldButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        settingsItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        quitITem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("abbozza! Worlds");
@@ -121,14 +128,23 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
 
         jMenu1.setText("abbozza!");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText(AbbozzaLocale.entry("gui.QUIT"));
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        settingsItem.setText(AbbozzaLocale.entry("gui.settings"));
+        settingsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                settingsItemActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu1.add(settingsItem);
+        jMenu1.add(jSeparator1);
+
+        quitITem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+        quitITem.setText(AbbozzaLocale.entry("gui.QUIT"));
+        quitITem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quitITemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(quitITem);
 
         jMenuBar1.add(jMenu1);
 
@@ -161,9 +177,9 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void quitITemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitITemActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_quitITemActionPerformed
 
     private void worldBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_worldBoxActionPerformed
         descriptionPane.setText(((World) worldBox.getSelectedItem()).getDescription());// TODO add your handling code here:
@@ -173,14 +189,21 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         abbozza.setWorld((World) worldBox.getSelectedItem(),true);
     }//GEN-LAST:event_selectWorldButtonActionPerformed
 
+    private void settingsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsItemActionPerformed
+        AbbozzaServer abbozza = AbbozzaServer.getInstance();
+        abbozza.openConfigDialog();
+    }//GEN-LAST:event_settingsItemActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea descriptionPane;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JMenuItem quitITem;
     private javax.swing.JButton selectWorldButton;
+    private javax.swing.JMenuItem settingsItem;
     private javax.swing.JComboBox<de.uos.inf.did.abbozza.worlds.World> worldBox;
     // End of variables declaration//GEN-END:variables
 
@@ -194,4 +217,7 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         this.worldBox.setSelectedIndex(0);
     }
 
+    private void loadSketch(File file) {
+        abbozza.setWorld((World) worldBox.getSelectedItem(),file);
+    }
 }

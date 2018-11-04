@@ -333,10 +333,16 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         return optionXml;
     }
 
+    public void setWorld(World world, File file) {
+        currentWorld = world;
+        AbbozzaLocale.setLocale(this.config.getLocale());
+        this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html?" + file.toURI());
+    }
+
     public void setWorld(World world, boolean browser) {
         currentWorld = world;
         AbbozzaLocale.setLocale(this.config.getLocale());
-        if ( browser) this.startBrowser("abbozza/world/" + world.getId() + "/");
+        if (browser) this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html");
         // @TODO
     }
 

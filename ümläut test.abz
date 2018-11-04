@@ -1,22 +1,36 @@
 <xml xmlns="http://www.w3.org/1999/xhtml">
-<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
-<mutation>
-<title>&lt;title&gt;</title>
-<symbols/>
-</mutation>
-<data>main</data>
-<statement name="STATEMENTS">
-<block id="#|QMlyS5@489Q7Ox2x]w" type="hanoi_reset">
-<value name="DISCS">
-<block id="W8OMWE}n6D;YqPg)z.Ft" type="math_number">
-<field name="VALUE">6</field>
-</block>
-</value>
-</block>
-</statement>
-</block>
-<system world="hanoi">worlds</system>
-<description/>
-<options apply="no" protected="no">{option.operations=false,option.source=true,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.advanced=false,option.colorCategory=false,option.noArrays=true}</options>
-<task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
+    <block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+        <mutation>
+            <title>&lt;title&gt;</title>
+            <symbols/>
+        </mutation>
+        <data>main</data>
+        <statement name="STATEMENTS">
+            <block id="l+q8^s3FWhun3~htors`" type="hanoi_reset">
+                <value name="DISCS">
+                    <block id="mGTl=M}kh|NY#lS.B6QJ" type="math_number">
+                        <field name="VALUE">6</field>
+                    </block>
+                </value>
+            </block>
+        </statement>
+    </block>
+    <block id="Hz*NxVhBxePkdEyF(jMt" type="hanoi_move" x="134" y="204">
+        <value name="FROM">
+            <block id="uqsSzGpwiqB:e#8]21MU" type="math_number">
+                <mutation confirmed="false"/>
+                <field name="VALUE">0</field>
+            </block>
+        </value>
+        <value name="TO">
+            <block id="inv8Wz6FUTNNluOg1RGt" type="math_number">
+                <mutation confirmed="false"/>
+                <field name="VALUE">6</field>
+            </block>
+        </value>
+    </block>
+    <system world="hanoi">worlds</system>
+    <description/>
+    <options apply="no" protected="no">{option.test=false,option.colorType=false,option.source=true,option.colorDefault=true,option.debug=true,option.noArrays=true,option.operations=true,option.localVars=false,option.advanced=true,option.colorCategory=false,option.linArrays=false,option.multArrays=false}</options>
+    <task height="400" width="600">&lt;page&gt;&lt;/page&gt;</task>
 </xml>

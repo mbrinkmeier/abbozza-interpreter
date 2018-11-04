@@ -20,6 +20,10 @@
         <msg id="gui.aborted_by_error">Ein Fehler ist aufgetreten!</msg>
         <msg id="gui.SET_WORLD">Starte Welt</msg> 
         <msg id="gui.close_and_quit">abbozza! wird durch das Schließen des Fensters nicht beendet!</msg>
+        <msg id="gui.startBrowser">Starte Browser</msg>
+        <msg id="gui.settings">Einstellungen</msg>
+    </gui>
+    <blocks>
         <msg id="msg.save_source">Quelltext wird gespeichert</msg> 
         <msg id="msg.load_source">Quelltext wird geladen</msg>
         <msg id="cat.KEYBOARD">Tastatur</msg>
@@ -38,5 +42,5 @@
         <msg id="key.TAB">Tabulator</msg>
         <msg id="key.INSERT">Einfügen</msg>
         <msg id="key.ESCAPE">Escape (Esc)</msg>
-    </gui>
+    </blocks>
 </language>    
