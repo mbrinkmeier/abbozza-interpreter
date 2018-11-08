@@ -43,4 +43,12 @@
         <msg id="key.INSERT">Einfügen</msg>
         <msg id="key.ESCAPE">Escape (Esc)</msg>
     </blocks>
+    <errors>
+        <msg id="err.unknown_stack">Unbekannter Stack!</msg>
+        <msg id="err.stack_is_empty">Zugriff auf leeren Stack!</msg>
+        <msg id="err.unknown_queue">Unbekannte Queue!</msg>
+        <msg id="err.queue_is_empty">Zugriff auf leere Queue!</msg>
+        <msg id="err.unknown_list">Unbekannte Liste!</msg>
+        <msg id="err.list_invalid_index">Ungültiger Index!</msg>    
+    </errors>
 </language>    

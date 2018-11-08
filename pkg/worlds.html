@@ -34,7 +34,8 @@
         <script src="/js/ckeditor/ckeditor.js"></script>
         <script src="/js/codemirror/lib/codemirror.js"></script>
         <script src="/js/codemirror/mode/javascript/javascript.js"></script>
-        <script src="/lib/acorn_interpreter.js"></script>
+        <script src="/lib/acorn.js"></script>
+        <script src="/lib/interpreter.js"></script>
         <script src="/js/abbozza/core/Generator.js" type="text/javascript"></script>
 
         <!-- worlds specific classes -->
@@ -81,6 +82,7 @@
         <!-- worlds specific stuff -->
         <script src="/js/abbozza/worlds/Abbozza.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Interpreter.js" type="text/javascript"></script>
+        <script src="/js/abbozza/worlds/Datastructures.js" type="text/javascript"></script>
         <script src="Tools.js" type="text/javascript"></script>
         
 
@@ -156,7 +158,7 @@
                 </div>                    
             </div>
             <div id=".right" style="min-height: 50px; min-width: 100px">
-                <div id="workspace" style="position: fixed"></div>                
+                <div id="workspace"></div>                
                 <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="img/step.png"></div>
                 <div class="topButton" id="run" title="Run" onclick="AbbozzaInterpreter.run()"><img width=50 height=50  src="img/run.png"></div>
                 <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.stop()"><img width=50 height=50  src="img/stop.png"></div>

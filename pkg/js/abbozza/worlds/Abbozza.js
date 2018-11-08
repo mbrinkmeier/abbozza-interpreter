@@ -72,7 +72,13 @@ Abbozza.initWorlds = function () {
     Abbozza.sourceEditor.setSize(null, "100%");
     tabs.openTab(infoPane);
     World._init(document.getElementById(".topleft"));
-
+    
+    Abbozza.splitter.addEventListener("splitter_resize", 
+        function(event) {
+            Blockly.svgResize(Blockly.mainWorkspace);
+        }
+    );
+    Blockly.svgResize(Blockly.mainWorkspace);
 }
 
 

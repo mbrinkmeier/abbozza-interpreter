@@ -547,7 +547,7 @@ AbbozzaInterpreter.exec["text_char_at"] = function(entry) {
             entry.phase = 2;
             break;
         case 2:
-            entry.returnValue  = entry.callResult.charAt(entry.pos); 
+            entry.returnValue = entry.callResult.charAt(entry.pos); 
             entry.finished();
             break;
         default:
@@ -970,7 +970,7 @@ AbbozzaInterpreter.exec["stack_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, [] );
+            entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, new Stack() );
             entry.finished();
             break;
         default :
@@ -979,15 +979,15 @@ AbbozzaInterpreter.exec["stack_new"] = function(entry) {
 };
 
 AbbozzaInterpreter.exec["stack_is_empty"] = function(entry) {
-    switch ( entry.phase) {
+    switch ( entry.phase ) {
         case 0 :
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name);
             var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( !Array.isArray(stack) ) 
-                entry.returnValue = true;
+            if ( stack instanceof Stack )
+                entry.returnValue = stack.isEmpty();
             else
-                entry.returnValue = ( stack.length == 0);
+                Abbozza.throwException(1,_("err.unknown_stack"));                
             entry.finished();
             break;
         default :
@@ -1005,8 +1005,10 @@ AbbozzaInterpreter.exec["stack_push"] = function(entry) {
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name,null);
             var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( Array.isArray(stack) ) 
+            if ( stack instanceof Stack ) 
                 stack.push(entry.callResult);
+            else
+                Abbozza.throwException(1,_("err.unknown_stack"));                
             entry.finished();
             break;
         default :
@@ -1021,10 +1023,10 @@ AbbozzaInterpreter.exec["stack_pop"] = function(entry) {
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name);
             var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( (Array.isArray(stack))  && (stack.length > 0) ) 
+            if (stack instanceof Stack) 
                 entry.returnValue = stack.pop();
             else {
-                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+                Abbozza.throwException(1,_("err.unknown_stack"));
             }
             entry.finished();
             break;
@@ -1039,10 +1041,10 @@ AbbozzaInterpreter.exec["stack_top"] = function(entry) {
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name);
             var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( (Array.isArray(stack)) && (stack.length > 0) ) 
-                entry.returnValue = stack[stack.length-1];
+            if (stack instanceof Stack) 
+                entry.returnValue = stack.top();
             else {
-                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+                Abbozza.throwException(1,_("err.unknown_stack"));
             }
             entry.finished();
             break;
@@ -1058,7 +1060,7 @@ AbbozzaInterpreter.exec["queue_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, [] );
+            entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, new Queue() );
             entry.finished();
             break;
         default :
@@ -1072,10 +1074,10 @@ AbbozzaInterpreter.exec["queue_is_empty"] = function(entry) {
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name);
             var queue = AbbozzaInterpreter.getObjectValue(reference);
-            if ( !Array.isArray(queue) )
-                entry.returnValue = true;
+            if ( queue instanceof Queue )
+                entry.returnValue = queue.isEmpty();
             else
-                entry.returnValue = ( queue.length == 0 );
+                Abbozza.throwException(1,_("err.unknown_queue"));                
             entry.finished();
             break;
         default :
@@ -1092,9 +1094,11 @@ AbbozzaInterpreter.exec["queue_enqueue"] = function(entry) {
         case 1:
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name,null);
-            var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( Array.isArray(stack) ) 
-                stack.push(entry.callResult);
+            var queue = AbbozzaInterpreter.getObjectValue(reference);
+            if ( queue instanceof Queue ) 
+                queue.enqueue(entry.callResult);
+            else
+                Abbozza.throwException(1,_("err.unknown_queue"));                
             entry.finished();
             break;
         default :
@@ -1108,12 +1112,11 @@ AbbozzaInterpreter.exec["queue_dequeue"] = function(entry) {
         case 0 :
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name);
-            var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( (Array.isArray(stack))  && (stack.length > 0) ) {
-                entry.returnValue = stack[0];
-                stack = stack.splice(0,1);
+            var queue = AbbozzaInterpreter.getObjectValue(reference);
+            if (queue instanceof Queue) {
+                entry.returnValue = queue.dequeue();
             } else {
-                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+                Abbozza.throwException(1,_("err.unknown_queue"));
             }
             entry.finished();
             break;
@@ -1127,11 +1130,11 @@ AbbozzaInterpreter.exec["queue_head"] = function(entry) {
         case 0 :
             var name = this.getFieldValue("NAME");
             var reference = AbbozzaInterpreter.getSymbol(name);
-            var stack = AbbozzaInterpreter.getObjectValue(reference);
-            if ( (Array.isArray(stack)) && (stack.length > 0) ) { 
-                entry.returnValue = stack[0];
+            var queue = AbbozzaInterpreter.getObjectValue(reference);
+            if ( queue instanceof Queue ) { 
+                entry.returnValue = queue.head();
             } else {
-                Abbozza.throwException(1,_("err.stack_pop_from_empty"));
+                Abbozza.throwException(1,_("err.unknown_queue"));
             }
             entry.finished();
             break;
@@ -1146,9 +1149,158 @@ AbbozzaInterpreter.exec["list_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozaInterpreter.createObject("LIST_" + type, [] );
+            entry.returnValue = AbbozzaInterpreter.createObject("LIST_" + type, new List() );
             entry.finished();
             break;
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["list_is_empty"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+            if ( list instanceof List)
+                entry.returnValue = list.isEmpty();
+            else
+                Abbozza.throwException(1,_("err.unknown_list"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["list_get_length"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+            if ( list instanceof List)
+                entry.returnValue = list.getLength();
+            else
+                Abbozza.throwException(1,_("err.unknown_list"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["list_get_item"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"INDEX");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+             if ( list instanceof List) {
+                entry.returnValue = list.getItem(entry.callResult);
+                entry.finished();
+             } else
+                Abbozza.throwException(1,_("err.unknown_list"));                
+        default :
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["list_delete"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"INDEX");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+            if ( list instanceof List) {
+                list.delete(entry.callResult);
+                entry.finished();
+            } else
+                Abbozza.throwException(1,_("err.unknown_list"));                
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["list_append"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+            if ( list instanceof List) {
+                list.append(entry.callResult);
+                entry.finished();
+            } else
+                Abbozza.throwException(1,_("err.unknown_list"));                
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["list_insert_at"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"INDEX");
+            entry.phase = 1;
+            break;
+        case 1 :
+            entry.index = entry.callResult;
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 2;
+            break;
+        case 2 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+            if ( list instanceof List) {
+                list.insertAt(entry.index,entry.callResult);
+                entry.finished();
+            } else
+                Abbozza.throwException(1,_("err.unknown_list"));                
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["list_set_item"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"INDEX");
+            entry.phase = 1;
+            break;
+        case 1 :
+            entry.index = entry.callResult;
+            AbbozzaInterpreter.callValue(this,"VALUE");
+            entry.phase = 2;
+            break;
+        case 2 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var list = AbbozzaInterpreter.getObjectValue(reference);
+            if ( list instanceof List) {
+                list.setItem(entry.index,entry.callResult);
+                entry.finished();
+            } else
+                Abbozza.throwException(1,_("err.unknown_list"));                
         default :
             entry.finished();
     }

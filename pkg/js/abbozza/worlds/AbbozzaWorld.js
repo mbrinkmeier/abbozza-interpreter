@@ -19,19 +19,20 @@
 
 function AbbozzaWorld(id) {
     this.id = id;
-};
+}
+;
 
-AbbozzaWorld.prototype._init = function(view) {
-    if ( this.init ) {
+AbbozzaWorld.prototype._init = function (view) {
+    if (this.init) {
         this.init(view);
     }
 };
 
-AbbozzaWorld.prototype.getId = function() {
+AbbozzaWorld.prototype.getId = function () {
     return this.id;
 };
 
-AbbozzaWorld.prototype.getInfo = function() {
+AbbozzaWorld.prototype.getInfo = function () {
     return this.id;
 };
 
@@ -45,12 +46,12 @@ AbbozzaWorld.prototype.getInfo = function() {
  * step() is called every time a step os a sketch is executed
  * stop() is called if the sketch terminates (either by error or regularly)
  */
-AbbozzaWorld.prototype.reset = function() {};
-AbbozzaWorld.prototype.start = function() {};
-AbbozzaWorld.prototype.step = function() {};
-AbbozzaWorld.prototype.stop = function() {};
+AbbozzaWorld.prototype.reset = function () {};
+AbbozzaWorld.prototype.start = function () {};
+AbbozzaWorld.prototype.step = function () {};
+AbbozzaWorld.prototype.stop = function () {};
 
-AbbozzaWorld.prototype.error = function(exception) {
+AbbozzaWorld.prototype.error = function (exception) {
     if (exception) {
         Abbozza.openOverlay(exception[1]);
         Abbozza.overlayWaitForClose();
@@ -62,11 +63,14 @@ AbbozzaWorld.prototype.error = function(exception) {
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onStart = function() {
+AbbozzaWorld.prototype._onStart = function () {
     this.start();
-    if ( World.onStart ) World.onStart();
-    if ( Task && Task.onStart ) Task.onStart();
-    if ( Page && Page.onStart ) Page.onStart();
+    if (World.onStart)
+        World.onStart();
+    if (Task && Task.onStart)
+        Task.onStart();
+    if (Page && Page.onStart)
+        Page.onStart();
     document.dispatchEvent(new CustomEvent("abz_start"));
 };
 
@@ -75,11 +79,14 @@ AbbozzaWorld.prototype._onStart = function() {
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onStop = function() {
+AbbozzaWorld.prototype._onStop = function () {
     this.stop();
-    if ( World.onStop ) World.onStop();
-    if ( Task && Task.onStop ) Task.onStop();
-    if ( Page && Page.onStop ) Page.onStop();
+    if (World.onStop)
+        World.onStop();
+    if (Task && Task.onStop)
+        Task.onStop();
+    if (Page && Page.onStop)
+        Page.onStop();
     document.dispatchEvent(new CustomEvent("abz_stop"));
 };
 
@@ -88,74 +95,196 @@ AbbozzaWorld.prototype._onStop = function() {
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onError = function(exception) {
-    if ( World.onError ) World.onError();
-    if ( Task && Task.onError ) Task.onError();
-    if ( Page && Page.onError ) Page.onError();
+AbbozzaWorld.prototype._onError = function (exception) {
+    if (World.onError)
+        World.onError();
+    if (Task && Task.onError)
+        Task.onError();
+    if (Page && Page.onError)
+        Page.onError();
     document.dispatchEvent(new CustomEvent("abz_error"));
-    if ( exception ) {
+    if (exception) {
         World.error(exception);
-    }    
+    }
 };
 
 /**
  * This handler is callex after a step of an execution was performed
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onStep = function() {
+AbbozzaWorld.prototype._onStep = function () {
     this.step();
     var result = true;
-    if ( World.onStep ) result = result && World.onStep();
-    if ( Task && Task.onStep ) result = result && Task.onStep();
-    if ( Page && Page.onStep ) result = result && Page.onStep();
+    if (World.onStep)
+        result = result && World.onStep();
+    if (Task && Task.onStep)
+        result = result && Task.onStep();
+    if (Page && Page.onStep)
+        result = result && Page.onStep();
     document.dispatchEvent(new CustomEvent("abz_step"));
     return result;
 };
 
 
 
-AbbozzaWorld.prototype._initSourceInterpreter = function(interpreter,scope) {
-    interpreter.setProperty(scope,"getPressedKey",interpreter.createNativeFunction(World.getPressedKey));
-    interpreter.setProperty(scope,"getLastKey",interpreter.createNativeFunction(World.getLastKey));
+AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
+    var wrapper;
+    interpreter.setProperty(scope, "getPressedKey", interpreter.createNativeFunction(World.getPressedKey));
+    interpreter.setProperty(scope, "getLastKey", interpreter.createNativeFunction(World.getLastKey));
+
+    // Stack constructor.
+    var stackWrapper = function () {
+        if (interpreter.calledWithNew()) {
+            // Called as new Stack().
+            this.data = new Stack();
+            return this;
+        } else {
+            return null;
+        }
+    };
+    interpreter.STACK = interpreter.createNativeFunction(stackWrapper, true);
+    interpreter.setProperty(scope, 'Stack', interpreter.STACK);
+    
+    wrapper = function() {
+        return this.data.isEmpty();
+    };
+    interpreter.setNativeFunctionPrototype(this.STACK, 'isEmpty', wrapper);
+
+    wrapper = function(value) {
+        this.data.push(value);
+    };
+    interpreter.setNativeFunctionPrototype(this.STACK, 'push', wrapper);
+
+    wrapper = function() {
+        return this.data.pop();
+    };
+    interpreter.setNativeFunctionPrototype(this.STACK, 'pop', wrapper);
+
+    wrapper = function() {
+        return this.data.top();
+    };
+    interpreter.setNativeFunctionPrototype(this.STACK, 'top', wrapper);
+
+    
+    var queueWrapper = function () {
+        if (interpreter.calledWithNew()) {
+            // Called as new Stack().
+            this.data = new Queue();
+            return this;
+        }
+    };
+    interpreter.QUEUE = interpreter.createNativeFunction(queueWrapper, true);
+    interpreter.setProperty(scope, 'Queue', interpreter.QUEUE);
+
+    wrapper = function() {
+        return this.data.isEmpty();
+    };
+    interpreter.setNativeFunctionPrototype(this.QUEUE, 'isEmpty', wrapper);
+
+    wrapper = function(value) {
+        this.data.enqueue(value);
+    };
+    interpreter.setNativeFunctionPrototype(this.QUEUE, 'enqueue', wrapper);
+
+    wrapper = function() {
+        return this.data.dequeue();
+    };
+    interpreter.setNativeFunctionPrototype(this.QUEUE, 'dequeue', wrapper);
+
+    wrapper = function() {
+        return this.data.head();
+    };
+    interpreter.setNativeFunctionPrototype(this.QUEUE, 'head', wrapper);
+
+
+    var listWrapper = function() {
+        if (interpreter.calledWithNew()) {
+            // Called as new Stack().
+            this.data = new List();
+            return this;
+        }
+    };
+    interpreter.LIST = interpreter.createNativeFunction(listWrapper, true);
+    interpreter.setProperty(scope, 'List', interpreter.LIST);
+
+
+    wrapper = function() {
+        return this.data.isEmpty();
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'isEmpty', wrapper);
+
+    wrapper = function(index) {
+        return this.data.getItem(index);
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'getItem', wrapper);
+
+    wrapper = function(value) {
+        this.data.append(value);
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'append', wrapper);
+
+    wrapper = function(index,value) {
+        this.data.insertAt(index,value);
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'insertAt', wrapper);
+
+    wrapper = function(index,value) {
+        this.data.setItem(index,value);
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'setItem', wrapper);
+
+    wrapper = function(index) {
+        this.data.delete(index);
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'delete', wrapper);
+        
+    wrapper = function() {
+        return this.data.getLength();
+    };
+    interpreter.setNativeFunctionPrototype(this.LIST, 'getLength', wrapper);
 
     // Do global initialization of interpreter
-    if ( World.initSourceInterpreter) {
-        World.initSourceInterpreter(interpreter,scope);
+    if (World.initSourceInterpreter) {
+        World.initSourceInterpreter(interpreter, scope);
     }
 }
 
 
-AbbozzaWorld.prototype._activateKeyboard = function(view) {
+AbbozzaWorld.prototype._activateKeyboard = function (view) {
     World.curKey = "";
     World.lastKey = "";
     view.addEventListener("keydown", this.onKeyDown);
     view.addEventListener("keyup", this.onKeyUp);
 }
 
-AbbozzaWorld.prototype.onKeyDown = function(event) {
+AbbozzaWorld.prototype.onKeyDown = function (event) {
     World.curKey = World.getKeyString(event);
 }
 
-AbbozzaWorld.prototype.onKeyUp = function(event) {
-    World.lastKey = World.curKey; 
+AbbozzaWorld.prototype.onKeyUp = function (event) {
+    World.lastKey = World.curKey;
     World.curKey = "";
 }
 
 
-AbbozzaWorld.prototype.getKeyString = function(event) {
+AbbozzaWorld.prototype.getKeyString = function (event) {
     var val = event.key;
-    if (event.shiftKey) val = "Shift+"+val;
-    if (event.metaKey) val = "Meta+"+val;
-    if (event.ctrlKey) val = "Ctrl+"+val;
-    if (event.altKey) val = "Alt+"+val;
+    if (event.shiftKey)
+        val = "Shift+" + val;
+    if (event.metaKey)
+        val = "Meta+" + val;
+    if (event.ctrlKey)
+        val = "Ctrl+" + val;
+    if (event.altKey)
+        val = "Alt+" + val;
     return val;
 }
 
-AbbozzaWorld.prototype.getPressedKey = function() {
+AbbozzaWorld.prototype.getPressedKey = function () {
     return World.curKey;
 }
 
-AbbozzaWorld.prototype.getLastKey = function() {
+AbbozzaWorld.prototype.getLastKey = function () {
     var val = World.lastKey;
     World.lastKey = "";
     return val;
