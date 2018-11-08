@@ -255,18 +255,28 @@
         </category>
     </feature>
     
-    <feature id="feat.datastructures" option="datastructures">
+    <feature id="feat.stack" option="stack">
         <category id="cat.DATASTRUCTURES" color="#C000C0">
             <block type="stack_new"></block>
             <block type="stack_is_empty"></block>
             <block type="stack_push"></block>
             <block type="stack_top"></block>
             <block type="stack_pop"></block>
+        </category>
+    </feature>
+
+    <feature id="feat.queue" option="queue">
+        <category id="cat.DATASTRUCTURES" color="#C000C0">
             <block type="queue_new"></block>
             <block type="queue_is_empty"></block>
             <block type="queue_enqueue"></block>
             <block type="queue_dequeue"></block>
             <block type="queue_head"></block>
+        </category>
+    </feature>
+
+    <feature id="feat.list" option="list">
+        <category id="cat.DATASTRUCTURES" color="#C000C0">
             <block type="list_new"></block>
             <block type="list_is_empty"></block>
             <block type="list_get_item">
