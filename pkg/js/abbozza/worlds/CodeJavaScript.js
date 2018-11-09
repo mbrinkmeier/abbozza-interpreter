@@ -333,3 +333,12 @@ AbbozzaCode['list_insert_at'] =  ["#.insertAt(#,#);",["F_NAME","V_INDEX","V_VALU
 AbbozzaCode['list_set_item'] =  ["#.setItem(#,#);",["F_NAME","V_INDEX","V_VALUE"]];
 AbbozzaCode['list_delete'] =  ["#.delete(#);",["F_NAME","V_INDEX"]];
 AbbozzaCode['list_get_length'] = ["#.getLength()",["F_NAME"]];
+
+AbbozzaCode['bintree_new'] = ["new BinTree(#)",["V_VALUE"]];
+AbbozzaCode['bintree_has'] = ["#.has#()",["F_NAME","F_FUNC"]];
+AbbozzaCode['bintree_get'] = ["#.get#()",["F_NAME","F_FUNC"]];
+AbbozzaCode['bintree_set'] = ["#.set#();",["F_NAME","F_FUNC"]];
+AbbozzaCode['bintree_del'] = ["#.delete#();",["F_NAME","F_FUNC"]];
+AbbozzaCode['bintree_set_data'] = ["#.setData(#);",["F_NAME","V_VALUE"]];
+AbbozzaCode['bintree_get_data'] = ["#.getData()",["F_NAME"]];
+AbbozzaCode['bintree_is_leaf'] = ["#.isLeaf()",["F_NAME"]];

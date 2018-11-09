@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-
+/**
+ * This class implements a generic stack.
+ * 
+ * @returns {Stack}
+ */
 function Stack() {
     this.elements = [];
 }
@@ -46,7 +50,11 @@ Stack.prototype.pop = function() {
 }
 
 
-
+/**
+ * This class implements a generic queue
+ * 
+ * @returns {Queue}
+ */
 function Queue() {
     this.elements = [];
 }
@@ -80,7 +88,11 @@ Queue.prototype.dequeue = function() {
 }
 
 
-
+/**
+ * This class implements a generic list, or moee precisely a dynamic array.
+ * 
+ * @returns {List}
+ */
 function List() {
     this.elements = [];
 }
@@ -131,3 +143,73 @@ List.prototype.getLength = function() {
     return this.elements.length;
 }
 
+
+/**
+ * This class implements generic binary tree node
+ * 
+ * @param {type} value
+ * @returns {BinTree}
+ */
+BinTree = function(value) {
+    this.data = value;
+    this.leftChild = null;
+    this.rightChild = null;
+    this.parent = null;
+}
+
+BinTree.prototype.getData = function() {
+    return this.data;
+}
+
+BinTree.prototype.setData = function(value) {
+    this.data = value;
+}
+
+
+BinTree.prototype.getLeftChild = function() {
+    return this.leftChild;
+}
+
+BinTree.prototype.getRightChild = function() {
+    return this.rightChild;
+}
+
+BinTree.prototype.getParent = function() {
+    return this.parent;
+}
+
+BinTree.prototype.setLeftChild = function(binTree) {
+    this.leftChild = binTree;
+    binTree.parent = this;
+}
+
+BinTree.prototype.setRightChild = function(binTree) {
+    this.rightChild = binTree;
+    binTree.parent = this;
+}
+
+BinTree.prototype.deleteLeftChild = function () {
+    if (this.leftChild) this.leftChild.parent = null;
+    this.leftChild = null;
+}
+
+BinTree.prototype.deleteRightChild = function () {
+    if (this.rightChild) this.rightChild.parent = null;
+    this.rightChild = null;
+}
+
+BinTree.prototype.hasLeftChild = function () {
+    return (this.leftChild != null);
+}
+
+BinTree.prototype.hasRightChild = function () {
+    return (this.rightChild != null);
+}
+
+BinTree.prototype.hasParent = function () {
+    return (this.parent != null);
+}
+
+BinTree.prototype.isLeaf = function() {
+    return ( this.leftChild == null ) && (this.rightChild == null );
+}

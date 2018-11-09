@@ -1305,3 +1305,160 @@ AbbozzaInterpreter.exec["list_set_item"] = function(entry) {
             entry.finished();
     }
 };
+
+
+AbbozzaInterpreter.exec['bintree_new'] = function(entry) {
+    switch ( entry.phase) {
+        case 0:
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1:
+            var type = entry.block.getFieldValue("TYPE");
+            entry.returnValue = AbbozzaInterpreter.createObject("BINTREE_" + type, new BinTree(entry.callResult) );
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_is_leaf"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                entry.returnValue = bintree.isLeaf();
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_has"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var func = this.getFieldValue("FUNC");
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                entry.returnValue = BinTree.prototype['has'+func].call(bintree);
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_get"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var func = this.getFieldValue("FUNC");
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                entry.returnValue = BinTree.prototype['get'+func].call(bintree);
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_del"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var func = this.getFieldValue("FUNC");
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                BinTree.prototype['del'+func].call(bintree);
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_set"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"CHILD");
+            entry.phase = 1;
+            break;
+        case 1:
+            var func = this.getFieldValue("FUNC");
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                entry.returnValue = BinTree.prototype['set'+func].call(bintree,entry.callResult);
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_set_data"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1:
+            var func = this.getFieldValue("FUNC");
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                entry.returnValue = BinTree.prototype['setData'].call(bintree,entry.callResult);
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["bintree_get_data"] = function(entry) {
+    switch ( entry.phase) {
+        case 0 :
+            var func = this.getFieldValue("FUNC");
+            var name = this.getFieldValue("NAME");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var bintree = AbbozzaInterpreter.getObjectValue(reference);
+            if ( bintree instanceof BinTree)
+                entry.returnValue = BinTree.prototype['getData'].call(bintree);
+            else
+                Abbozza.throwException(1,_("err.unknown_bintree"));                
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+};

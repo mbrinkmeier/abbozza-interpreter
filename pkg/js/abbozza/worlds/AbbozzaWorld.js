@@ -126,7 +126,6 @@ AbbozzaWorld.prototype._onStep = function () {
 };
 
 
-
 AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     var wrapper;
     interpreter.setProperty(scope, "getPressedKey", interpreter.createNativeFunction(World.getPressedKey));
@@ -196,7 +195,6 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     };
     interpreter.setNativeFunctionPrototype(this.QUEUE, 'head', wrapper);
 
-
     var listWrapper = function() {
         if (interpreter.calledWithNew()) {
             // Called as new Stack().
@@ -206,8 +204,7 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     };
     interpreter.LIST = interpreter.createNativeFunction(listWrapper, true);
     interpreter.setProperty(scope, 'List', interpreter.LIST);
-
-
+    
     wrapper = function() {
         return this.data.isEmpty();
     };
@@ -242,6 +239,82 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
         return this.data.getLength();
     };
     interpreter.setNativeFunctionPrototype(this.LIST, 'getLength', wrapper);
+
+
+    var bintreeWrapper = function(value) {
+        if (interpreter.calledWithNew()) {
+            // Called as new Stack().
+            this.data = new Bintree(value);
+            return this;
+        }
+    };
+    interpreter.BINTREE = interpreter.createNativeFunction(bintreeWrapper, true);
+    interpreter.setProperty(scope, 'BinTree', interpreter.BINTREE);
+
+    wrapper = function() {
+        return this.data.getData();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'getData', wrapper);
+    
+    wrapper = function(value) {
+        return this.data.setData(value);
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'setData', wrapper);
+
+    wrapper = function(value) {
+        return this.data.getLeftChild();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'getLeftChild', wrapper);
+
+    wrapper = function(value) {
+        return this.data.getRightChild();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'getRightChild', wrapper);
+
+        wrapper = function(value) {
+        return this.data.getParent();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'getParent', wrapper);
+
+    wrapper = function(child) {
+        this.data.setLeftChild(child);
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'setLeftChild', wrapper);
+
+    wrapper = function(child) {
+        this.data.setRightChild(child);
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'setRightChild', wrapper);
+
+    wrapper = function() {
+        this.data.deleteLeftChild();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'deleteLeftChild', wrapper);
+
+    wrapper = function() {
+        this.data.deleteRightChild();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'deleteRightChild', wrapper);
+
+    wrapper = function() {
+        return this.data.hasLeftChild();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'hasLeftChild', wrapper);
+
+    wrapper = function() {
+        return this.data.hasRightChild();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'hasRightChild', wrapper);
+
+    wrapper = function() {
+        return this.data.hasParent();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'hasParent', wrapper);
+
+    wrapper = function() {
+        return this.data.isLeaf();
+    }
+    interpreter.setNativeFunctionPrototype(this.BINTREE, 'isLeaf', wrapper);
 
     // Do global initialization of interpreter
     if (World.initSourceInterpreter) {

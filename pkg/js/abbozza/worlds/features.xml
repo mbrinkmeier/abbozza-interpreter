@@ -312,5 +312,18 @@
         </category>
     </feature>
             
+    <feature id="feat.bintree" option="bintree">
+        <category id="cat.DATASTRUCTURES" color="#C000C0">
+            <block type="bintree_new"></block>
+            <block type="bintree_set_data"></block>
+            <block type="bintree_get_data"></block>
+            <block type="bintree_is_leaf"></block>
+            <block type="bintree_has"></block>
+            <block type="bintree_set"></block>
+            <block type="bintree_get"></block>
+            <block type="bintree_del"></block>
+        </category>
+    </feature>
+            
 </features>
     
