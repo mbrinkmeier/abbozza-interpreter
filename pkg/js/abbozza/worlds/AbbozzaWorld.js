@@ -19,52 +19,82 @@
 
 function AbbozzaWorld(id) {
     this.id = id;
-}
-;
+};
 
-AbbozzaWorld.prototype._init = function (view) {
-    if (this.init) {
-        this.init(view);
+
+/**
+ * This operation has to be called to initialize the world and its view.
+ * 
+ * @param {type} view
+ * @returns {undefined}
+ */
+AbbozzaWorld.prototype.init = function (view) {
+    if (this.initView) {
+        this.initView(view);
+    }
+    if ( this.onInit ) {
+        this.onInit();
     }
 };
 
+
+/**
+ * This abstract operation can be overloaded to initialize the view.
+ * IT is called once during the initialization;
+ * 
+ * @param {type} view
+ * @returns {undefined}
+ */
+AbbozzaWorld.prototype.initView = function(view) {}
+
+
+/**
+ * Returns the id of the world
+ * 
+ * @returns {string} The id
+ */
 AbbozzaWorld.prototype.getId = function () {
     return this.id;
 };
 
+/**
+ * Returns the info textof the world.
+ * 
+ * @returns {string} The info text for the world
+ */
 AbbozzaWorld.prototype.getInfo = function () {
     return this.id;
 };
 
 
 /**
- * These operations can be overwritten to implement a standard behavior of the
- * wordl.
- * 
- * reset() is called if th wolrd is loaded , even before sketch is started
- * start() is called if a sketch is started
- * step() is called every time a step os a sketch is executed
- * stop() is called if the sketch terminates (either by error or regularly)
- */
-AbbozzaWorld.prototype.reset = function () {};
-AbbozzaWorld.prototype.start = function () {};
-AbbozzaWorld.prototype.step = function () {};
-AbbozzaWorld.prototype.stop = function () {};
-
-AbbozzaWorld.prototype.error = function (exception) {
-    if (exception) {
-        Abbozza.openOverlay(exception[1]);
-        Abbozza.overlayWaitForClose();
-    }
-}
-
-/**
  * This handler is called if the excution of a program starts.
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onStart = function () {
-    this.start();
+AbbozzaWorld.prototype.reset = function () {
+    this.resetWorld();
+    if (World.onReset)
+        World.onReset();
+    if (Task && Task.onReset)
+        Task.onReset();
+    if (Page && Page.onReset)
+        Page.onReset();
+    document.dispatchEvent(new CustomEvent("abz_reset"));
+};
+
+/**
+ * This operation may be overriden to implement a world specific reset behavior
+ * @returns {undefined}
+ */
+AbbozzaWorld.prototype.resetWorld = function() {};
+
+
+/**
+ * This handler is called if the excution of a program starts.
+ */
+AbbozzaWorld.prototype.start = function () {
+    this.startWorld();
     if (World.onStart)
         World.onStart();
     if (Task && Task.onStart)
@@ -75,27 +105,42 @@ AbbozzaWorld.prototype._onStart = function () {
 };
 
 /**
- * This handler is called if the execution of a program terminated regularly
- * 
- * @returns {undefined}
+ * This operation may be overriden to implement a world specific start behavior
  */
-AbbozzaWorld.prototype._onStop = function () {
-    this.stop();
-    if (World.onStop)
-        World.onStop();
-    if (Task && Task.onStop)
-        Task.onStop();
-    if (Page && Page.onStop)
-        Page.onStop();
-    document.dispatchEvent(new CustomEvent("abz_stop"));
+AbbozzaWorld.prototype.startWorld = function() {};
+
+
+/**
+ * This handler is called if the execution of a program is terminated regularly
+ * 
+ * @returns {boolean} true if the Program end mesage should be displayed.
+ */
+AbbozzaWorld.prototype.terminate = function () {
+    var show = true;
+    this.terminateWorld();
+    if (World.onTerminate)
+        show = show & World.onTerminate();
+    if (Task && Task.onTerminate)
+        show = show & Task.onFinished();
+    if (Page && Page.onTerminate)
+        show = show & Page.onTerminate();
+    document.dispatchEvent(new CustomEvent("abz_fnished"));
+    return show;
 };
+
+/**
+ * This operation may be overriden to implement a world specific terminate behavior
+ */
+AbbozzaWorld.prototype.terminateWorld = function() {};
+
 
 /**
  * This handler is called if the execution of a programm way ended by an error
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onError = function (exception) {
+AbbozzaWorld.prototype.error = function(exception) {
+    this.errorWorld(exception);
     if (World.onError)
         World.onError();
     if (Task && Task.onError)
@@ -104,16 +149,23 @@ AbbozzaWorld.prototype._onError = function (exception) {
         Page.onError();
     document.dispatchEvent(new CustomEvent("abz_error"));
     if (exception) {
-        World.error(exception);
+        Abbozza.openOverlay(exception[1]);
+        Abbozza.overlayWaitForClose();
     }
 };
+
+/**
+ * This operation may be overriden to implement a world specific error behavior
+ */
+AbbozzaWorld.prototype.errorWorld = function() {};
+
 
 /**
  * This handler is callex after a step of an execution was performed
  * @returns {undefined}
  */
-AbbozzaWorld.prototype._onStep = function () {
-    this.step();
+AbbozzaWorld.prototype.step = function () {
+    this.stepWorld();
     var result = true;
     if (World.onStep)
         result = result && World.onStep();
@@ -124,6 +176,11 @@ AbbozzaWorld.prototype._onStep = function () {
     document.dispatchEvent(new CustomEvent("abz_step"));
     return result;
 };
+
+/**
+ * This operation may be overriden to implement a world specific error behavior
+ */
+AbbozzaWorld.prototype.stepWorld = function() {};
 
 
 AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {

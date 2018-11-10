@@ -22,7 +22,7 @@
 var World = new AbbozzaWorld("kara");
 
 
-World.init = function(view) {
+World.initView = function(view) {
     this.kara = new Kara(view);
     this.kara.parent_.tabIndex="0";
     this._activateKeyboard(this.kara.parent_);
@@ -54,13 +54,13 @@ World.fromDom = function(xml) {
     this.kara.fromDom(xml);
 };
     
-World.reset = function () {
+World.resetWorld = function () {
     this.width = 20;
     this.height = 20;
     this.kara.reset();
 };
 
-World.onStart = function() {
+World.startWorld = function() {
     this.kara.onStart();
 }
 
@@ -221,8 +221,35 @@ Kara.prototype.reset = function () {
     this.redraw();    
 };
 
+
 Kara.prototype.onStart = function() {
     this.hideCollision();
+}
+
+
+Kara.prototype.setKara = function(x,y,dir) {
+    this.karaX = x;
+    this.karaY = y;
+    this.karaDir = dir % 4;
+    switch (this.karaDir) {
+        case 0:
+            this.karaDX = 1;
+            this.karaDY = 0;
+            break;
+        case 1:
+            this.karaDX = 0;
+            this.karaDY = -1;
+            break;
+        case 2:
+            this.karaDX = -1;
+            this.karaDY = 0;
+            break;
+        case 3:
+            this.karaDX = 0;
+            this.karaDY = 1;
+            break;
+    }
+    this.redraw();
 }
 
 
@@ -345,6 +372,11 @@ Kara.prototype.put = function (type, x, y) {
 };
 
 
+Kara.prototype.get = function(x,y) {
+    x = ( x + this.width ) % this.width;
+    y = ( y + this.height ) % this.height;
+    return this.field[x][y];
+}
 
 
 Kara.prototype.turnRight = function () {
@@ -575,7 +607,7 @@ Kara.prototype.fromDom = function(xml) {
 
 World.wrapper = function(func,args) {
     return func.apply(World.kara,args);
-}
+};
 
 
 World.createWrapper = function(func) {
@@ -585,8 +617,8 @@ World.createWrapper = function(func) {
             args[i] = arguments[i];
         }
         return World.wrapper(World.kara[func],args);        
-    }
-}
+    };
+};
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
@@ -599,5 +631,4 @@ World.initSourceInterpreter = function(interpreter,scope) {
             interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
         );        
     }
-}
-
+};

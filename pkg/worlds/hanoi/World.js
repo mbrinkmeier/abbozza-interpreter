@@ -19,7 +19,7 @@
 
 var World = new AbbozzaWorld("hanoi");
 
-World.init = function(view) {
+World.initView = function(view) {
     this.hanoi = new Hanoi(view);
     var hanoi = this.hanoi;
     Abbozza.splitter.addEventListener("splitter_resize", this.resize);
@@ -40,6 +40,7 @@ World.init = function(view) {
 World.resize = function(event) {
     World.hanoi.resize();
 };
+
 
 
 var svgNS = "http://www.w3.org/2000/svg";
@@ -258,7 +259,7 @@ World.createWrapper = function(func) {
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
-      'moveDisc','getNumberOfDiscs','getSize'
+      'moveDisc','getNumberOfDiscs','getSize','reset'
     ];
     for ( var i = 0; i < funcs.length; i++ ) {
         interpreter.setProperty(scope,funcs[i],

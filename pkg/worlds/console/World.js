@@ -21,14 +21,24 @@
  */
 var World = new AbbozzaWorld("console");
 
-World.init = function(view) {
+/**
+ * Initialize the view
+ * 
+ * @param {type} view
+ * @returns {undefined}
+ */
+World.initView = function(view) {
     this.mycon = new Console(view);
     this._activateKeyboard(this.mycon.parent_);
 }
 
-World.reset  = function() {
+
+
+
+World.resetWorld = function() {
     this.mycon.clear();
 };
+
 
 /**
  * The console as view for the context.

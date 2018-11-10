@@ -36,8 +36,10 @@ Abbozza.initWorlds = function () {
     ToolboxMgr.rebuild();
 
     Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
-    AbbozzaInterpreter.init();
-    AbbozzaInterpreter.setSpeed(75);
+    World.init(document.getElementById(".topleft"));
+
+    AbbozzaInterpreter.reset();
+    
     var tabs = new TabPane(document.getElementById('tabs'));
     var infoPane = tabs.addPane(_("gui.information"), document.getElementById("worldinfo"));
     var debugPane;
@@ -71,7 +73,6 @@ Abbozza.initWorlds = function () {
     });
     Abbozza.sourceEditor.setSize(null, "100%");
     tabs.openTab(infoPane);
-    World._init(document.getElementById(".topleft"));
     
     Abbozza.splitter.addEventListener("splitter_resize", 
         function(event) {
@@ -128,6 +129,15 @@ Abbozza.loadSketch = function () {
 };
 
 
+Abbozza.goToSketch = function(path) {
+    Abbozza.setSketchFromPath(path);
+    document.location.reload();
+}
+
+Abbozza.getNumberOfBlocks = function() {
+    return Blockly.mainWorkspace.getAllBlocks().length;
+}
+
 
 Abbozza.worldFromDom = function (worldXml) {
     if (World.fromDom) {
@@ -183,6 +193,9 @@ Abbozza.initButtons = function () {
     but = document.getElementById("info");
     but.setAttribute("title", _("gui.info_button"));
 };
+
+
+
 Blockly.BlockSvg.prototype.addSystemContextMenuItems = function (menuOptions) {
     var block = this;
     var breakpointOption = {
@@ -237,7 +250,7 @@ Abbozza.generateSource = function () {
         Abbozza.appendOverlayText(_("msg.code_generated"));
     }
     Abbozza.closeOverlay();
-    AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_STOPPED;
+    AbbozzaInterpreter.resetSource();
 }
 
 

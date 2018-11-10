@@ -21,7 +21,7 @@
  */
 var World = new AbbozzaWorld("turtle");
 
-World.init = function(view) {
+World.initView = function(view) {
     this.turtle = new Turtle(view);
     Abbozza.splitter.addEventListener("splitter_resize", this.resize);
     this.turtle.parent_.tabIndex="0";
@@ -32,7 +32,7 @@ World.resize = function(event) {
     World.turtle.reset();
 };
     
-World.reset = function() {
+World.resetWorld = function() {
     World.turtle.reset();
 };
 

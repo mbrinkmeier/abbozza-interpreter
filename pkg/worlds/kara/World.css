@@ -15,17 +15,15 @@
 }
 
 .karaView {
-    position    : relative;
+    display     : block;
+    position    : absolute;
     top         : 0px;
+    bottom      : 0px;
     left        : 0px;
+    right       : 0px;
     padding     : 0px;
     resize      : none;
-    overflowX   : hidden;
-    overflowY   : auto;
     font-family : monospaced;
     font-size   : 14px;
-    margin-left : auto;
-    margin-right: auto;
-    display     : block;
-    vertical-align: middle;
+    margin      : auto;
 }
