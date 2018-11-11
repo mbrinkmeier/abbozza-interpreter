@@ -25,7 +25,7 @@ var World = new AbbozzaWorld("kara");
 World.initView = function(view) {
     this.editable = true;
     this.kara = new Kara(view);
-    this.kara.parent_.tabIndex="0";
+    this.kara.parent_.tabIndex = "0";
     this._activateKeyboard(this.kara.parent_);
     
     document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
@@ -68,6 +68,7 @@ World.fromDom = function(xml) {
 };
     
 World.resetWorld = function () {
+    this.setEditable(true);
     this.kara.setSize(20,20);
     this.kara.reset();
 };

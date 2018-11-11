@@ -19,6 +19,7 @@
 
 function AbbozzaWorld(id) {
     this.id = id;
+    this.worldDoms = null;
 };
 
 
@@ -75,19 +76,24 @@ AbbozzaWorld.prototype.purgeHooks = function() {
     this.onError = null;
 }
 
+
+AbbozzaWorld.prototype.setWorldDom = function(worlds) {
+    this.worldDoms = worlds;
+}
+
 /**
  * This handler is called if the excution of a program starts.
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype.reset = function(worlds = null) {
+AbbozzaWorld.prototype.reset = function() {
     // First do the stuff the world always has to do
     this.resetWorld();
     
     // Check the dom and resore the world
-    if ( worlds && Abbozza.worldFromDom ) {
-        for (var idx = 0; idx < worlds.length; idx++) {
-            Abbozza.worldFromDom(worlds[idx]);
+    if ( this.worldDoms && Abbozza.worldFromDom ) {
+        for (var idx = 0; idx < this.worldDoms.length; idx++) {
+            Abbozza.worldFromDom(this.worldDoms[idx]);
         }        
     }
     

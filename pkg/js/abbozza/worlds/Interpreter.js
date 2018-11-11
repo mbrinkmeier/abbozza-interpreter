@@ -25,7 +25,7 @@
 
 AbbozzaInterpreter = {
     state: 0,
-    delay: 1,
+    delay: 500,
     worker: null,
     globalSymbols: [],
     breakLoop: false,
@@ -45,7 +45,6 @@ AbbozzaInterpreter.STATE_PAUSED = 2;     // The interpreter is paused, ready to 
 AbbozzaInterpreter.STATE_TERMINATED = 3; // The program terminated regularly
 AbbozzaInterpreter.STATE_ERROR = 4;      // The program terminated with an error
 
-
 /**
  * Initialize the interpreter
  * 
@@ -58,13 +57,13 @@ AbbozzaInterpreter.reset = function () {
         }
     }
 
-    World.reset();
     this.threads = [];
     this.globalSymbols = [];
     Abbozza.exceptions = [];
     this.objects = [];
     this.setSpeed(document.getElementById("speed").value);
 
+    World.reset();
     this.state = AbbozzaInterpreter.STATE_READY;
     var newEvent = new CustomEvent("abz_reset");
     document.dispatchEvent(newEvent);

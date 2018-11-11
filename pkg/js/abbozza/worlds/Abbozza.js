@@ -24,23 +24,20 @@
  */
 Abbozza.exceptions = [];
 
-
-
 /**
  * This operation initializes the gui of abbozza worlds.
  * 
  * @returns {undefined}
  */
 Abbozza.initWorlds = function () {
+    
     Abbozza.worldId = worldId;
-
-    Abbozza.init('worlds', true, 'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
+    Abbozza.initSystem('worlds', true, 'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
 
     ToolboxMgr.rebuild();
 
     Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
     World.init(document.getElementById(".topleft"));
-    // World.reset();
     
     /**
     * Register abbozza event handlers
@@ -89,7 +86,9 @@ Abbozza.initWorlds = function () {
             Blockly.svgResize(Blockly.mainWorkspace);
         }
     );
-    Blockly.svgResize(Blockly.mainWorkspace);    
+    Blockly.svgResize(Blockly.mainWorkspace);
+    
+    Abbozza.parseQuery();
 }
 
 /**
@@ -164,7 +163,7 @@ Abbozza.resetWorld = function(event) {
             worlds = sketch.getElementsByTagName("world");
         }
     }
-    World.reset(worlds);
+    World.setWorldDom(worlds)
     AbbozzaInterpreter.reset();
     Abbozza.sourceEditor.value = "";
 }

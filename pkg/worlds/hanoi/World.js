@@ -25,10 +25,10 @@ World.initView = function(view) {
     Abbozza.splitter.addEventListener("splitter_resize", this.resize);
     
     var info = document.getElementById("info");
-    info.contentDocument.getElementById("speed").value = (50-World.hanoi.duration/100);
+    info.contentDocument.getElementById("anispeed").value = (50-World.hanoi.duration/100);
     info.contentDocument.getElementById("discs").value = World.hanoi.numberOfDiscs;
     
-    info.contentDocument.getElementById("speed").oninput = function(event) {
+    info.contentDocument.getElementById("anispeed").oninput = function(event) {
         World.hanoi.duration = 100 * (50-Number(this.value));
     }
     info.contentDocument.getElementById("discs").oninput = function(event) {
