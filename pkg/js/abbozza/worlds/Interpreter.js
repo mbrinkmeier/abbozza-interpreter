@@ -451,11 +451,10 @@ AbbozzaInterpreter.getDefaultArray = function (dimension, val, pos = 0) {
 
 
 AbbozzaInterpreter.setGlobalSymbol = function (key, value, dim = null) {
-    var interpreter = Abbozza.blockInterpreter;
     if (dim == null) {
-        interpreter.globalSymbols[key] = value;
+        AbbozzaInterpreter.globalSymbols[key] = value;
     } else {
-        var ar = interpreter.globalSymbols[key];
+        var ar = AbbozzaInterpreter.globalSymbols[key];
         for (var i = 0; i < dim.length - 1; i++) {
             ar = ar[dim[i]];
         }

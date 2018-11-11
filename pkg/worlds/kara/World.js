@@ -55,8 +55,8 @@ World.fromDom = function(xml) {
 };
     
 World.resetWorld = function () {
-    this.width = 20;
-    this.height = 20;
+    // this.width = 20;
+    // this.height = 20;
     this.kara.reset();
 };
 
@@ -362,6 +362,15 @@ Kara.prototype.hideCollision = function() {
         this.drawSquare(this.collX2,this.collY2);
     }
 }
+
+Kara.prototype.clear = function() {
+    for (var x = 0; x < this.width; x++) {
+        for (var y = 0; y < this.height; y++) {
+            this.field[x][y] = 0;
+        }
+    }    
+}
+
 
 
 Kara.prototype.put = function (type, x, y) {

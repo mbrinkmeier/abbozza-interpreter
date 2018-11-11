@@ -26,6 +26,7 @@ Abbozza.exceptions = [];
 
 /**
  * This operation initializes the gui of abbozza worlds.
+ * 
  * @returns {undefined}
  */
 Abbozza.initWorlds = function () {
@@ -82,11 +83,25 @@ Abbozza.initWorlds = function () {
     Blockly.svgResize(Blockly.mainWorkspace);
 }
 
+/**
+ * 
+ * @returns {undefined}
+ */
+Abbozza._newSketch = function () {
+    Abbozza.storeSketch(document.location.search.substring(1));
+
+    Abbozza.clearSketch();
+    Abbozza.setContentLocation("");
+    World.reset();
+};
 
 /**
- * Check if the world has to be changed for the loaded sketch
+ * Load a sketch.
+ * A request is sent to the AbbozzaServer to ask the user for a sketch to be
+ * loaded. Beforethat the user is asked wetherthe current sketch should be 
+ * saved.
  * 
- * @type Abbozza.loadSketch
+ * @returns {undefined}
  */
 Abbozza.loadSketch = function () {
 // Check if sketch was modified, ask if it should be saved
@@ -131,7 +146,7 @@ Abbozza.loadSketch = function () {
 
 Abbozza.goToSketch = function(path) {
     Abbozza.setSketchFromPath(path);
-    document.location.reload();
+    World.reset();
 }
 
 Abbozza.getNumberOfBlocks = function() {
