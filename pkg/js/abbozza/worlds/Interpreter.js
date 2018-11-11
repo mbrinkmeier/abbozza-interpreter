@@ -945,10 +945,10 @@ AbbozzaInterpreter.SOURCE_ERROR = 4;
 AbbozzaInterpreter.sourceState = 0;
 
 
-AbbozzaInterpreter.resetSource = function () {
+AbbozzaInterpreter.resetSource = function() {
     World.reset();
     Abbozza.exceptions = [];
-
+    
     var code = Abbozza.sourceEditor.getValue();
     AbbozzaInterpreter.sourceInterpreter = new Interpreter(code, World._initSourceInterpreter);
 

@@ -62,24 +62,43 @@ AbbozzaWorld.prototype.getId = function () {
  * 
  * @returns {string} The info text for the world
  */
-AbbozzaWorld.prototype.getInfo = function () {
+AbbozzaWorld.prototype.getInfo = function() {
     return this.id;
 };
 
+
+AbbozzaWorld.prototype.purgeHooks = function() {
+    this.onReset = null;
+    this.onStart = null;
+    this.onStep = null;
+    this.onTwrminate = null;
+    this.onError = null;
+}
 
 /**
  * This handler is called if the excution of a program starts.
  * 
  * @returns {undefined}
  */
-AbbozzaWorld.prototype.reset = function () {
+AbbozzaWorld.prototype.reset = function(worlds = null) {
+    // First do the stuff the world always has to do
     this.resetWorld();
+    
+    // Check the dom and resore the world
+    if ( worlds && Abbozza.worldFromDom ) {
+        for (var idx = 0; idx < worlds.length; idx++) {
+            Abbozza.worldFromDom(worlds[idx]);
+        }        
+    }
+    
+    // Now the dom is overriden or modified by the tasks hooks
     if (World.onReset)
         World.onReset();
     if (Task && Task.onReset)
         Task.onReset();
     if (Page && Page.onReset)
         Page.onReset();
+    
     document.dispatchEvent(new CustomEvent("abz_reset"));
 };
 
@@ -93,7 +112,7 @@ AbbozzaWorld.prototype.resetWorld = function() {};
 /**
  * This handler is called if the excution of a program starts.
  */
-AbbozzaWorld.prototype.start = function () {
+AbbozzaWorld.prototype.start = function() {
     this.startWorld();
     if (World.onStart)
         World.onStart();

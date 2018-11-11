@@ -23,6 +23,7 @@ var World = new AbbozzaWorld("kara");
 
 
 World.initView = function(view) {
+    this.editable = true;
     this.kara = new Kara(view);
     this.kara.parent_.tabIndex="0";
     this._activateKeyboard(this.kara.parent_);
@@ -34,15 +35,27 @@ World.initView = function(view) {
     info.contentDocument.getElementById("size").value = World.kara.squareSize;
     
     info.contentDocument.getElementById("width").oninput = function(event) {
+        if ( !World.editable ) {
+            info.contentDocument.getElementById("width").value = World.kara.width;
+            return;
+        }
         World.kara.setWidth(info.contentDocument.getElementById("width").value);
     }
     
     info.contentDocument.getElementById("height").oninput = function(event) {
+        if ( !World.editable ) {
+            info.contentDocument.getElementById("height").value = World.kara.height;
+            return;
+        }
         World.kara.setHeight(info.contentDocument.getElementById("height").value);
     }
     
     info.contentDocument.getElementById("size").oninput = function(event) {
-        World.kara.setSize(info.contentDocument.getElementById("size").value);
+        if ( !World.editable ) {
+            info.contentDocument.getElementById("size").value = World.kara.squareSize;
+            return;
+        }
+        World.kara.setSquareSize(info.contentDocument.getElementById("size").value);
     }
 };
 
@@ -55,8 +68,7 @@ World.fromDom = function(xml) {
 };
     
 World.resetWorld = function () {
-    // this.width = 20;
-    // this.height = 20;
+    this.kara.setSize(20,20);
     this.kara.reset();
 };
 
@@ -221,6 +233,94 @@ Kara.prototype.reset = function () {
     this.redraw();    
 };
 
+Kara.prototype.reset = function () {
+    this.karaX = 0;
+    this.karaY = 0;
+    this.karaDir = 0;
+    this.karaDX = 1;
+    this.karaDY = 0;
+    // this.squareSize = 40;    
+    this.moved = false;
+    this.hideCollision();
+    this.collX = 0;
+    this.collY = 0;
+    this.collX2 = 0;
+    this.collY2 = 0;
+
+    this.field = [];
+    for (var x = 0; x < this.width; x++) {
+        var line = []
+        for (var y = 0; y < this.height; y++) {
+            line.push(0);
+        }
+        this.field.push(line);
+    }
+
+    this.view_.width = this.width * this.squareSize;
+    this.view_.height = this.height * this.squareSize;
+
+    this.view_.onclick = this.clicked;
+    this.view_.oncontextmenu = this.rightclicked;
+
+    // draw fields
+    this.context_.strokeStyle = "#0fff0f";
+    this.context_.lineWidth = 0;
+    this.context_.fillStyle = "#d0ffd0";
+    this.context_.fillRect(0, 0, this.view_.width, this.view_.height);
+    for (var i = 0; i <= this.width; i++) {
+        this.context_.moveTo(this.squareSize * i, 0);
+        this.context_.lineTo(this.squareSize * i, this.view_.height);
+        this.context_.stroke();
+    }
+    for (var i = 0; i <= this.height; i++) {
+        this.context_.moveTo(0, this.squareSize * i);
+        this.context_.lineTo(this.view_.width, this.squareSize * i);
+        this.context_.stroke();
+    }
+    this.redraw();    
+};
+
+
+Kara.prototype.resize = function() {
+    var oldField = this.field;
+    
+    this.field = [];
+    for (var x = 0; x < this.width; x++) {
+        var line = []
+        for (var y = 0; y < this.height; y++) {
+            if ( oldField && oldField[x] && oldField[x][y] ) {
+                line.push(oldField[x][y]);
+            } else {
+                line.push(0);
+            }
+        }
+        this.field.push(line);
+    }
+
+    this.view_.width = this.width * this.squareSize;
+    this.view_.height = this.height * this.squareSize;
+
+    this.view_.onclick = this.clicked;
+    this.view_.oncontextmenu = this.rightclicked;
+
+    // draw fields
+    this.context_.strokeStyle = "#0fff0f";
+    this.context_.lineWidth = 0;
+    this.context_.fillStyle = "#d0ffd0";
+    this.context_.fillRect(0, 0, this.view_.width, this.view_.height);
+    for (var i = 0; i <= this.width; i++) {
+        this.context_.moveTo(this.squareSize * i, 0);
+        this.context_.lineTo(this.squareSize * i, this.view_.height);
+        this.context_.stroke();
+    }
+    for (var i = 0; i <= this.height; i++) {
+        this.context_.moveTo(0, this.squareSize * i);
+        this.context_.lineTo(this.view_.width, this.squareSize * i);
+        this.context_.stroke();
+    }
+    this.redraw();        
+};
+
 
 Kara.prototype.onStart = function() {
     this.hideCollision();
@@ -255,17 +355,30 @@ Kara.prototype.setKara = function(x,y,dir) {
 
 Kara.prototype.setWidth = function(w) {
     this.width = Number(w);
-    this.reset();
+    var info = document.getElementById("info");
+    info.contentDocument.getElementById("width").value = this.width;
+    this.resize();
     this.redraw();
 }
 
 Kara.prototype.setHeight = function(w) {
     this.height = Number(w);
-    this.reset();
+    var info = document.getElementById("info");
+    info.contentDocument.getElementById("height").value = this.height;
+    this.resize();
     this.redraw();
 }
 
-Kara.prototype.setSize = function(w) {
+Kara.prototype.setSize = function(w,h) {
+    this.width = Number(w);
+    this.height = Number(h);
+    var info = document.getElementById("info");
+    info.contentDocument.getElementById("width").value = this.width;
+    info.contentDocument.getElementById("height").value = this.height;
+    this.resize();
+}
+
+Kara.prototype.setSquareSize = function(w) {
     this.squareSize = Number(w);
     this.reset();
     this.redraw();
@@ -502,6 +615,8 @@ Kara.prototype.isForward = function(type) {
 };
 
 Kara.prototype.clicked = function(event) {
+    if ( !World.editable ) return;
+    
     var kara = World.kara;
     var x = Math.floor(event.offsetX/kara.squareSize);
     var y = Math.floor(event.offsetY/kara.squareSize);
@@ -522,6 +637,8 @@ Kara.prototype.clicked = function(event) {
 
 
 Kara.prototype.rightclicked = function(event) { 
+    if ( !World.editable ) return;
+    
     var kara = World.kara;
     var x = Math.floor(event.offsetX/kara.squareSize);
     var y = Math.floor(event.offsetY/kara.squareSize);
@@ -641,3 +758,8 @@ World.initSourceInterpreter = function(interpreter,scope) {
         );        
     }
 };
+
+
+World.setEditable = function(editable) {
+    this.editable = editable;
+}

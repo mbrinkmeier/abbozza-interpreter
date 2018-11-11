@@ -24,6 +24,8 @@
  */
 Abbozza.exceptions = [];
 
+
+
 /**
  * This operation initializes the gui of abbozza worlds.
  * 
@@ -38,6 +40,13 @@ Abbozza.initWorlds = function () {
 
     Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
     World.init(document.getElementById(".topleft"));
+    // World.reset();
+    
+    /**
+    * Register abbozza event handlers
+    */
+    document.addEventListener("abz_clearSketch", Abbozza.resetWorld );
+    document.addEventListener("abz_setSketch", Abbozza.resetWorld );
 
     AbbozzaInterpreter.reset();
     
@@ -80,20 +89,8 @@ Abbozza.initWorlds = function () {
             Blockly.svgResize(Blockly.mainWorkspace);
         }
     );
-    Blockly.svgResize(Blockly.mainWorkspace);
+    Blockly.svgResize(Blockly.mainWorkspace);    
 }
-
-/**
- * 
- * @returns {undefined}
- */
-Abbozza._newSketch = function () {
-    Abbozza.storeSketch(document.location.search.substring(1));
-
-    Abbozza.clearSketch();
-    Abbozza.setContentLocation("");
-    World.reset();
-};
 
 /**
  * Load a sketch.
@@ -143,24 +140,73 @@ Abbozza.loadSketch = function () {
     );
 };
 
+/**
+ * To cleanup the Task, remove all hooks privided by the World.
+ * 
+ * @returns {undefined}
+ */
+Abbozza.cleanupTask = function() {
+    World.purgeHooks();
+}
 
+/**
+ * Reset the world and the interpreter
+ * 
+ * @param {type} event
+ * @returns {undefined}
+ */
+Abbozza.resetWorld = function(event) {
+    var worlds = null;
+    var sketch = null;
+    if ( event.detail ) {
+        sketch = event.detail;
+        if (Abbozza.worldFromDom) {
+            worlds = sketch.getElementsByTagName("world");
+        }
+    }
+    World.reset(worlds);
+    AbbozzaInterpreter.reset();
+    Abbozza.sourceEditor.value = "";
+}
+
+
+/**
+ * Laod a new sketch.
+ * 
+ * @param {type} path
+ * @returns {undefined}
+ */
 Abbozza.goToSketch = function(path) {
     Abbozza.setSketchFromPath(path);
     World.reset();
 }
 
+/**
+ * Get the number of blocks in the workspace
+ * 
+ * @returns {unresolved}
+ */
 Abbozza.getNumberOfBlocks = function() {
     return Blockly.mainWorkspace.getAllBlocks().length;
 }
 
-
+/**
+ * Read world from DOM
+ * 
+ * @param {type} worldXml
+ * @returns {undefined}
+ */
 Abbozza.worldFromDom = function (worldXml) {
     if (World.fromDom) {
         World.fromDom(worldXml);
     }
 }
 
-
+/**
+ * Construct a DOM representing the world.
+ * 
+ * @returns {unresolved}
+ */
 Abbozza.worldToDom = function () {
     if (World.toDom) {
         return World.toDom();
