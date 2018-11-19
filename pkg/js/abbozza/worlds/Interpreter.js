@@ -25,6 +25,7 @@
 
 AbbozzaInterpreter = {
     state: 0,
+    sourceState: 0,
     delay: 500,
     worker: null,
     globalSymbols: [],
@@ -1021,7 +1022,7 @@ AbbozzaInterpreter.runSource = function () {
     switch (AbbozzaInterpreter.sourceState) {
         case AbbozzaInterpreter.SOURCE_READY:
             // Do the first step and pause
-            this.sourceStart();
+            this.startSource();
             this.sourceState = AbbozzaInterpreter.SOURCE_RUNNING;
             this.doSourceStep();
             break;
