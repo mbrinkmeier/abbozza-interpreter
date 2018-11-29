@@ -1,38 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features>    
-    <feature id="feat.HANOI">    
-        <category id="cat.HANOI" color="#00A000">
-            <block type="hanoi_move">
-                <value name="FROM">
-                    <block type="math_number">
-                        <field name="VALUE">0</field>
-                        <mutation confirmed="false"/>
-                    </block>
-                </value>
-                <value name="TO">
-                    <block type="math_number">
-                        <field name="VALUE">6</field>
-                        <mutation confirmed="false"/>
-                    </block>
-                </value>
-            </block>       
-            <block type="hanoi_reset">
-                <value name="DISCS">
+    <feature id="feat.ARRAY">    
+        <category id="cat.ARRAY" color="#00A000">
+            <block type="array_reset">
+                <value name="SIZE">
                     <block type="math_number">
                         <field name="VALUE">0</field>
                         <mutation confirmed="false"/>
                     </block>
                 </value>                                
             </block>     
-            <block type="hanoi_number_of_discs"/>     
-            <block type="hanoi_get_size">
-                <value name="POS">
+            <block type="array_length"/>     
+            <block type="array_get">
+                <value name="INDEX">
                     <block type="math_number">
                         <field name="VALUE">0</field>
                         <mutation confirmed="false"/>
                     </block>
                 </value>                
             </block>     
+            <block type="array_set">
+                <value name="INDEX">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                
+                <value name="VALUE">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                
+            </block>     
+            <block type="array_swap">
+                <value name="INDEX">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                
+                <value name="INDEX2">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                
+            </block>     
+            <block type="array_as_index"/>
         </category>             
     </feature>
 </features>

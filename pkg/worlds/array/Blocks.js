@@ -1,67 +1,28 @@
-Abbozza.HanoiMove = {
+Abbozza.ArrayReset = {
     init : function() {
         this.setHelpUrl(Abbozza.HELP_URL);
-        this.setColour(ColorMgr.getCatColor("cat.HANOI"));
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
         this.setPreviousStatement(true,"STATEMENT");
         this.setNextStatement(true,"STATEMENT");            
-        this.appendValueInput("FROM")
-            .appendField(__("hanoi.move",0))
-            .setCheck(["NUMBER"]);
-        this.appendValueInput("TO")
-            .appendField(__("hanoi.move",1))
-            .setCheck(["NUMBER"]);
+        this.appendValueInput("SIZE")
+            .appendField(__("array.reset",0))
+            .appendField(new Blockly.FieldDropdown([
+                [_("array.random"),"RANDOM"],
+                [_("array.ascending"),"ASC"],
+                [_("array.descending"),"DESC"]
+            ]),"ORDER")
+            .appendField(__("array.reset",1));
         this.setTooltip('');
     },
     execute : function(entry) {
         switch ( entry.phase ) {
             case 0:
-                AbbozzaInterpreter.callInput(this,"FROM");
+                entry.order = this.getFieldValue("ORDER");
+                AbbozzaInterpreter.callInput(this,"SIZE");
                 entry.phase = 1;
                 break;
             case 1:
-                entry.from = entry.callResult;
-                AbbozzaInterpreter.callInput(this,"TO");
-                entry.phase = 2;
-                break;
-            case 2:
-                entry.phase = 3;
-                if (!World.hanoi.moveDisc(entry.from,entry.callResult)) {
-                    return false;
-                }
-                break;
-            case 3:
-                if ( !Abbozza.waitingForAnimation ) {
-                    entry.finished();
-                }
-                break;
-        }
-        return true;
-    }
-}
-
-Blockly.Blocks['hanoi_move'] = Abbozza.HanoiMove;
-AbbozzaCode['hanoi_move'] = [ 'moveDisc(#,#);',["V_FROM","V_TO"]];
-
-
-Abbozza.HanoiReset = {
-    init : function() {
-        this.setHelpUrl(Abbozza.HELP_URL);
-        this.setColour(ColorMgr.getCatColor("cat.HANOI"));
-        this.setPreviousStatement(true,"STATEMENT");
-        this.setNextStatement(true,"STATEMENT");            
-        this.appendValueInput("DISCS")
-            .appendField(_("hanoi.reset"))
-            .setCheck(["NUMBER"]);
-        this.setTooltip('');
-    },
-    execute : function(entry) {
-        switch ( entry.phase ) {
-            case 0:
-                AbbozzaInterpreter.callInput(this,"DISCS");
-                entry.phase = 1;
-                break;
-            case 1:
-                World.hanoi.reset(entry.callResult);
+                World.arrayWorld.reset(entry.callResult,entry.order);
                 entry.finished();
                 break;
             default:
@@ -71,54 +32,65 @@ Abbozza.HanoiReset = {
     }
 }
 
-Blockly.Blocks['hanoi_reset'] = Abbozza.HanoiReset;
-AbbozzaCode['hanoi_reset'] = ['reset(#);',["V_DISCS"]];
+Blockly.Blocks['array_reset'] = Abbozza.ArrayReset;
+AbbozzaCode['array_reset'] = ['reset(#);',["V_SIZE"]];
 
 
 
-Abbozza.HanoiNumberOfDiscs = {
+Abbozza.ArrayLength = {
     init : function() {
         this.setHelpUrl(Abbozza.HELP_URL);
-        this.setColour(ColorMgr.getCatColor("cat.HANOI"));
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
         this.setPreviousStatement(false);
         this.setNextStatement(false);            
         this.setOutput(true, "NUMBER");
         this.appendDummyInput()
-            .appendField(_("hanoi.number_of_discs"));
+            .appendField(_("array.length"));
         this.setTooltip('');
     },
     execute : function(entry) {
-        entry.returnValue = World.hanoi.getNumberOfDiscs();
+        entry.returnValue = World.arrayWorld.getLength();
         entry.finished();
         return true;    
     }    
 }
 
-Blockly.Blocks['hanoi_number_of_discs'] = Abbozza.HanoiNumberOfDiscs;
-AbbozzaCode['hanoi_number_of_discs'] = ['getNumberOfDiscs()',[]];
+Blockly.Blocks['array_length'] = Abbozza.ArrayLength;
+AbbozzaCode['array_length'] = ['getLength()',[]];
 
 
 
-Abbozza.HanoiGetSize = {
+Abbozza.ArraySet = {
     init : function() {
         this.setHelpUrl(Abbozza.HELP_URL);
-        this.setColour(ColorMgr.getCatColor("cat.HANOI"));
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
         this.setPreviousStatement(false);
         this.setNextStatement(false);            
-        this.setOutput(true, "NUMBER");
-        this.appendValueInput("POS")
-            .appendField(_("hanoi.get_size"))
+        this.setOutput(false);
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT"); 
+        this.setInputsInline(true);
+        this.appendValueInput("INDEX")
+            .appendField(__("array.set",0))
+            .setCheck("NUMBER");
+        this.appendValueInput("VALUE")
+            .appendField(__("array.set",1))
             .setCheck("NUMBER");
         this.setTooltip('');
     },
     execute : function(entry) {
         switch ( entry.phase) {
             case 0:
-                AbbozzaInterpreter.callInput(this,"POS");
+                AbbozzaInterpreter.callInput(this,"INDEX");
                 entry.phase = 1;
                 break;
             case 1:
-                entry.returnValue = World.hanoi.getSize(entry.callResult);
+                entry.index = entry.callResult;
+                AbbozzaInterpreter.callInput(this,"VALUE");
+                entry.phase = 2;                
+                break;
+            case 2:
+                World.arrayWorld.set(entry.index,entry.callResult);
                 entry.finished();
                 return true;
                 break;
@@ -128,5 +100,120 @@ Abbozza.HanoiGetSize = {
     }    
 }
 
-Blockly.Blocks['hanoi_get_size'] = Abbozza.HanoiGetSize;
-AbbozzaCode['hanoi_get_size'] = ['getSize(#)',["V_POS"]];
+Blockly.Blocks['array_set'] = Abbozza.ArraySet;
+AbbozzaCode['array_set'] = ['set(#.#)',["V_INDEX","V_VALUE"]];
+
+
+Abbozza.ArrayGet = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(true, "NUMBER");
+        this.setInputsInline(true);
+        this.appendValueInput("INDEX")
+            .appendField(_("array.get"))
+            .setCheck("NUMBER");
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        switch ( entry.phase) {
+            case 0:
+                AbbozzaInterpreter.callInput(this,"INDEX");
+                entry.phase = 1;
+                break;
+            case 1:
+                entry.returnValue = World.arrayWorld.get(entry.callResult);
+                entry.finished();
+                return true;
+                break;
+            default:
+                return false;
+        }
+    }    
+}
+
+Blockly.Blocks['array_get'] = Abbozza.ArrayGet;
+AbbozzaCode['array_get'] = ['get(#)',["V_INDEX"]];
+
+
+Abbozza.ArraySwap = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(false);
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");
+        this.setInputsInline(true);
+        this.appendValueInput("INDEX")
+            .appendField(__("array.swap",0))
+            .setCheck("NUMBER");
+        this.appendValueInput("INDEX2")
+            .appendField(__("array.swap",1))
+            .setCheck("NUMBER");
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        switch ( entry.phase) {
+            case 0:
+                AbbozzaInterpreter.callInput(this,"INDEX");
+                entry.phase = 1;
+                break;
+            case 1:
+                entry.index = entry.callResult;
+                AbbozzaInterpreter.callInput(this,"INDEX2");
+                entry.phase = 2;                
+                break;
+            case 2:
+                World.arrayWorld.swap(entry.index,entry.callResult);
+                entry.finished();
+                return true;
+                break;
+            default:
+                return false;
+        }
+    }    
+}
+
+Blockly.Blocks['array_swap'] = Abbozza.ArraySwap;
+AbbozzaCode['array_swap'] = ['swap(#.#)',["V_INDEX","V_INDEX2"]];
+
+
+Abbozza.ArrayAsIndex = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(false);
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");
+        this.setInputsInline(true);
+        this.appendDummyInput("INDEX")
+            .appendField(__("array.as_index",0))
+            .appendField(new VariableTypedDropdown(this, "NUMBER", null), "VAR")
+            .appendField(__("array.as_index",1))
+            .appendField(new Blockly.FieldColour("#000000"), "COLOR");
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        switch ( entry.phase) {
+            case 0:
+                var varName = this.getFieldValue("VAR");
+                var color = this.getFieldValue("COLOR");
+                World.arrayWorld.showAsIndex(varName, color);
+                entry.finished();
+                return true;
+                break;
+            default:
+                return false;
+        }
+    }    
+}
+
+Blockly.Blocks['array_as_index'] = Abbozza.ArrayAsIndex;
+AbbozzaCode['array_as_index'] = ['showAsIndex(#)',["F_VAR"]];
+

@@ -100,7 +100,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         worldManager.registerWorld(new World("worlds/kara"));
         worldManager.registerWorld(new World("worlds/turtle"));
         worldManager.registerWorld(new World("worlds/hanoi"));
-        this.setWorld(worldManager.getWorld("hanoi"));
+        worldManager.registerWorld(new World("worlds/array"));
+        this.setWorld(worldManager.getWorld("array"));
         
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
