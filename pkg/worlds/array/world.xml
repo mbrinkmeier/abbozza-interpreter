@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<world id="array">
+   <name>ArrayWorld</name>
+   <description>
+       Diese Welt dient zur Implementierung und Visualisierung von 
+       Algorithmen auf einem Array.
+   </description>
+</world>

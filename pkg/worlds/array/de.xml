@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <categories>
+        <msg id="cat.HANOI">Die Türme von Hanoi</msg>
+    </categories>
+    <blocks>
+        <msg id="hanoi.move">Bewege Scheibe von # nach #</msg>
+        <msg id="hanoi.reset">Setze Türme zurück</msg>
+        <msg id="hanoi.number_of_discs">Anzahl der Scheiben</msg>
+        <msg id="hanoi.get_Size">Größe der obersten Scheibe bei</msg>
+    </blocks>
+    <errors>
+        <msg id="err.from_illegal">Die Scheibe soll von der falschen Position # genommen werden!</msg>        
+        <msg id="err.to_illegal">Die Scheibe soll auf die falsche Position # gelegt werden!</msg>        
+        <msg id="err.no_move">Die Scheibe wurde nicht bewegt!</msg>        
+        <msg id="err.empty_pos">Die Scheibe soll von der leeren Position # genommen werden!</msg>        
+        <msg id="err.size">Die Scheibe von # ist größer als die Scheibe auf #!</msg>        
+    </errors>
+</language>

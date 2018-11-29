@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features>    
+    <feature id="feat.HANOI">    
+        <category id="cat.HANOI" color="#00A000">
+            <block type="hanoi_move">
+                <value name="FROM">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>
+                <value name="TO">
+                    <block type="math_number">
+                        <field name="VALUE">6</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>
+            </block>       
+            <block type="hanoi_reset">
+                <value name="DISCS">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                                
+            </block>     
+            <block type="hanoi_number_of_discs"/>     
+            <block type="hanoi_get_size">
+                <value name="POS">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                
+            </block>     
+        </category>             
+    </feature>
+</features>
