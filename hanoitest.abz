@@ -1,206 +1,215 @@
 <xml xmlns="http://www.w3.org/1999/xhtml">
-<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
-<mutation>
-<title>&lt;title&gt;</title>
-<symbols>
-<symbol len="" name="stapel" symboltype="2" type="VOID"/>
-</symbols>
-</mutation>
-<data>main</data>
-<statement name="STATEMENTS">
-<block id="DHFq-bBZ;n{jmAd+MN|," inline="false" type="func_call">
-<mutation name="stapel" type="VOID">
-<par name="anzahl" type="NUMBER"/>
-<par name="von" type="NUMBER"/>
-<par name="nach" type="NUMBER"/>
-<par name="helfer" type="NUMBER"/>
-</mutation>
-<field name="NAME">stapel</field>
-<value name="PAR0">
-<block id="fV8rX?oNs2#tB;`zY,R." type="math_number">
-<field name="VALUE">5</field>
-</block>
-</value>
-<value name="PAR1">
-<block id="6M(@%%+[Q.;p,49Atqhf" type="math_number">
-<field name="VALUE">0</field>
-</block>
-</value>
-<value name="PAR2">
-<block id="@SMd^g[rIfa;UgUw+2#}" type="math_number">
-<field name="VALUE">2</field>
-</block>
-</value>
-<value name="PAR3">
-<block id="bWqyp%lqE!hl1rl.pijw" type="math_number">
-<field name="VALUE">1</field>
-</block>
-</value>
-</block>
-</statement>
-</block>
-<block id="3~Wpy2:N`nlM{]h_SU%@" type="func_decl" x="147" y="238">
-<mutation>
-<name name="stapel"/>
-<type type="VOID"/>
-<symbols>
-<symbol name="anzahl" symboltype="1" type="NUMBER"/>
-<symbol name="von" symboltype="1" type="NUMBER"/>
-<symbol name="nach" symboltype="1" type="NUMBER"/>
-<symbol name="helfer" symboltype="1" type="NUMBER"/>
-</symbols>
-</mutation>
-<statement name="STATEMENTS">
-<block id="LJB7/5}I_7tp|-!q`5pl" type="cond_if_else">
-<value name="CONDITION">
-<block id="o-k+k_I[Z5b)l=4-.rt-" type="logic_compare">
-<field name="OP">EQUALS</field>
-<value name="LEFT">
-<block id="do?_UwT}4aG53ORjsb`d" type="var_block">
-<field name="NAME">anzahl</field>
-</block>
-</value>
-<value name="RIGHT">
-<block id="?G6U6uCy7aFBqv2bs|sF" type="math_number">
-<field name="VALUE">0</field>
-</block>
-</value>
-</block>
-</value>
-<statement name="STATEMENTS2">
-<block id="(5r-OWkhdCUS|,,0wsNU" type="cond_if_else">
-<value name="CONDITION">
-<block id="cBUcKhf)UYu%jYB!oJ75" type="logic_compare">
-<field name="OP">EQUALS</field>
-<value name="LEFT">
-<block id="~VkHr7/^_T`.os=K=@4c" type="var_block">
-<field name="NAME">anzahl</field>
-</block>
-</value>
-<value name="RIGHT">
-<block id="||3l|o}x/3*!%sB:pdh!" type="math_number">
-<field name="VALUE">1</field>
-</block>
-</value>
-</block>
-</value>
-<statement name="STATEMENTS1">
-<block id="g4ou|(*OE]b,4Gm__-}w" type="hanoi_move">
-<value name="FROM">
-<block id=",jq2}8AOxE{5/LwEO.Na" type="var_block">
-<field name="NAME">von</field>
-</block>
-</value>
-<value name="TO">
-<block id="?.@wc.b=e15cCYz?_iYo" type="var_block">
-<field name="NAME">nach</field>
-</block>
-</value>
-</block>
-</statement>
-<statement name="STATEMENTS2">
-<block id="?VnJmJQqtyQ1wJHd{7.Q" inline="false" type="func_call">
-<mutation name="stapel" type="VOID">
-<par name="anzahl" type="NUMBER"/>
-<par name="von" type="NUMBER"/>
-<par name="nach" type="NUMBER"/>
-<par name="helfer" type="NUMBER"/>
-</mutation>
-<field name="NAME">stapel</field>
-<value name="PAR0">
-<block id="AKFgpb9rzLtt9vUjhJm2" type="math_calc">
-<field name="OP">MINUS</field>
-<value name="LEFT">
-<block id="80I}CDQLgZKKoFksnY9i" type="var_block">
-<field name="NAME">anzahl</field>
-</block>
-</value>
-<value name="RIGHT">
-<block id=")3zSm{D`[GXyqcg)[;e;" type="math_number">
-<field name="VALUE">1</field>
-</block>
-</value>
-</block>
-</value>
-<value name="PAR1">
-<block id="Fab]tn69^b?JE0sej5}u" type="var_block">
-<field name="NAME">von</field>
-</block>
-</value>
-<value name="PAR2">
-<block id="cax2AoP`+lXSVWQoRBw7" type="var_block">
-<field name="NAME">helfer</field>
-</block>
-</value>
-<value name="PAR3">
-<block id="^bjLu4F{=874^fQYoj9C" type="var_block">
-<field name="NAME">nach</field>
-</block>
-</value>
-<next>
-<block id="d1Xa|iiTpATNPS]u_G0s" type="hanoi_move">
-<value name="FROM">
-<block id="6d^),_vl9p^ftFBkfRD0" type="var_block">
-<field name="NAME">von</field>
-</block>
-</value>
-<value name="TO">
-<block id="L}p0Udg8%jve(N)%//@9" type="var_block">
-<field name="NAME">nach</field>
-</block>
-</value>
-<next>
-<block id="cLx#Wc)m_yAoRU#f!+Nj" inline="false" type="func_call">
-<mutation name="stapel" type="VOID">
-<par name="anzahl" type="NUMBER"/>
-<par name="von" type="NUMBER"/>
-<par name="nach" type="NUMBER"/>
-<par name="helfer" type="NUMBER"/>
-</mutation>
-<field name="NAME">stapel</field>
-<value name="PAR0">
-<block id="x?hzfdP)qvoWU#3YpLmm" type="math_calc">
-<field name="OP">MINUS</field>
-<value name="LEFT">
-<block id="~}?XR_7k}*%9B2o5sL%{" type="var_block">
-<field name="NAME">anzahl</field>
-</block>
-</value>
-<value name="RIGHT">
-<block id="*K]]bIem.mNgLVz8[=Ke" type="math_number">
-<field name="VALUE">1</field>
-</block>
-</value>
-</block>
-</value>
-<value name="PAR1">
-<block id="K,gw(=3F#*t8:l/;i.~*" type="var_block">
-<field name="NAME">helfer</field>
-</block>
-</value>
-<value name="PAR2">
-<block id="8VdPw#0|GOBD?4sN#;vT" type="var_block">
-<field name="NAME">nach</field>
-</block>
-</value>
-<value name="PAR3">
-<block id="c_xf/+p;a_R?zfI@;K|{" type="var_block">
-<field name="NAME">von</field>
-</block>
-</value>
-</block>
-</next>
-</block>
-</next>
-</block>
-</statement>
-</block>
-</statement>
-</block>
-</statement>
-</block>
-<system world="hanoi">worlds</system>
-<description/>
-<options apply="no" protected="no">{option.operations=true,option.source=true,option.colorDefault=true,option.multArrays=false,option.localVars=false,option.linArrays=false,option.debug=true,option.colorType=false,option.test=false,option.colorCategory=false,option.advanced=true,option.noArrays=true}</options>
-<task height="385" width="600">&lt;page&gt;&lt;/page&gt;</task>
+    <block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+        <mutation>
+            <title>&lt;title&gt;</title>
+            <symbols>
+                <symbol len="" name="stapel" symboltype="2" type="VOID"/>
+            </symbols>
+        </mutation>
+        <data>main</data>
+        <statement name="STATEMENTS">
+            <block id="a=O3}re!n6bAPs:M.j6Z" type="hanoi_reset">
+                <value name="DISCS">
+                    <block id="kUbEqGg|TNyC=4C=.7BS" type="math_number">
+                        <field name="VALUE">5</field>
+                    </block>
+                </value>
+                <next>
+                    <block id="DHFq-bBZ;n{jmAd+MN|," inline="false" type="func_call">
+                        <mutation name="stapel" type="VOID">
+                            <par name="anzahl" type="NUMBER"/>
+                            <par name="von" type="NUMBER"/>
+                            <par name="nach" type="NUMBER"/>
+                            <par name="helfer" type="NUMBER"/>
+                        </mutation>
+                        <field name="NAME">stapel</field>
+                        <value name="PAR0">
+                            <block id="fV8rX?oNs2#tB;`zY,R." type="math_number">
+                                <field name="VALUE">5</field>
+                            </block>
+                        </value>
+                        <value name="PAR1">
+                            <block id="6M(@%%+[Q.;p,49Atqhf" type="math_number">
+                                <field name="VALUE">0</field>
+                            </block>
+                        </value>
+                        <value name="PAR2">
+                            <block id="@SMd^g[rIfa;UgUw+2#}" type="math_number">
+                                <field name="VALUE">2</field>
+                            </block>
+                        </value>
+                        <value name="PAR3">
+                            <block id="bWqyp%lqE!hl1rl.pijw" type="math_number">
+                                <field name="VALUE">1</field>
+                            </block>
+                        </value>
+                    </block>
+                </next>
+            </block>
+        </statement>
+    </block>
+    <block id="3~Wpy2:N`nlM{]h_SU%@" type="func_decl" x="147" y="238">
+        <mutation>
+            <name name="stapel"/>
+            <type type="VOID"/>
+            <symbols>
+                <symbol name="anzahl" symboltype="1" type="NUMBER"/>
+                <symbol name="von" symboltype="1" type="NUMBER"/>
+                <symbol name="nach" symboltype="1" type="NUMBER"/>
+                <symbol name="helfer" symboltype="1" type="NUMBER"/>
+            </symbols>
+        </mutation>
+        <statement name="STATEMENTS">
+            <block id="LJB7/5}I_7tp|-!q`5pl" type="cond_if_else">
+                <value name="CONDITION">
+                    <block id="o-k+k_I[Z5b)l=4-.rt-" type="logic_compare">
+                        <field name="OP">EQUALS</field>
+                        <value name="LEFT">
+                            <block id="do?_UwT}4aG53ORjsb`d" type="var_block">
+                                <field name="NAME">anzahl</field>
+                            </block>
+                        </value>
+                        <value name="RIGHT">
+                            <block id="?G6U6uCy7aFBqv2bs|sF" type="math_number">
+                                <field name="VALUE">0</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+                <statement name="STATEMENTS2">
+                    <block id="(5r-OWkhdCUS|,,0wsNU" type="cond_if_else">
+                        <value name="CONDITION">
+                            <block id="cBUcKhf)UYu%jYB!oJ75" type="logic_compare">
+                                <field name="OP">EQUALS</field>
+                                <value name="LEFT">
+                                    <block id="~VkHr7/^_T`.os=K=@4c" type="var_block">
+                                        <field name="NAME">anzahl</field>
+                                    </block>
+                                </value>
+                                <value name="RIGHT">
+                                    <block id="||3l|o}x/3*!%sB:pdh!" type="math_number">
+                                        <field name="VALUE">1</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                        <statement name="STATEMENTS1">
+                            <block id="g4ou|(*OE]b,4Gm__-}w" type="hanoi_move">
+                                <value name="FROM">
+                                    <block id=",jq2}8AOxE{5/LwEO.Na" type="var_block">
+                                        <field name="NAME">von</field>
+                                    </block>
+                                </value>
+                                <value name="TO">
+                                    <block id="?.@wc.b=e15cCYz?_iYo" type="var_block">
+                                        <field name="NAME">nach</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </statement>
+                        <statement name="STATEMENTS2">
+                            <block id="?VnJmJQqtyQ1wJHd{7.Q" inline="false" type="func_call">
+                                <mutation name="stapel" type="VOID">
+                                    <par name="anzahl" type="NUMBER"/>
+                                    <par name="von" type="NUMBER"/>
+                                    <par name="nach" type="NUMBER"/>
+                                    <par name="helfer" type="NUMBER"/>
+                                </mutation>
+                                <field name="NAME">stapel</field>
+                                <value name="PAR0">
+                                    <block id="AKFgpb9rzLtt9vUjhJm2" type="math_calc">
+                                        <field name="OP">MINUS</field>
+                                        <value name="LEFT">
+                                            <block id="80I}CDQLgZKKoFksnY9i" type="var_block">
+                                                <field name="NAME">anzahl</field>
+                                            </block>
+                                        </value>
+                                        <value name="RIGHT">
+                                            <block id=")3zSm{D`[GXyqcg)[;e;" type="math_number">
+                                                <field name="VALUE">1</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                </value>
+                                <value name="PAR1">
+                                    <block id="Fab]tn69^b?JE0sej5}u" type="var_block">
+                                        <field name="NAME">von</field>
+                                    </block>
+                                </value>
+                                <value name="PAR2">
+                                    <block id="cax2AoP`+lXSVWQoRBw7" type="var_block">
+                                        <field name="NAME">helfer</field>
+                                    </block>
+                                </value>
+                                <value name="PAR3">
+                                    <block id="^bjLu4F{=874^fQYoj9C" type="var_block">
+                                        <field name="NAME">nach</field>
+                                    </block>
+                                </value>
+                                <next>
+                                    <block id="d1Xa|iiTpATNPS]u_G0s" type="hanoi_move">
+                                        <value name="FROM">
+                                            <block id="6d^),_vl9p^ftFBkfRD0" type="var_block">
+                                                <field name="NAME">von</field>
+                                            </block>
+                                        </value>
+                                        <value name="TO">
+                                            <block id="L}p0Udg8%jve(N)%//@9" type="var_block">
+                                                <field name="NAME">nach</field>
+                                            </block>
+                                        </value>
+                                        <next>
+                                            <block id="cLx#Wc)m_yAoRU#f!+Nj" inline="false" type="func_call">
+                                                <mutation name="stapel" type="VOID">
+                                                    <par name="anzahl" type="NUMBER"/>
+                                                    <par name="von" type="NUMBER"/>
+                                                    <par name="nach" type="NUMBER"/>
+                                                    <par name="helfer" type="NUMBER"/>
+                                                </mutation>
+                                                <field name="NAME">stapel</field>
+                                                <value name="PAR0">
+                                                    <block id="x?hzfdP)qvoWU#3YpLmm" type="math_calc">
+                                                        <field name="OP">MINUS</field>
+                                                        <value name="LEFT">
+                                                            <block id="~}?XR_7k}*%9B2o5sL%{" type="var_block">
+                                                                <field name="NAME">anzahl</field>
+                                                            </block>
+                                                        </value>
+                                                        <value name="RIGHT">
+                                                            <block id="*K]]bIem.mNgLVz8[=Ke" type="math_number">
+                                                                <field name="VALUE">1</field>
+                                                            </block>
+                                                        </value>
+                                                    </block>
+                                                </value>
+                                                <value name="PAR1">
+                                                    <block id="K,gw(=3F#*t8:l/;i.~*" type="var_block">
+                                                        <field name="NAME">helfer</field>
+                                                    </block>
+                                                </value>
+                                                <value name="PAR2">
+                                                    <block id="8VdPw#0|GOBD?4sN#;vT" type="var_block">
+                                                        <field name="NAME">nach</field>
+                                                    </block>
+                                                </value>
+                                                <value name="PAR3">
+                                                    <block id="c_xf/+p;a_R?zfI@;K|{" type="var_block">
+                                                        <field name="NAME">von</field>
+                                                    </block>
+                                                </value>
+                                            </block>
+                                        </next>
+                                    </block>
+                                </next>
+                            </block>
+                        </statement>
+                    </block>
+                </statement>
+            </block>
+        </statement>
+    </block>
+    <system world="hanoi">worlds</system>
+    <description/>
+    <options apply="no" protected="no">{option.calls=false,option.test=false,option.colorType=false,option.source=true,option.list=false,option.colorDefault=true,option.queue=true,option.debug=false,option.bintree=true,option.datastructures=true,option.stack=true,option.noArrays=true,option.operations=true,option.localVars=true,option.advanced=true,option.colorCategory=false,option.linArrays=false,option.multArrays=false}</options>
+    <task height="385" width="600">&lt;page&gt;&lt;/page&gt;</task>
 </xml>
