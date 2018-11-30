@@ -47,7 +47,9 @@ World.resize = function(event) {
 var svgNS = "http://www.w3.org/2000/svg";
 
 /**
- * The class Sort
+ * The class ArrayWorld provides the view
+ * 
+ * @param {dvi} parent The parent div, containing the World 
  */
 function ArrayWorld(parent) {
     this.parent = parent;
@@ -74,11 +76,16 @@ function ArrayWorld(parent) {
 }
 
 
-
+/**
+ * Reset the array to the given length and fill it with random values.
+ * 
+ * @param {int} elements The number of elements in the array
+ * @param {string} order The order of the random elementsS
+ */
 ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
     elements = Number(elements);
     if ( elements <= 0 ) discs = 1;
-    if ( elements > 100 ) discs = 100;
+    if ( elements > 30 ) discs = 30; // More than 30 is not sensible
         
     this.numberOfElements = elements;
     this.values = [];
@@ -150,27 +157,29 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
     this.redraw();
 };
 
+/**
+ * Resize the view, wrapper and svg, if the parent container is resized.
+ * 
+ */
 ArrayWorld.prototype.resize = function() {    
     var width = this.parent.offsetWidth;
     var height = this.parent.offsetHeight;
     if ( width > this.squareSize*(this.numberOfElements+2) ) {
         this.wrapper.style.width = (width + "px");
-        this.view.style.width = (width + "px");
-        this.svg.setAttribute("width",width + "px");        
+        // this.view.style.width = (width + "px");
+        // this.svg.style.width = (width + "px");
     } else {
         this.wrapper.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";
-        this.view.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";        
-        this.svg.setAttribute("width",(this.squareSize*(this.numberOfElements+2)) + "px");
     }
-    this.svg.setAttribute("height",(this.squareSize*(this.numberOfElements+2)) + "px");
-    
+    this.view.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";        
+    this.svg.setAttribute("width",(this.squareSize*(this.numberOfElements+2)) + "px");
+    this.svg.setAttribute("height",(this.squareSize*4) + "px");
+       
     this.redraw();
 };
 
 /**
- * Draw the elements
- * 
- * @returns {undefined}
+ * Repositions the index elements and updates variables.
  */
 ArrayWorld.prototype.redraw = function() {
     var ypos = (this.squareSize*3);
@@ -185,6 +194,13 @@ ArrayWorld.prototype.redraw = function() {
     }
 }
 
+/**
+ * Set the zoom factor of the svg.
+ * The zoom factor can be a value between 10 (0.1) and 200 (2.0).
+ * 
+ * @param {type} factor the zoom factor.
+ * @returns {undefined}
+ */
 ArrayWorld.prototype.setZoom = function(factor) {
     var zoomFactor = (1.0 * factor/100.0);
     var dx = -(1-zoomFactor) * (this.view.offsetWidth/2);
@@ -192,17 +208,31 @@ ArrayWorld.prototype.setZoom = function(factor) {
     this.svg.setAttribute("transform","matrix(" +  zoomFactor + ",0,0," + zoomFactor +"," + dx + "," + dy +")");
 }
 
-
+/**
+ * Redarw indices and variabels after wach step.
+ * 
+ * @returns {undefined}
+ */
 World.stepWorld = function() {
     World.arrayWorld.redraw();
 }
 
+/**
+ * Returns the length of the array.
+ * 
+ * @returns {int}
+ */
 ArrayWorld.prototype.getLength = function() {
     return this.numberOfElements;
     this.redrawNeeded = false;
 }
 
-
+/**
+ * Get the value at the given index.
+ * 
+ * @param {type} index The index
+ * @returns {Array}
+ */
 ArrayWorld.prototype.get = function(index) {
     if (( index >= 0 ) && (index < this.values.length )) { 
         return this.values[index];
@@ -211,6 +241,13 @@ ArrayWorld.prototype.get = function(index) {
     Abbozza.throwException(1,_("err.illegal_index"));
 }
 
+/**
+ * Sets the value at the given index.
+ * 
+ * @param {type} index The index of the position to be set.
+ * @param {type} value The new value.
+ * @returns {undefined}
+ */
 ArrayWorld.prototype.set = function(index, value) {
     if (( index >= 0 ) && (index < this.values.length )) { 
         this.values[index] = value;
@@ -221,6 +258,13 @@ ArrayWorld.prototype.set = function(index, value) {
     }
 }
 
+/**
+ * Swaps two positions in the array and animates it.
+ * 
+ * @param {type} index
+ * @param {type} index2
+ * @returns {undefined}
+ */
 ArrayWorld.prototype.swap = function(index, index2) {
     if ( ( index >= 0 ) && (index < this.values.length ) &&
           ( index2 >= 0 ) && (index2 < this.values.length )  ) {
@@ -240,22 +284,24 @@ ArrayWorld.prototype.swap = function(index, index2) {
             additive: "sum"
         }
         );
-        var toSvg = this.valueSvg[index2];
-        var toAnim = toSvg.animate(
-        [
-            { transform: "translate(" + xe + "px,0px)" },
-            { transform: "translate(" + xe + "px," + this.squareSize + "px" },
-            { transform: "translate(" + xs + "px," + this.squareSize + "px" },
-            { transform: "translate(" + xs + "px,0px)" }
-        ], {
-            duration: Number(this.duration),
-            fill: "both",
-            accumulate : "sum",
-            additive: "sum"
+        if ( index != index2) {
+            var toSvg = this.valueSvg[index2];
+            var toAnim = toSvg.animate(
+            [
+                { transform: "translate(" + xe + "px,0px)" },
+                { transform: "translate(" + xe + "px," + this.squareSize + "px" },
+                { transform: "translate(" + xs + "px," + this.squareSize + "px" },
+                { transform: "translate(" + xs + "px,0px)" }
+            ], {
+                duration: Number(this.duration),
+                fill: "both",
+                accumulate : "sum",
+                additive: "sum"
+            }
+            );
         }
-        );
         var arr = this;
-        Abbozza.waitForAnimation(toAnim, null);
+        if ( index != index2 ) { Abbozza.waitForAnimation(toAnim, null); }
         Abbozza.waitForAnimation(fromAnim,
             function(event) {
                 var dummy = arr.values[index];
