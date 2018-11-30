@@ -9,7 +9,8 @@
     right       : 0px;    
     bottom      : 0px;    
     padding     : 0px;
-    overflow    : auto;
+    background-color: #ffffcf;
+    overflow: auto;
 }
 
 .arrayView {
@@ -19,7 +20,7 @@
     right       : 0px;    
     bottom      : 0px;    
     padding     : 0px;
-    background-color: #ffffcf;
+    overflow    : none;
 }
 
 .arraySvg {
@@ -30,4 +31,5 @@
     bottom: 0px;
     width:100%;
     height:100%;
+    display: block;
 }

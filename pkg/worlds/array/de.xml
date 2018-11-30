@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language id="de">
     <categories>
-        <msg id="cat.ARR">Array</msg>
+        <msg id="cat.ARRAY">Array</msg>
     </categories>
     <blocks>
         <msg id="array.reset">Initalisiere Array # mit Länge</msg>

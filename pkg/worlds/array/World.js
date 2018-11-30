@@ -26,10 +26,15 @@ World.initView = function(view) {
     
     var info = document.getElementById("info");
     info.contentDocument.getElementById("anispeed").value = (50-World.arrayWorld.duration/100);
+    info.contentDocument.getElementById("zoom").value = 100;
     
     info.contentDocument.getElementById("anispeed").oninput = function(event) {
          World.arrayWorld.duration = 100 * (50-Number(this.value));
-    }
+    };
+    
+    info.contentDocument.getElementById("zoom").oninput = function(event) {
+         World.arrayWorld.setZoom(this.value);
+    };
 };
 
 
@@ -62,7 +67,7 @@ function ArrayWorld(parent) {
     this.topOffset = 50;
     this.duration = 500;    
     this.squareSize = 50;
-    this.reset(30);
+    this.reset(10);
     
     this.redrawNeeded = false;
     this.redraw();
@@ -145,14 +150,15 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
     this.redraw();
 };
 
-
 ArrayWorld.prototype.resize = function() {    
     var width = this.parent.offsetWidth;
     var height = this.parent.offsetHeight;
     if ( width > this.squareSize*(this.numberOfElements+2) ) {
+        this.wrapper.style.width = (width + "px");
         this.view.style.width = (width + "px");
         this.svg.setAttribute("width",width + "px");        
     } else {
+        this.wrapper.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";
         this.view.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";        
         this.svg.setAttribute("width",(this.squareSize*(this.numberOfElements+2)) + "px");
     }
@@ -177,6 +183,13 @@ ArrayWorld.prototype.redraw = function() {
             "translate(" + xpos + "," + ypos + ")"
         );
     }
+}
+
+ArrayWorld.prototype.setZoom = function(factor) {
+    var zoomFactor = (1.0 * factor/100.0);
+    var dx = -(1-zoomFactor) * (this.view.offsetWidth/2);
+    var dy = -(1-zoomFactor) * (this.view.offsetHeight/2);
+    this.svg.setAttribute("transform","matrix(" +  zoomFactor + ",0,0," + zoomFactor +"," + dx + "," + dy +")");
 }
 
 
