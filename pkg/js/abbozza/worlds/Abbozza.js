@@ -30,46 +30,117 @@ Abbozza.exceptions = [];
  * @returns {undefined}
  */
 Abbozza.initWorlds = function () {
-    
+    Desktop.init("/js/desktop/");
+
+    Abbozza.workspaceFrame = new Frame("Workspace", null);
+    Abbozza.workspaceFrame.div.addEventListener("frame_resize",
+            function (event) {
+                Abbozza.workspaceFrame.content.width = "100%";
+                Blockly.svgResize(Blockly.mainWorkspace);
+            }
+    );
+
+    Abbozza.workspaceDiv = document.createElement("DIV");
+    Abbozza.workspaceDiv.id = "workspace";
+    Abbozza.workspaceFrame.content.appendChild(Abbozza.workspaceDiv);
+
+    try {
+        Abbozza.initSystem('worlds', true, 'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
+    } catch (ex) {
+    }
     Abbozza.worldId = worldId;
-    Abbozza.initSystem('worlds', true, 'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
 
-    ToolboxMgr.rebuild();
+    // Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
+    // World.init(document.getElementById(".topleft"));
 
-    Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
-    World.init(document.getElementById(".topleft"));
+    Abbozza.worldFrame = new Frame("World", null);
+    Abbozza.worldFrame.setPosition(0, 0);
+    Abbozza.worldFrame.setSize("50%", "50%");
+    Abbozza.worldFrame.show();
+    Abbozza.worldFrame.div.addEventListener("frame_resize",
+            function (event) {
+                World.resize();
+            }
+    );
+    Abbozza.worldView = document.createElement("DIV");
+    Abbozza.worldView.className = "abzWorldView";    
+    Abbozza.worldSpeed = document.createElement("DIV");
+    Abbozza.worldSpeed.className = "abzWorldSpeed";
+    Abbozza.worldControl = document.createElement("DIV");
+    Abbozza.worldControl.className = "abzWorldControl";
+    Abbozza.worldFrame.content.appendChild(Abbozza.worldView);
+    Abbozza.worldFrame.content.appendChild(Abbozza.worldSpeed);
+    Abbozza.worldFrame.content.appendChild(Abbozza.worldControl);
+    // Desktop.header.appendChild(document.getElementById("speedslider"));
+    Abbozza.worldSpeed.appendChild(document.getElementById("speedslider"));
     
+    var controls = document.getElementById("infoFrame").contentDocument.getElementById("controls");
+    if ( controls ) {
+        document.adoptNode(controls);
+        var ctrls = controls.getElementsByClassName("control");
+        while ( ctrls[0] ) {
+            var el = ctrls[0];
+            Abbozza.worldControl.appendChild(el);
+        }   
+    } 
+    
+    var desktopBody = document.getElementById("infoFrame").contentDocument.getElementById("desktop");
+    if ( desktopBody ) {
+        document.adoptNode(desktopBody);
+        Desktop.desktop.appendChild(desktopBody);
+    }
+    
+    ToolboxMgr.rebuild();
+    Blockly.svgResize(Blockly.mainWorkspace);
+
+    Abbozza.workspaceFrame.setPosition("50%", 0);
+    Abbozza.workspaceFrame.setSize("50%", "100%");
+    Abbozza.workspaceFrame.show();
+
+    World.init(Abbozza.worldView);
+
     /**
-    * Register abbozza event handlers
-    */
-    document.addEventListener("abz_clearSketch", Abbozza.resetWorld );
-    document.addEventListener("abz_setSketch", Abbozza.resetWorld );
+     * Register abbozza event handlers
+     */
+    document.addEventListener("abz_clearSketch", Abbozza.resetWorld);
+    document.addEventListener("abz_setSketch", Abbozza.resetWorld);
 
     AbbozzaInterpreter.reset();
-    
-    var tabs = new TabPane(document.getElementById('tabs'));
-    var infoPane = tabs.addPane(_("gui.information"), document.getElementById("worldinfo"));
-    var debugPane;
+
+
+    /*
+     var tabs = new TabPane(document.getElementById('tabs'));
+     var infoPane = tabs.addPane(_("gui.information"), document.getElementById("worldinfo"));
+     var debugPane;
+     */
+
+    var debugPane = document.getElementById("debug");
     if (Configuration.getParameter("option.debug") == "true") {
-        debugPane = tabs.addPane(_("gui.debug"), document.getElementById("debug"));
+        Abbozza.debugFrame = Abbozza.createFrame(_("gui.debug"), null, debugPane, 0, "50%", "50%", "50%");
         Abbozza.initDebugger(debugPane);
     } else {
-        debugPane = document.getElementById("debug");
+        Abbozza.debugFrame = null;
         debugPane.style.display = "none";
     }
-    var sourcePane;
+
+    var sourcePane = document.getElementById("source");
+    var sourcefont;
     if (Configuration.getParameter("option.source") == "true") {
-        sourcePane = tabs.addPane(_("gui.source"), document.getElementById("source"));
+        Abbozza.sourceFrame = Abbozza.createFrame(_("gui.source"), null, sourcePane, 0, "50%", "50%", "50%");
+        sourcefont = document.getElementById("sourcefont");
+        sourcefont.value = "12";
+        document.getElementById("sourcefontlabel").textContent = _("gui.font_size");
     } else {
-        sourcePane = document.getElementById("source");
+        Abbozza.sourceFrame = null;
         sourcePane.style.display = "none";
     }
-    var callsPane;
+
+    var callsPane = document.getElementById("calls");
     if (Configuration.getParameter("option.calls") == "true") {
-        callsPane = tabs.addPane(_("gui.calls"), document.getElementById("calls"));
+        Abbozza.callsFrame = Abbozza.createFrame(_("gui.calls"), null, callsPane, 0, "50%", "50%", "50%");
         Abbozza.initCallView(callsPane);
     } else {
-        callsPane = document.getElementById("calls");
+        Abbozza.callsFrame = null;
         callsPane.style.display = "none";
     }
 
@@ -79,17 +150,48 @@ Abbozza.initWorlds = function () {
         styleSelectedText: true
     });
     Abbozza.sourceEditor.setSize(null, "100%");
-    tabs.openTab(infoPane);
     
-    Abbozza.splitter.addEventListener("splitter_resize", 
-        function(event) {
-            Blockly.svgResize(Blockly.mainWorkspace);
+    if ( Abbozza.sourceFrame != null ) {
+        sourcefont.oninput = function(event) {
+            Abbozza.sourceEditor.getWrapperElement().style["font-size"] = this.value + "px";
+            Abbozza.sourceEditor.refresh();
         }
-    );
-    Blockly.svgResize(Blockly.mainWorkspace);
-    
+    }
+    // tabs.openTab(infoPane);
+
     Abbozza.parseQuery();
-}
+};
+
+
+Abbozza.createFrame = function (title, icon, content, x, y, w, h) {
+    var frame = new Frame(title, icon);
+    frame.setContent(content);
+    frame.setPosition(x, y);
+    frame.setSize(w, h);
+    frame.hide();
+    frame.div.addEventListener("frame_resize",
+            function (event) {
+                frame.content.resize();
+            }
+    );
+    return frame;
+};
+
+
+
+Abbozza.openFullscreen = function () {
+    var elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen();
+    }
+};
+
 
 /**
  * Load a sketch.
@@ -144,7 +246,7 @@ Abbozza.loadSketch = function () {
  * 
  * @returns {undefined}
  */
-Abbozza.cleanupTask = function() {
+Abbozza.cleanupTask = function () {
     World.purgeHooks();
 }
 
@@ -154,10 +256,10 @@ Abbozza.cleanupTask = function() {
  * @param {type} event
  * @returns {undefined}
  */
-Abbozza.resetWorld = function(event) {
+Abbozza.resetWorld = function (event) {
     var worlds = null;
     var sketch = null;
-    if ( event.detail ) {
+    if (event.detail) {
         sketch = event.detail;
         if (Abbozza.worldFromDom) {
             worlds = sketch.getElementsByTagName("world");
@@ -165,7 +267,8 @@ Abbozza.resetWorld = function(event) {
     }
     World.setWorldDom(worlds)
     AbbozzaInterpreter.reset();
-    Abbozza.sourceEditor.value = "";
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";
 }
 
 
@@ -175,7 +278,7 @@ Abbozza.resetWorld = function(event) {
  * @param {type} path
  * @returns {undefined}
  */
-Abbozza.goToSketch = function(path) {
+Abbozza.goToSketch = function (path) {
     Abbozza.setSketchFromPath(path);
     World.reset();
 }
@@ -185,7 +288,7 @@ Abbozza.goToSketch = function(path) {
  * 
  * @returns {unresolved}
  */
-Abbozza.getNumberOfBlocks = function() {
+Abbozza.getNumberOfBlocks = function () {
     return Blockly.mainWorkspace.getAllBlocks().length;
 }
 
@@ -293,9 +396,9 @@ Abbozza.getSystemTag = function () {
  * @param {type} code A numerical code describing the type of exception
  * @param {type} msg A textual message to be shown to the user.
  */
-Abbozza.throwException = function(code,msg) {
-    Abbozza.exceptions.push([code,msg]);
-} 
+Abbozza.throwException = function (code, msg) {
+    Abbozza.exceptions.push([code, msg]);
+}
 
 /**
  * 
@@ -357,13 +460,13 @@ Abbozza.saveSource = function () {
  * @param {type} callPane
  * @returns {undefined}
  */
-Abbozza.initCallView = function (callPane) {
+Abbozza.initCallView = function () {
     Abbozza.callCount = 0;
     var view = document.getElementById("callView");
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     // svg.setAttribute("width","100%");
     // svg.setAttribute("height","100%");
-    svg.setAttribute("transform", "scale(1 -1)");
+    // svg.setAttribute("transform", "scale(1 -1)");
     view.appendChild(svg);
     var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", "M 0,0");
@@ -374,17 +477,18 @@ Abbozza.initCallView = function (callPane) {
     document.addEventListener("abz_start", function (event) {
         Abbozza.callCount = 0;
         Abbozza.lastCallStep = 0;
+        AbbozzaIntertpreter.threads[0].callList = [];
         path.setAttribute("d", "M 0,0");
     });
     document.addEventListener("abz_step", function (event) {
-        if (AbbozzaInterpreter.threads[0] == null)
+        if (AbbozzaInterpreter.threads[0] == null) {
             return;
+        }
         var list = AbbozzaInterpreter.threads[0].callList;
         if (Abbozza.callCount != list.length) {
             for (var i = Abbozza.callCount; i < list.length; i++) {
                 var d = path.getAttribute("d");
                 var step = list[i][0];
-                console.log(list[i]);
                 var dx = step - Abbozza.lastCallStep;
                 if (list[i][1] != null) {
                     d = d + " l " + dx + ",0 l 0,10 ";
@@ -392,12 +496,19 @@ Abbozza.initCallView = function (callPane) {
                     d = d + " l " + dx + ",0 l 0,-10 ";
                 }
                 path.setAttribute("d", d);
-                svg.setAttribute("width", path.getBBox().width);
-                svg.setAttribute("height", path.getBBox().height);
                 Abbozza.lastCallStep = list[i][0];
             }
 
+            svg.setAttribute("width", path.getBBox().width);
+            svg.setAttribute("height", path.getBBox().height);
+
             Abbozza.callCount = list.length;
+            var ph = path.getBBox().height;
+            var vh = 0.9*view.offsetHeight;
+            var scale = -(1.0*vh)/ph;
+            var dy = 45.0*vh/100.0;
+            svg.setAttribute("transform","matrix(1,0,0," + scale + ",0," + dy + ")");
+            view.scrollLeft = path.getBBox().width;
             // callPane.textContent = AbbozzaInterpreter.threads[0].callList;
         }
     });
@@ -412,31 +523,31 @@ Abbozza.initCallView = function (callPane) {
  * @param {type} debugPane The pane into which the debug panel should be injected
  * @returns {undefined}
  */
-Abbozza.initDebugger = function (debugPane) {
+Abbozza.initDebugger = function () {
     document.getElementById("stepLabel").textContent = _("gui.executed_steps") + " ";
     document.getElementById("blockLabel").textContent = _("gui.executed_blocks") + " ";
     // Register event handlers
     document.addEventListener("abz_start", function (event) {
-        Abbozza.updateDebugger(debugPane);
+        Abbozza.updateDebugger();
     });
     document.addEventListener("abz_step", function (event) {
-        Abbozza.updateDebugger(debugPane);
+        Abbozza.updateDebugger();
     });
     document.addEventListener("abz_stop", function (event) {
-        Abbozza.updateDebugger(debugPane);
+        Abbozza.updateDebugger();
     });
     document.addEventListener("abz_error", function (event) {
-        Abbozza.updateDebugger(debugPane);
+        Abbozza.updateDebugger();
     });
 }
 
 /**
  * Update the debug panel
  * 
- * @param {type} debugPane
+ * @param {type} debugPan
  * @returns {undefined}
  */
-Abbozza.updateDebugger = function (debugPane) {
+Abbozza.updateDebugger = function () {
     document.getElementById("stepCounter").textContent = AbbozzaInterpreter.executedSteps;
     document.getElementById("blockCounter").textContent = AbbozzaInterpreter.executedBlocks;
     if (!Abbozza.debugViews)

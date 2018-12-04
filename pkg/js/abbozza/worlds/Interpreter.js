@@ -900,7 +900,7 @@ Thread.prototype.endFunctionCall = function (returnEntry) {
         }
         funcEntry.finished();
     }
-    this.callList.push([AbbozzaInterpreter.executedSteps, null, null]);
+    // this.callList.push([AbbozzaInterpreter.executedSteps, null, null]);
 };
 
 

@@ -23,13 +23,13 @@ var World = new AbbozzaWorld("turtle");
 
 World.initView = function(view) {
     this.turtle = new Turtle(view);
-    Abbozza.splitter.addEventListener("splitter_resize", this.resize);
+    // Abbozza.splitter.addEventListener("splitter_resize", this.resize);
     this.turtle.parent_.tabIndex="0";
     this._activateKeyboard(this.turtle.parent_);
 };
     
 World.resize = function(event) { 
-    World.turtle.reset();
+    World.turtle.resize();
 };
     
 World.resetWorld = function() {
@@ -54,6 +54,9 @@ function Turtle(view) {
     this.view_.className = "turtleIntCanvas";
     this.parent_.appendChild(this.view_);
     this.context_ = this.view_.getContext("2d");
+    // this.view_.width = 1000;
+    // this.view_.height = 1000;
+    
 
     this.turtle_layer_ = document.createElement("div");
     this.turtle_layer_.turtle = this;
@@ -70,6 +73,26 @@ function Turtle(view) {
 };
 
 
+Turtle.prototype.resize = function() {
+    this.turtle_svg_ = document.createElementNS(svgNS,"path");
+    this.turtle_svg_.setAttribute("stroke-width","3");
+    this.turtle_svg_.setAttribute("fill","none");
+    
+    var w = this.view_.width;
+    var h = this.view_.height;
+    var data = this.context_.getImageData(0,0,w,h);
+    
+    // Reset context
+    this.view_.width = this.parent_.clientWidth;
+    this.view_.height = this.parent_.clientHeight;
+    
+    this.svg_.setAttribute("width",this.view_.offsetWidth + "px");
+    this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
+    this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
+    
+    this.context_.putImageData(data,0,0);
+}
+
 
 Turtle.prototype.reset = function() {
     var child = this.svg_.firstChild;
@@ -85,6 +108,10 @@ Turtle.prototype.reset = function() {
     // Reset context
     this.view_.width = this.parent_.clientWidth;
     this.view_.height = this.parent_.clientHeight;
+    
+    this.svg_.setAttribute("width",this.view_.offsetWidth + "px");
+    this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
+    this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
     
     this.turtle_penDown = true;
     this.turtle_hidden = false;

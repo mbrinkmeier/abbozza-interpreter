@@ -22,17 +22,16 @@ var World = new AbbozzaWorld("hanoi");
 World.initView = function(view) {
     this.hanoi = new Hanoi(view);
     var hanoi = this.hanoi;
-    Abbozza.splitter.addEventListener("splitter_resize", this.resize);
+    // Abbozza.splitter.addEventListener("splitter_resize", this.resize);
     
-    var info = document.getElementById("info");
-    info.contentDocument.getElementById("anispeed").value = (50-World.hanoi.duration/100);
-    info.contentDocument.getElementById("discs").value = World.hanoi.numberOfDiscs;
+    document.getElementById("anispeed").value = (50-World.hanoi.duration/100);
+    document.getElementById("discs").value = World.hanoi.numberOfDiscs;
     
-    info.contentDocument.getElementById("anispeed").oninput = function(event) {
+    document.getElementById("anispeed").oninput = function(event) {
         World.hanoi.duration = 100 * (50-Number(this.value));
     }
-    info.contentDocument.getElementById("discs").oninput = function(event) {
-        World.hanoi.reset(info.contentDocument.getElementById("discs").value);
+    document.getElementById("discs").oninput = function(event) {
+        World.hanoi.reset(document.getElementById("discs").value);
     }
 
 };
@@ -57,10 +56,21 @@ function Hanoi(parent) {
     this.svg.className = "hanoiSvg";
     this.view.appendChild(this.svg);
     this.parent.appendChild(this.view);
+
+    this.maxDiscs = 26;
+    this.discColors = [
+        "#FF0000", "#FF3300", "#FF6600", "#FF9900","#FFBB00",
+        "#FFFF00", "#BBFF00", "#99FF00", "#66FF00","#33FF00", 
+        "#00FF00", "#00FF33", "#00FF66", "#00FF99","#00FFBB", 
+        "#00FFFF", "#00BBFF", "#0099FF", "#0066FF","#0033FF", 
+        "#0000FF", "#3300FF", "#6600FF", "#9900FF","#BB00FF",
+        "#FF00FF"
+    ];
     
     this.duration = 500;    
     this.reset(5);
     
+
     this.draw();
 }
 
@@ -68,7 +78,7 @@ function Hanoi(parent) {
 Hanoi.prototype.reset = function(discs) {
     discs = Number(discs);
     if ( discs <= 0) discs = 1;
-    if ( discs > 20) discs = 20;
+    if ( discs > this.maxDiscs) discs = this.maxDiscs;
         
     this.numberOfDiscs = discs;
     this.stacks = [];
@@ -80,61 +90,77 @@ Hanoi.prototype.reset = function(discs) {
     
     var width = this.view.offsetWidth;
     var height = this.view.offsetHeight;
-    this.svg.setAttribute("width",width);
-    this.svg.setAttribute("height",height);
+    // this.svg.setAttribute("width",width);
+    // this.svg.setAttribute("height",height);
+    this.svg.setAttribute("width",100);
+    this.svg.setAttribute("height",100);
+    this.svg.setAttribute("viewBox","0 0 100 100");
 
     this.pos = [];
     this.pos[0] = 17.5;
     this.pos[1] = 50;    
     this.pos[2] = 82.5;
     this.thickness = 100/(this.numberOfDiscs+4);
-    this.step = 20/this.numberOfDiscs;
+    this.step = this.maxDiscs/this.numberOfDiscs;
     
+    
+    // Draw rods
     var sketch =
-            "<rect x='0' y='" + (100-this.thickness) + "%' width='100%' height='" + this.thickness + "%' />";
+            "<rect x='0' y='" + (100-this.thickness) + "' width='100' height='" + this.thickness + "' />";
     for ( var i = 0; i <= 2; i++ ) {
-        sketch = sketch + "<line x1='" + this.pos[i] + "%' y1='100%' x2='" + this.pos[i] + "%' y2='" + (2*this.thickness) + "%' stroke='black' stroke-width='3%' height='" + (height-15) + "' />"; 
+        sketch = sketch + "<line x1='" + this.pos[i] + "' y1='100' x2='" + this.pos[i] + "' y2='" + (2*this.thickness) + "' stroke='black' stroke-width='3' height='" + (height-15) + "' />"; 
     }
+    // var sketch =
+    //         "<rect x='0' y='" + (100-this.thickness) + "%' width='100%' height='" + this.thickness + "%' />";
+    // for ( var i = 0; i <= 2; i++ ) {
+    //     sketch = sketch + "<line x1='" + this.pos[i] + "%' y1='100%' x2='" + this.pos[i] + "%' y2='" + (2*this.thickness) + "%' stroke='black' stroke-width='3%' height='" + (height-15) + "' />"; 
+    // }
     
     this.svg.innerHTML = sketch;
 
     for ( var i = 0; i < this.numberOfDiscs; i++ ) {
         this.stacks[0].push(this.numberOfDiscs-i);
         this.discs[i] = document.createElementNS(svgNS,"rect");
-        this.discs[i].setAttribute("height", this.thickness + "%");
-        this.discs[i].setAttribute("width",(5+i*this.step) + "%");
-        this.discs[i].setAttribute("stroke-width","2");
+        this.discs[i].setAttribute("height", this.thickness);
+        this.discs[i].setAttribute("width",(5+i*this.step));
+        this.discs[i].setAttribute("stroke-width","0.25");
         this.discs[i].setAttribute("stroke","black");
-        this.discs[i].setAttribute("fill","white");
-        this.discs[i].setAttribute("rx","5");
-        this.discs[i].setAttribute("ry","5");
+        this.discs[i].setAttribute("fill",this.discColors[Math.round(i*(this.maxDiscs-1)/(this.numberOfDiscs-1))]);
+        this.discs[i].setAttribute("rx","1");
+        this.discs[i].setAttribute("ry","1");
         this.svg.appendChild(this.discs[i]);
     }
-    
+  
+    this.resize();
     this.draw();
 };
 
 Hanoi.prototype.xpos = function(i,value) {
     var width = this.view.offsetWidth;    
-    return width * (this.pos[i] - (2.5+(value-1)*this.step/2))/100;
+    // return width * (this.pos[i] - (2.5+(value-1)*this.step/2))/100;
+    return (this.pos[i] - (2.5+(value-1)*this.step/2));
 }
 
 Hanoi.prototype.ypos = function(j) {
     var height = this.view.offsetHeight;   
-    return height * (100 - this.thickness * (j+2))/100;
+    // return height * (100 - this.thickness * (j+2))/100;
+    return (100 - this.thickness * (j+2));
 }
 
 Hanoi.prototype.resize = function() {    
     var width = this.view.offsetWidth;
     var height = this.view.offsetHeight;
-    this.svg.setAttribute("width",width);
-    this.svg.setAttribute("height",height);
-
+    var xFactor = width/100;
+    var yFactor = height/100;
+    var dx = -(1-xFactor)*50;
+    var dy = -(1-yFactor)*50;
+    this.svg.setAttribute("transform","matrix(" +  xFactor + ",0,0," + yFactor +"," + dx + "," + dy +")");
+    
     this.draw();
 };
 
 /**
- * Draw the towers
+ * Draw the tower
  * 
  * @returns {undefined}
  */
@@ -147,6 +173,7 @@ Hanoi.prototype.draw = function() {
         }
     }
 }
+
 
 Hanoi.prototype.animate = function(from,to,callback) {
 
@@ -168,7 +195,8 @@ Hanoi.prototype.animate = function(from,to,callback) {
         ], {
             duration: Number(this.duration),
             fill: "both",
-            composite: "add"
+            composite: "add",
+            accumulate: "add"
         }
     );
     Abbozza.waitForAnimation(animation,

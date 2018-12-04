@@ -6,30 +6,29 @@
 
         <title>abbozza!</title>
         <script type="text/javascript">
-            getIdFromPath = function (path) {
-                var prefix = "/abbozza/world/";
-                var start = path.indexOf(prefix);
-                if (start >= 0) {
-                    var start = start + prefix.length;
-                    var end = path.indexOf("/", start);
-                    return path.substring(start, end);
-                } else {
-                    // Default context is consol
-                    return "console";
-                }
+        getIdFromPath = function(path) {
+            var prefix = "/abbozza/world/";
+            var start = path.indexOf(prefix);
+            if ( start >= 0 ) {
+                var start = start + prefix.length;
+                var end = path.indexOf("/",start);
+                return path.substring(start,end);
+            } else {
+                // Default context is consol
+                return "console";
             }
-
-            var worldId = getIdFromPath(window.location.href);
+        }    
+            
+        var worldId = getIdFromPath(window.location.href);
         </script>
-
-        <!--link rel="stylesheet" href="samples.css"-->
+        
+	<!--link rel="stylesheet" href="samples.css"-->
         <!-- link rel="stylesheet" href="js/SCEditor/themes/default.min.css" id="theme-style" /-->
-        <link rel="stylesheet" type="text/css" href="/js/desktop/css/Desktop.css">
         <link rel="stylesheet" type="text/css" href="/js/codemirror/lib/codemirror.css">
         <link rel="stylesheet" type="text/css" href="/css/abbozza.css">
         <link rel="stylesheet" type="text/css" href="/css/worlds.css">
         <link rel="stylesheet" type="text/css" href="World.css">
-
+        
         <script src="/js/polyfill/CustomElements.js"></script>
         <script src="/js/blockly/blockly_compressed_new.js"></script>
         <script src="/js/ckeditor/ckeditor.js"></script>
@@ -37,10 +36,6 @@
         <script src="/js/codemirror/mode/javascript/javascript.js"></script>
         <script src="/lib/acorn.js"></script>
         <script src="/lib/interpreter.js"></script>
-        <script src="/js/desktop/js/Desktop.js"></script>
-        <script src="/js/desktop/js/Frame.js"></script>
-
-
         <script src="/js/abbozza/core/Generator.js" type="text/javascript"></script>
 
         <!-- worlds specific classes -->
@@ -49,7 +44,7 @@
         <script src="/js/abbozza/worlds/CodeJavaScript.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Splitter.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/TabPane.js" type="text/javascript"></script>
-
+        
         <!-- general classes -->
         <script src="/js/abbozza/core/ToolboxMgr.js" type="text/javascript"></script>        
         <script src="/js/abbozza/core/ColorMgr.js" type="text/javascript"></script>        
@@ -69,17 +64,16 @@
         <script src="/js/abbozza/core/AbbozzaBubble.js" type="text/javascript"></script>	
         <script src="/js/abbozza/core/TaskHintIcon.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/TaskWindow.js" type="text/javascript"></script>
-        <script src="/js/abbozza/worlds/TaskWindow.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/TaskHint.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/Configuration.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/ErrorMgr.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/TabMgr.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/DynamicMutator.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/DraggingManager.js" type="text/javascript"></script>
-
+        
         <script src="/js/abbozza/worlds/AbbozzaWorld.js" type="text/javascript"></script>
         <script src="World.js" type="text/javascript"></script>
-
+        
         <script src="/js/abbozza/core/Abbozza.js" type="text/javascript"></script>
         <script src="/js/abbozza/core/Tools.js" type="text/javascript"></script>
 
@@ -90,14 +84,14 @@
         <script src="/js/abbozza/worlds/Interpreter.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Datastructures.js" type="text/javascript"></script>
         <script src="Tools.js" type="text/javascript"></script>
-
+        
 
         <!-- world specific blocks -->
         <script src="/js/abbozza/worlds/blocks/Main.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/blocks/Keyboard.js" type="text/javascript"></script>
         <script src="/js/abbozza/worlds/Execs.js" type="text/javascript"></script>
         <script src="Blocks.js" type="text/javascript"></script>
-
+        
         <!-- general blocks -->
         <script src="/js/abbozza/blocks/Conditionals.js" type="text/javascript"></script>
         <script src="/js/abbozza/blocks/Loops.js" type="text/javascript"></script>
@@ -108,7 +102,7 @@
         <script src="/js/abbozza/blocks/Variable.js" type="text/javascript"></script>
         <script src="/js/abbozza/blocks/Functions.js" type="text/javascript"></script>
         <script src="/js/abbozza/blocks/Objects.js" type="text/javascript"></script>
-
+        
         <!-- The plugins -->
         <script src="/abbozza/plugins/plugins.js" type="text/javascript"></script>
     </head>
@@ -119,73 +113,66 @@
             <div id="overlay_content">
             </div>
         </div>
-
-        <div id="worldinfo" style="display: none" class="abzFrameContent">
-            <iframe id="infoFrame" src="World.html" style="width: 100%; height: 100%; border: none;"></iframe>
-        </div>
-
-        <div id="speedslider">
+        
+        <div id="header">
+            <div id="speedslider">
             <span>Langsam</span>
             <input type="range" id="speed" name="speed" step="5" min="0" max="100" list="speedticks" oninput="AbbozzaInterpreter.setSpeed(this.value);"/>
             <span>Schnell</span>
-        </div>
-
-        <div id="debug" style="visibility: hidden" class="abzFrameContent">
-            <div id="debug.headline">
-                <span id="stepLabel">Schritte: </span><span id="stepCounter">0</span>
-                &nbsp;&nbsp;
-                <span id="blockLabel">Blöcke: </span><span id="blockCounter">0</span>
-                <div id="debug_addWatch" onclick="Abbozza.addDebugView()">+</div>
-            </div>
-            <div id="debugViews">        
             </div>
         </div>
-        
-        <div id="calls" style="visibility: hidden" class="abzFrameContent">
-            <div id="callView" style="width: 100%; height:100%; overflow: auto">
-            </div>
-        </div>
-        
-        <div id="source" style="visibility: hidden" class="abzFrameContent">
-            <div class="sourcebuttons">
-                <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>
-                <img class="sourcebutton" onclick="AbbozzaInterpreter.stepSource()" src="/img/step.png"/>
-                <img class="sourcebutton" onclick="AbbozzaInterpreter.runSource()" src="/img/run.png"/>
-                <img class="sourcebutton" onclick="AbbozzaInterpreter.resetSource()" src="/img/stop.png"/>
-                <img class="sourcebutton" onclick="Abbozza.loadSource()" src="/img/load.png"/>
-                <img class="sourcebutton" onclick="Abbozza.saveSource()" src="/img/save.png"/>
-                <span style="float:right">
-                    <span id="sourcefontlabel">Schriftgröße</span>
-                    <input type="number" id="sourcefont" name="sourcefont" min="8" max="40"/>
-                </span>
-            </div>
-            <div class="sourcewrapper">
-                <textarea class="sourceeditor" id="sourceeditor"></textarea>
-            </div>
-        </div>     
-
-        <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="img/step.png"></div>
-        <div class="topButton" id="run" title="Run" onclick="AbbozzaInterpreter.run()"><img width=50 height=50  src="img/run.png"></div>
-        <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.reset()"><img width=50 height=50  src="img/stop.png"></div>
-        <div class="topButton" id="new" title="Neuer Sketch" onclick="Abbozza.newSketch()"><img width=50 height=50  src="img/new.png"></div>
-        <div class="topButton" id="load" title="Lade Sketch" onclick="Abbozza.loadSketch()"><img width=50 height=50  src="img/load.png"></div>
-        <div class="topButton" id="save" title="Speichere Sketch" onclick="Abbozza.saveSketch()"><img width=50 height=50  src="img/save.png"></div>
-        <div class="topButton" id="config" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>		
-        <div class="topButton" id="info" title="Informationen"><div class="toolButton" id="serial" onclick="Abbozza.openTaskWindow()"><img width=50 height=50  src="img/info.png"></div></div>
-        <div class="license_div">
-            Based on <a href="https://developers.google.com/blockly/">Blockly</a>, 
-            Icons and images designed by <a href="http://www.flaticon.com/authors/freepik">Freepik</a>
-        </div>
-
-        <!--
         <div id="splitter" style="position: fixed; width: 100%; top:50px; bottom:0px;">
             <div id=".topleft" style="min-height: 50px; min-width: 50px"></div>
             <div id=".bottomleft" style="min-height: 50px; min-width: 50px">
                 <div id="tabs" style="position:absolute; width: 100%; height:100%;">
+                    <div id="debug">
+                        <div id="debug.headline">
+                            <span id="stepLabel">Schritte: </span><span id="stepCounter">0</span>
+                            &nbsp;&nbsp;
+                            <span id="blockLabel">Blöcke: </span><span id="blockCounter">0</span>
+                            <div id="debug_addWatch" onclick="Abbozza.addDebugView()">+</div>
+                        </div>
+                        <div id="debugViews">        
+                        </div>
+                    </div>
+                    <div id="calls">
+                        <div id="callView" style="width: 100%; height:100%; overflow: auto">
+                        </div>
+                    </div>
+                    <div id="source">
+                        <div class="sourcebuttons">
+                            <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>
+                            <img class="sourcebutton" onclick="AbbozzaInterpreter.stepSource()" src="/img/step.png"/>
+                            <img class="sourcebutton" onclick="AbbozzaInterpreter.runSource()" src="/img/run.png"/>
+                            <img class="sourcebutton" onclick="AbbozzaInterpreter.resetSource()" src="/img/stop.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.loadSource()" src="/img/load.png"/>
+                            <img class="sourcebutton" onclick="Abbozza.saveSource()" src="/img/save.png"/>
+                        </div>
+                        <div class="sourcewrapper">
+                            <textarea class="sourceeditor" id="sourceeditor"></textarea>
+                        </div>
+                    </div>     
+                    <div id="worldinfo">
+                        <iframe id="info" src="Infos.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                    </div>
                 </div>                    
             </div>
+            <div id=".right" style="min-height: 50px; min-width: 100px">
+                <div id="workspace"></div>                
+                <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="img/step.png"></div>
+                <div class="topButton" id="run" title="Run" onclick="AbbozzaInterpreter.run()"><img width=50 height=50  src="img/run.png"></div>
+                <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.reset()"><img width=50 height=50  src="img/stop.png"></div>
+                <div class="topButton" id="new" title="Neuer Sketch" onclick="Abbozza.newSketch()"><img width=50 height=50  src="img/new.png"></div>
+                <div class="topButton" id="load" title="Lade Sketch" onclick="Abbozza.loadSketch()"><img width=50 height=50  src="img/load.png"></div>
+                <div class="topButton" id="save" title="Speichere Sketch" onclick="Abbozza.saveSketch()"><img width=50 height=50  src="img/save.png"></div>
+                <div class="topButton" id="config" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="img/settings.png"></div>		
+                <div class="topButton" id="info" title="Informationen"><div class="toolButton" id="serial" onclick="Abbozza.openTaskWindow()"><img width=50 height=50  src="img/info.png"></div></div>
+                <div class="license_div">
+                    Based on <a href="https://developers.google.com/blockly/">Blockly</a>, 
+                    Icons and images designed by <a href="http://www.flaticon.com/authors/freepik">Freepik</a>
+                </div>
+            </div>
         </div> 
-        -->
 
     <xml id="startBlocks" style="display: none">
         <block type="main" id="main" inline="false" x="100" y="100"></block>
@@ -194,6 +181,5 @@
     <xml id="startBlocksWoDevices" style="display: none">
         <block type="main" id="main" inline="false" x="100" y="20"></block>
     </xml>    
-
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 #step {
     right: 370px;
 }
@@ -48,14 +49,6 @@
     left: 0px;
     width: 100%;
     height: 50px;
-}
-
-#speedslider {
-    position: fixed;
-    top: 0px;
-    right: 520px;
-    width: auto;
-    height: 49px;
 }
 
 #speedslider * {
@@ -141,7 +134,7 @@
 
 .sourcebuttons {
     position: absolute;
-    left: 0px;
+    left: 5px;
     right:0px;
     top: 5px;
     height: 30px;
@@ -227,4 +220,101 @@
 
 .debugViewButton:hover {
     background-color: #d0d0d0;
+}
+
+#infoBody {
+    padding: 5px;
+}
+
+.taskFrameWrapper {
+    position: absolute;
+    overflow: hidden;
+    top: 5px;
+    bottom: 30px;
+    left: 5px;
+    right: 5px;
+    background-color: white;
+    font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
+    font-size: 12px;
+    text-align: left;
+    cursor:default;
+    color: black;
+}
+
+.taskFrameNav {
+    background: #d0d0d0;
+    position: absolute;
+    margin: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 24px;
+    cursor: default;
+    color: black;
+    z-index: 0;
+    text-align: center;
+    font-family: sans-serif;
+    padding-top: 4px;
+}
+.taskFrameNav SPAN {
+    height: 24px;
+    background: red;
+}
+    
+.taskFrameNav .taskFrameNavButton {
+    height: 24px;
+    background: red;
+}
+
+.taskFrameNavButton IMG {
+    height: 24px;
+}
+
+.abzWorldView {
+    position: absolute;
+    top: 0px;
+    left:   0px;
+    right:  0px;
+    bottom: 49px;
+}
+
+.abzWorldSpeed {
+    position: absolute;
+    bottom: 0px;
+    left:   0px;
+    width:  299px;
+    height: 48px;
+    background-color: white;
+    border-top: black 1px solid;
+    display: flex;
+    align-items: center;
+}
+
+.abzWorldControl {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 0px;
+    left:   301px;
+    right:  0px;
+    height: 48px;
+    background-color: white;
+    border-top: black 1px solid;
+    overflow: auto;
+}
+
+.abzWorldControl DIV.control {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    overflow: hidden;
+    flex-shrink:0;
+}
+
+#speedslider {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    width: auto;
+    height: 48px;
 }

@@ -66,7 +66,17 @@ function Console(view) {
     this.console_.className = "console";
 
     // Add event handlers
-    this.console_.addEventListener("keydown", this.keydown);    
+    this.console_.addEventListener("keydown", this.keydown);  
+    
+    this.fontSizeDiv = document.getElementById("fontsize");
+    this.fontSizeDiv.value = 14;
+    this.console_.style.fontSize="14pt";
+    
+    this.fontSizeDiv.oninput = function(event) {
+        World.mycon.console_.style.fontSize = this.value + "pt";
+    }
+
+    
 };
 
 

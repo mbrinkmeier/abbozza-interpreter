@@ -1,0 +1,274 @@
+/* 
+ * Copyright 2018 Michael Brinkmeier <michael.brinkmeier@uni-osnabrueck.de>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+Frame = function (title, icon = null, closeable = false) {
+    var frame = this;
+    this.iconSrc = icon;
+    this.title = title;
+    this.initialX = 0;
+    this.initialY = 0;
+    this.currentX = 0;
+    this.currentY = 0;
+    this.minWidth = 200;
+    this.minHeight = 70;
+
+    this.div = document.createElement("DIV");
+    this.div.className = "abzFrame";
+    this.div.frame = this;
+
+    this.titleBar = document.createElement("DIV");
+    this.titleBar.className = "titleBar";
+    this.titleBar.frame = this;
+    this.div.appendChild(this.titleBar);
+
+    this.titleIcon = document.createElement("IMG");
+    if (this.iconSrc != null) {
+        this.titleIcon.src = this.iconSrc;
+    }
+    this.titleBar.appendChild(this.titleIcon);
+    this.titleIcon.addEventListener("mousedown",
+            function (event) {
+                Desktop.dragFrame(frame);
+            }
+    , false);
+
+    this.titleText = document.createElement("DIV");
+    this.titleText.className = "titleText";
+    this.titleText.textContent = title;
+    this.titleBar.appendChild(this.titleText);
+    this.titleText.addEventListener("mousedown",
+            function (event) {
+                Desktop.dragFrame(frame);
+            }
+    , false);
+
+    if ( closeable ) {
+        this.closeButton = document.createElement("SPAN");
+        this.closeButton.className = "titleButton";
+        this.titleBar.appendChild(this.closeButton);
+        this.closeButton.innerHTML = "<svg viewBox='0 0 20 20'><path d='M3,3 L17,17 M17,3 L3,17' stroke='black' stroke-width='1px'></svg>";
+    } else {
+        this.closeButton = null;
+    }
+    
+    this.maxButton = document.createElement("SPAN");
+    this.maxButton.className = "titleButton";
+    this.titleBar.appendChild(this.maxButton);
+    this.maxButton.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
+    this.maxButton.onclick = this.maximize;
+    this.maxButton.frame = this;
+
+    this.minButton = document.createElement("SPAN");
+    this.minButton.className = "titleButton";
+    this.titleBar.appendChild(this.minButton);
+    this.minButton.innerHTML = "<svg viewBox='0 0 20 20'><path stroke='black' stroke-width='1px' d='M3,17 L17,17'></svg>";
+    this.minButton.onclick = this.minimize;
+    this.minButton.frame = this;
+
+    this.icon = document.createElement("SPAN");
+    this.icon.className = "abzFrameIcon";
+    if (this.iconSrc != null) {
+        this.icon.innerHTML = "<IMG src='" + this.iconSrc + "'/>";
+    } else {
+        this.icon.textContent = title;
+    }
+    this.icon.frame = this;
+    this.icon.style.visibility = "hdden";
+    this.icon.onclick = function (event) {
+        frame.toggleShow();
+        frame.bringToFront();
+    };
+
+    this.content = document.createElement("DIV");
+    this.content.className = "content";
+    this.div.appendChild(this.content);
+
+    this.resizeHandle = document.createElement("SPAN");
+    this.resizeHandle.className = "resizeHandle";
+    this.resizeHandle.innerHTML = "<svg viewBox='0 0 19 19'><path stroke='#909090' stroke-width='1px' d='M19,0 L0,19 M19,4 L4,19 M19,8 L8,19 M19,12 L12,19 M19,16 L 16,19'></svg>";
+    this.div.appendChild(this.resizeHandle);
+    this.resizeHandle.addEventListener("mousedown",
+            function (event) {
+                Desktop.resizeFrame(frame);
+            }
+    , false);
+
+    this.div.ondragend = this.onDragEnd;
+    this.div.style.visibility = "hidden";
+
+    this.maximized = false;
+
+    Desktop.addFrame(this);
+}
+
+
+Frame.prototype.setContent = function (contentDiv) {
+    this.content.appendChild(contentDiv);
+    contentDiv.style.visibility = "inherit";
+}
+
+
+Frame.prototype.toggleShow = function () {
+    if (this.div.style.visibility == "hidden") {
+        this.show();
+    } else {
+        this.hide();
+    }
+}
+
+Frame.prototype.show = function () {
+    this.div.style.visibility = "visible";
+    this.content.style.visibility = "visible";
+    this.div.style.zIndex = 30  ;
+}
+
+Frame.prototype.bringToFront = function () {
+    Desktop.desktop.appendChild(this.div);
+}
+
+Frame.prototype.hide = function () {
+    this.div.style.visibility = "hidden";
+    this.content.style.visibility = "hidden";
+    this.div.style.zIndex = 0;
+}
+
+/**
+ * Sets the size of the frame
+ * 
+ * @param {string} w The width as length measure with unit
+ * @param {string} h The height as length measure with unit
+ * @returns {undefined}
+ */
+Frame.prototype.setSize = function (w, h) {
+    if (w < this.minWidth)
+        w = this.minWidth;
+    if (h < this.minHeight)
+        h = this.minHeight;
+
+    if (typeof w == "number") {
+        this.div.style.width = w + "px";
+    } else {
+        this.div.style.width = w;
+    }
+    if (typeof h == "number") {
+        this.div.style.height = h + "px";
+    } else {
+        this.div.style.height = h;
+    }
+    var event = new CustomEvent("frame_resize", {
+        detail: {
+            frame: this
+        }
+    });
+    this.div.dispatchEvent(event);
+}
+
+/**
+ * Sets the position of the top left corner of the frame
+ *  
+ * @param {string} x The x-coordinate as length measure with unit
+ * @param {string} y The y-coordinate as length measure with unit
+ * @returns {undefined}
+ */
+Frame.prototype.setPosition = function (x, y) {
+    if (typeof x == "number") {
+        this.div.style.left = x + "px";
+    } else {
+        this.div.style.left = x;
+    }
+    if (typeof y == "number") {
+        this.div.style.top = y + "px";
+    } else {
+        this.div.style.top = y;
+    }
+}
+
+
+Frame.prototype.setMinSize = function (mw, mh) {
+    this.minWidth = mw;
+    this.minHeight = mh;
+}
+
+
+
+Frame.prototype.onDragEnd = function (event) {
+    console.log(event);
+    var frame = this.frame;
+    var rect = this.getBoundingClientRect();
+    var x = this.offsetLeft + event.offsetX;
+    var y = this.offsetTop + event.offsetY;
+    frame.setPosition(x, y);
+    Desktop.desktop.appendChild(frame.div);
+}
+
+
+Frame.prototype.maximize = function (event) {
+    var frame = this.frame;
+    if (!frame.maximized) {
+        frame.oldWidth = frame.div.offsetWidth;
+        frame.oldHeight = frame.div.offsetHeight;
+        frame.oldX = frame.div.offsetLeft;
+        frame.oldY = frame.div.offsetTop;
+        var w = frame.desktop.desktop.offsetWidth - 2;
+        var h = frame.desktop.desktop.offsetHeight - 2;
+        frame.setPosition(0, 0);
+        frame.setSize(w, h);
+        frame.maximized = true;
+    } else {
+        frame.maximized = false;
+        frame.setPosition(frame.oldX, frame.oldY);
+        frame.setSize(frame.oldWidth, frame.oldHeight);
+    }
+}
+
+Frame.prototype.minimize = function (event) {
+    var frame = this.frame;
+    frame.hide();
+}
+
+
+Frame.prototype.dragEnd = function (event) {
+    console.log("dragend");
+    var frame = this.frame;
+    frame.initialX = frame.currentX;
+    frame.initialY = frame.currentY;
+
+    frame.active = false;
+}
+
+Frame.prototype.drag = function (event) {
+    var frame = this.frame;
+    if (frame.active) {
+        console.log("dragging");
+        console.log(frame);
+
+        event.preventDefault();
+
+        if (event.type === "touchmove") {
+            frame.currentX = event.touches[0].clientX - frame.initialX;
+            frame.currentY = event.touches[0].clientY - frame.initialY;
+        } else {
+            frame.currentX = event.clientX - frame.initialX;
+            frame.currentY = event.clientY - frame.initialY;
+        }
+
+        frame.xOffset = frame.currentX;
+        frame.yOffset = frame.currentY;
+
+        frame.setPosition(frame.currentX, frame.currentY);
+    }
+}

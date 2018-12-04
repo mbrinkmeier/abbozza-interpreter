@@ -22,6 +22,7 @@
         <msg id="gui.close_and_quit">abbozza! wird durch das Schließen des Fensters nicht beendet!</msg>
         <msg id="gui.startBrowser">Starte Browser</msg>
         <msg id="gui.settings">Einstellungen</msg>
+        <msg id="gui.font_size">Schriftgröße</msg>
     </gui>
     <blocks>
         <msg id="msg.save_source">Quelltext wird gespeichert</msg> 

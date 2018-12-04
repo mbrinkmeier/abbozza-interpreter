@@ -30,32 +30,32 @@ World.initView = function(view) {
     
     document.getElementById("speed").value = AbbozzaInterpreter.getSpeed();
     var info = document.getElementById("info");
-    info.contentDocument.getElementById("width").value = World.kara.width;
-    info.contentDocument.getElementById("height").value = World.kara.height;
-    info.contentDocument.getElementById("size").value = World.kara.squareSize;
+    document.getElementById("width").value = World.kara.width;
+    document.getElementById("height").value = World.kara.height;
+    document.getElementById("size").value = World.kara.squareSize;
     
-    info.contentDocument.getElementById("width").oninput = function(event) {
+    document.getElementById("width").oninput = function(event) {
         if ( !World.editable ) {
-            info.contentDocument.getElementById("width").value = World.kara.width;
+            document.getElementById("width").value = World.kara.width;
             return;
         }
-        World.kara.setWidth(info.contentDocument.getElementById("width").value);
+        World.kara.setWidth(document.getElementById("width").value);
     }
     
-    info.contentDocument.getElementById("height").oninput = function(event) {
+    document.getElementById("height").oninput = function(event) {
         if ( !World.editable ) {
-            info.contentDocument.getElementById("height").value = World.kara.height;
+            document.getElementById("height").value = World.kara.height;
             return;
         }
-        World.kara.setHeight(info.contentDocument.getElementById("height").value);
+        World.kara.setHeight(document.getElementById("height").value);
     }
     
-    info.contentDocument.getElementById("size").oninput = function(event) {
+    document.getElementById("size").oninput = function(event) {
         if ( !World.editable ) {
-            info.contentDocument.getElementById("size").value = World.kara.squareSize;
+            document.getElementById("size").value = World.kara.squareSize;
             return;
         }
-        World.kara.setSquareSize(info.contentDocument.getElementById("size").value);
+        World.kara.setSquareSize(document.getElementById("size").value);
     }
 };
 
@@ -76,6 +76,9 @@ World.resetWorld = function () {
 World.startWorld = function() {
     this.kara.onStart();
 }
+
+
+World.resize = function() {}
 
 
 var svgNS = "http://www.w3.org/2000/svg";
@@ -182,6 +185,7 @@ Kara.SHAMROCK = 1;
 
 
 Kara.prototype.reset = function () {
+    this.offsetY = 0;
     this.karaX = 0;
     this.karaY = 0;
     this.karaDir = 0;
@@ -210,6 +214,9 @@ Kara.prototype.reset = function () {
         this.field.push(line);
     }
 
+    this.resize();
+    
+    /*
     this.view_.width = this.width * this.squareSize;
     this.view_.height = this.height * this.squareSize;
 
@@ -220,20 +227,24 @@ Kara.prototype.reset = function () {
     this.context_.strokeStyle = "#0fff0f";
     this.context_.lineWidth = 0;
     this.context_.fillStyle = "#d0ffd0";
-    this.context_.fillRect(0, 0, this.view_.width, this.view_.height);
+    this.context_.fillRect(0, this.offsetY, this.view_.width, this.view_.height);
     for (var i = 0; i <= this.width; i++) {
-        this.context_.moveTo(this.squareSize * i, 0);
-        this.context_.lineTo(this.squareSize * i, this.view_.height);
+        this.context_.moveTo(this.squareSize * i, 0 + this.offsetY);
+        this.context_.lineTo(this.squareSize * i, this.view_.height + this.offsetY);
         this.context_.stroke();
     }
     for (var i = 0; i <= this.height; i++) {
-        this.context_.moveTo(0, this.squareSize * i);
-        this.context_.lineTo(this.view_.width, this.squareSize * i);
+        this.context_.moveTo(0, this.squareSize * i + this.offsetY);
+        this.context_.lineTo(this.view_.width, this.squareSize * i + this.offsetY);
         this.context_.stroke();
     }
+    
     this.redraw();    
+    */
+   
 };
 
+/*
 Kara.prototype.reset = function () {
     this.karaX = 0;
     this.karaY = 0;
@@ -280,9 +291,11 @@ Kara.prototype.reset = function () {
     }
     this.redraw();    
 };
-
+*/
 
 Kara.prototype.resize = function() {
+    var parHeight = this.parent_.offsetHeight;
+    
     var oldField = this.field;
     
     this.field = [];
@@ -299,24 +312,31 @@ Kara.prototype.resize = function() {
     }
 
     this.view_.width = this.width * this.squareSize;
-    this.view_.height = this.height * this.squareSize;
+    if ( parHeight > this.height * this.squareSize ) {
+        this.offsetY = (parHeight - this.height * this.squareSize)/2;
+        this.view_.height = parHeight;       
+    } else {
+        this.offsetY = 0;
+        this.view_.height = this.height * this.squareSize;        
+    }
 
     this.view_.onclick = this.clicked;
     this.view_.oncontextmenu = this.rightclicked;
 
     // draw fields
+    var hlen = this.height * this.squareSize;
     this.context_.strokeStyle = "#0fff0f";
     this.context_.lineWidth = 0;
     this.context_.fillStyle = "#d0ffd0";
     this.context_.fillRect(0, 0, this.view_.width, this.view_.height);
     for (var i = 0; i <= this.width; i++) {
-        this.context_.moveTo(this.squareSize * i, 0);
-        this.context_.lineTo(this.squareSize * i, this.view_.height);
+        this.context_.moveTo(this.squareSize * i, 0 + this.offsetY);
+        this.context_.lineTo(this.squareSize * i, hlen + this.offsetY );
         this.context_.stroke();
     }
     for (var i = 0; i <= this.height; i++) {
-        this.context_.moveTo(0, this.squareSize * i);
-        this.context_.lineTo(this.view_.width, this.squareSize * i);
+        this.context_.moveTo(0, this.squareSize * i + this.offsetY);
+        this.context_.lineTo(this.view_.width, this.squareSize * i + this.offsetY );
         this.context_.stroke();
     }
     this.redraw();        
@@ -356,16 +376,14 @@ Kara.prototype.setKara = function(x,y,dir) {
 
 Kara.prototype.setWidth = function(w) {
     this.width = Number(w);
-    var info = document.getElementById("info");
-    info.contentDocument.getElementById("width").value = this.width;
+    document.getElementById("width").value = this.width;
     this.resize();
     this.redraw();
 }
 
 Kara.prototype.setHeight = function(w) {
     this.height = Number(w);
-    var info = document.getElementById("info");
-    info.contentDocument.getElementById("height").value = this.height;
+    document.getElementById("height").value = this.height;
     this.resize();
     this.redraw();
 }
@@ -373,9 +391,8 @@ Kara.prototype.setHeight = function(w) {
 Kara.prototype.setSize = function(w,h) {
     this.width = Number(w);
     this.height = Number(h);
-    var info = document.getElementById("info");
-    info.contentDocument.getElementById("width").value = this.width;
-    info.contentDocument.getElementById("height").value = this.height;
+    document.getElementById("width").value = this.width;
+    document.getElementById("height").value = this.height;
     this.resize();
 }
 
@@ -398,17 +415,17 @@ Kara.prototype.drawSquare = function (x, y) {
     y = ( y + this.height ) % this.height;
     // Draw empty square as basis
     this.context_.fillStyle = "#0fff0f";
-    this.context_.fillRect(x * this.squareSize, y * this.squareSize,
+    this.context_.fillRect(x * this.squareSize, y * this.squareSize + this.offsetY,
             this.squareSize, this.squareSize
             );
     this.context_.fillStyle = "#d0ffd0";
     this.context_.fillRect(
-            x * this.squareSize + 1, y * this.squareSize + 1,
+            x * this.squareSize + 1, y * this.squareSize + 1 + this.offsetY,
             this.squareSize - 2, this.squareSize - 2
             );
 
     var xpos = x * this.squareSize + 1;
-    var ypos = y * this.squareSize + 1;
+    var ypos = y * this.squareSize + 1 + this.offsetY;
     var siz = this.squareSize - 2;
 
     if (this.field[x][y] <= 0) {

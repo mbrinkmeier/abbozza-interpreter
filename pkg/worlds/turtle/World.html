@@ -1,0 +1,23 @@
+<body>
+    <div id="controls">
+        <div class="control">
+            <script>
+                saveCanvas = function () {
+                    var canvas = parent.World.turtle.view_;
+                    var context = canvas.getContext("2d");
+                    var but = document.getElementById("save");
+                    but.href = canvas.toDataURL("image/png");
+                }
+            </script>
+            <a id="save" onclick="saveCanvas()" download="turtle.png" 
+               style="text-decoration: none; color: black; border: 1px outset black; padding: 10px; background-color:#ddd">Speichere Das Bild</a>
+        </div>
+    </div>
+    <div id="desktop">
+        <h2>Turtle</h2>
+        <p>
+            In dieser Welt kannst Du Zeichnen. Der Stift bewegt sich dabei wie eine
+            Schildkröte. Das Bild kannst Du auch speichern.
+        </p>
+    </div>
+</body>

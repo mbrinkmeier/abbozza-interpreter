@@ -22,17 +22,23 @@ var World = new AbbozzaWorld("array");
 
 World.initView = function(view) {
     this.arrayWorld = new ArrayWorld(view);
-    Abbozza.splitter.addEventListener("splitter_resize", World.resize);
+    // Abbozza.splitter.addEventListener("splitter_resize", World.resize);
     
-    var info = document.getElementById("info");
-    info.contentDocument.getElementById("anispeed").value = (50-World.arrayWorld.duration/100);
-    info.contentDocument.getElementById("zoom").value = 100;
+    // var anislider = document.getElementById("anislider");
+    var anispeed = document.getElementById("anispeed");
+    anispeed.value = (50-World.arrayWorld.duration/100);
+    // Abbozza.worldControl.appendChild(anislider);
     
-    info.contentDocument.getElementById("anispeed").oninput = function(event) {
+    // var zoomslider = document.getElementById("zoomslider");
+    var zoom = document.getElementById("zoom");
+    zoom.value = 100;
+    // Abbozza.worldControl.appendChild(zoomslider);
+     
+    anispeed.oninput = function(event) {
          World.arrayWorld.duration = 100 * (50-Number(this.value));
     };
     
-    info.contentDocument.getElementById("zoom").oninput = function(event) {
+    zoom.oninput = function(event) {
          World.arrayWorld.setZoom(this.value);
     };
 };
@@ -119,7 +125,6 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
         
     }
         
-    console.log(order);
     for ( var i = 0; i < this.numberOfElements; i++ ) {
         var value = Math.floor(min + Math.random() * (max-min)); 
         this.values.push(value); 
@@ -169,10 +174,10 @@ ArrayWorld.prototype.resize = function() {
         // this.view.style.width = (width + "px");
         // this.svg.style.width = (width + "px");
     } else {
-        this.wrapper.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";
+        this.wrapper.style.width = (this.squareSize*(this.numberOfElements+4)) + "px";
     }
-    this.view.style.width = (this.squareSize*(this.numberOfElements+2)) + "px";        
-    this.svg.setAttribute("width",(this.squareSize*(this.numberOfElements+2)) + "px");
+    this.view.style.width = (this.squareSize*(this.numberOfElements+4)) + "px";        
+    this.svg.setAttribute("width",(this.squareSize*(this.numberOfElements+4)) + "px");
     this.svg.setAttribute("height",(this.squareSize*4) + "px");
        
     this.redraw();
