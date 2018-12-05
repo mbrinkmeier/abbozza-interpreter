@@ -35,11 +35,15 @@ Frame = function (title, icon = null, closeable = false) {
     this.titleBar.frame = this;
     this.div.appendChild(this.titleBar);
 
+    this.titleLeft = document.createElement("DIV");
+    this.titleLeft.className = "titleLeft";
+    this.titleBar.appendChild(this.titleLeft);
+    
     this.titleIcon = document.createElement("IMG");
     if (this.iconSrc != null) {
         this.titleIcon.src = this.iconSrc;
     }
-    this.titleBar.appendChild(this.titleIcon);
+    this.titleLeft.appendChild(this.titleIcon);
     this.titleIcon.addEventListener("mousedown",
             function (event) {
                 Desktop.dragFrame(frame);
@@ -49,35 +53,40 @@ Frame = function (title, icon = null, closeable = false) {
     this.titleText = document.createElement("DIV");
     this.titleText.className = "titleText";
     this.titleText.textContent = title;
-    this.titleBar.appendChild(this.titleText);
+    this.titleLeft.appendChild(this.titleText);
     this.titleText.addEventListener("mousedown",
             function (event) {
                 Desktop.dragFrame(frame);
             }
     , false);
-
+    
+    
+    this.titleRight = document.createElement("DIV");
+    this.titleRight.className = "titleRight";
+    this.titleBar.appendChild(this.titleRight);
+    
     if ( closeable ) {
         this.closeButton = document.createElement("SPAN");
         this.closeButton.className = "titleButton";
-        this.titleBar.appendChild(this.closeButton);
+        this.titleRight.appendChild(this.closeButton);
         this.closeButton.innerHTML = "<svg viewBox='0 0 20 20'><path d='M3,3 L17,17 M17,3 L3,17' stroke='black' stroke-width='1px'></svg>";
     } else {
         this.closeButton = null;
     }
     
-    this.maxButton = document.createElement("SPAN");
-    this.maxButton.className = "titleButton";
-    this.titleBar.appendChild(this.maxButton);
-    this.maxButton.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
-    this.maxButton.onclick = this.maximize;
-    this.maxButton.frame = this;
-
     this.minButton = document.createElement("SPAN");
     this.minButton.className = "titleButton";
-    this.titleBar.appendChild(this.minButton);
+    this.titleRight.appendChild(this.minButton);
     this.minButton.innerHTML = "<svg viewBox='0 0 20 20'><path stroke='black' stroke-width='1px' d='M3,17 L17,17'></svg>";
     this.minButton.onclick = this.minimize;
     this.minButton.frame = this;
+
+    this.maxButton = document.createElement("SPAN");
+    this.maxButton.className = "titleButton";
+    this.titleRight.appendChild(this.maxButton);
+    this.maxButton.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
+    this.maxButton.onclick = this.maximize;
+    this.maxButton.frame = this;
 
     this.icon = document.createElement("SPAN");
     this.icon.className = "abzFrameIcon";

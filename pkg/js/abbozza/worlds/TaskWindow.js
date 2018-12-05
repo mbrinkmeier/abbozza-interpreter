@@ -60,7 +60,7 @@ TaskWindow.init = function() {
     TaskWindow.nav_prevSketch.onclick = TaskWindow.prevSketch_;
     TaskWindow.nav_prevSketch.className = "taskFrameNavButton";
     TaskWindow.nav_prevSketch.title = _("gui.task_tooltip_prevsketch");
-    // TaskWindow.nav_.appendChild(TaskWindow.nav_prevSketch);        
+    TaskWindow.nav_.appendChild(TaskWindow.nav_prevSketch);        
     
     TaskWindow.nav_prev = document.createElementNS(Blockly.HTML_NS,'span');
     TaskWindow.nav_prev.innerHTML = "<img src='img/nav/prev.png'/>";
@@ -71,9 +71,25 @@ TaskWindow.init = function() {
     
     TaskWindow.nav_.pageno_ = document.createElementNS(Blockly.HTML_NS, 'SPAN');
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
+    TaskWindow.nav_.pageno_.className = "taskFrameNAvButton";
+    TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
     // TaskWindow.nav_.style.display = "none";
     content.appendChild(TaskWindow.nav_);
+
+    TaskWindow.nav_next = document.createElementNS(Blockly.HTML_NS,'span');
+    TaskWindow.nav_next.innerHTML = "<img src='img/nav/next.png'/>";
+    TaskWindow.nav_next.className = "taskFrameNavButton";
+    TaskWindow.nav_next.onclick = TaskWindow.nextPage_;
+    TaskWindow.nav_next.title = _("gui.task_tooltip_next");
+    TaskWindow.nav_.appendChild(TaskWindow.nav_next);
  
+    TaskWindow.nav_nextSketch = document.createElement("SPAN");
+    TaskWindow.nav_nextSketch.innerHTML = "<img src='img/nav/nextsketch.png'/>";
+    TaskWindow.nav_nextSketch.onclick = TaskWindow.nextSketch_;
+    TaskWindow.nav_nextSketch.className = "taskFrameNavButton";
+    TaskWindow.nav_nextSketch.title = _("gui.task_tooltip_nextsketch");
+    TaskWindow.nav_.appendChild(TaskWindow.nav_nextSketch);        
+
 };
 
 TaskWindow.show = function() {

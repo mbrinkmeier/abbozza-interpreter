@@ -39,7 +39,7 @@ limitations under the License.
     background-color: white;
     z-index: 40;
     border-top: 1px black solid;
-    box-shadow: 0px -5px 10px #d0d0d0;
+    box-shadow: 0px -2px 5px #d0d0d0;
 }
 
 .abzFooter .frameList {
@@ -107,25 +107,42 @@ limitations under the License.
     left: 0px;
     right: 0px;
     height: 28px;
-    vertical-align: middle;
+    display: flex;
 }
 
-.abzFrame .titleBar .titleText {
+.titleLeft {
+    position: absolute;
+    left: 0px;
+    top:0px;
+    height: 28px;
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+    align-items:center;
+}
+
+.titleRight {
+    position: absolute;
+    right: 0px;
+    top:0px;
+    height: 28px;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.titleText {
     font-family: sans-serif;
     font-weight: regular;
     font-size: 100%;
-    position: absolute;
-    min-height: 24px;
     border: none;
-    bottom: 0px;
-    right: 102px;
-    left: 32px;
     margin: 0px;
+    margin-left: 5px;
     padding: 2px;
-    vertical-align : middle;
 }
 
-.abzFrame .titleBar IMG {
+.titleLeft IMG {
     position: absolute;
     width: 24px;
     height: 24px;
@@ -133,11 +150,10 @@ limitations under the License.
 }
 
 
-.abzFrame .titleBar .titleButton {
+.titleButton {
     border: none;
     width: 24px;
     height: 24px;
-    float: right;
     margin: 2px 8px 2px 8px;
 }
 

@@ -242,6 +242,10 @@
 }
 
 .taskFrameNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
     background: #d0d0d0;
     position: absolute;
     margin: 0px;
@@ -258,16 +262,26 @@
 }
 .taskFrameNav SPAN {
     height: 24px;
-    background: red;
 }
     
 .taskFrameNav .taskFrameNavButton {
-    height: 24px;
-    background: red;
+    height: 20px;
+    margin-left:5px;
+    margin-right:5px;
 }
 
-.taskFrameNavButton IMG {
-    height: 24px;
+.taskFrameNav .taskFrameNavButton IMG {
+    height: 20px;
+}
+
+.taskFrameNav .taskFrameNavButtonDisabled {
+    height: 20px;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.taskFrameNav .taskFrameNavButtonDisabled IMG {
+    height: 20px;
 }
 
 .abzWorldView {
@@ -278,7 +292,7 @@
     bottom: 49px;
 }
 
-.abzWorldSpeed {
+.abzWorldSpeed { 
     position: absolute;
     bottom: 0px;
     left:   0px;
