@@ -44,27 +44,23 @@ Frame = function (title, icon = null, closeable = false) {
         this.titleIcon.src = this.iconSrc;
     }
     this.titleLeft.appendChild(this.titleIcon);
-    this.titleIcon.addEventListener("mousedown",
-            function (event) {
-                Desktop.dragFrame(frame);
-            }
-    , false);
 
     this.titleText = document.createElement("DIV");
     this.titleText.className = "titleText";
     this.titleText.textContent = title;
     this.titleLeft.appendChild(this.titleText);
-    this.titleText.addEventListener("mousedown",
-            function (event) {
-                Desktop.dragFrame(frame);
-            }
-    , false);
     
     
     this.titleRight = document.createElement("DIV");
     this.titleRight.className = "titleRight";
     this.titleBar.appendChild(this.titleRight);
     
+    this.titleBar.addEventListener("mousedown",
+            function (event) {
+                Desktop.dragFrame(frame);
+            }
+    , false);
+   
     if ( closeable ) {
         this.closeButton = document.createElement("SPAN");
         this.closeButton.className = "titleButton";
@@ -78,14 +74,14 @@ Frame = function (title, icon = null, closeable = false) {
     this.minButton.className = "titleButton";
     this.titleRight.appendChild(this.minButton);
     this.minButton.innerHTML = "<svg viewBox='0 0 20 20'><path stroke='black' stroke-width='1px' d='M3,17 L17,17'></svg>";
-    this.minButton.onclick = this.minimize;
+    this.minButton.onmouseup = this.minimize;
     this.minButton.frame = this;
 
     this.maxButton = document.createElement("SPAN");
     this.maxButton.className = "titleButton";
     this.titleRight.appendChild(this.maxButton);
     this.maxButton.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
-    this.maxButton.onclick = this.maximize;
+    this.maxButton.onmouseup = this.maximize;
     this.maxButton.frame = this;
 
     this.icon = document.createElement("SPAN");
@@ -280,4 +276,14 @@ Frame.prototype.drag = function (event) {
 
         frame.setPosition(frame.currentX, frame.currentY);
     }
+}
+
+
+Frame.prototype.addTitleButton = function(html,clickHandler) {
+    var button = document.createElement("SPAN");
+    button.className = "titleButton";
+    button.innerHTML = html;
+    button.onmouseup = clickHandler;
+    this.titleRight.appendChild(button);
+    return button;
 }

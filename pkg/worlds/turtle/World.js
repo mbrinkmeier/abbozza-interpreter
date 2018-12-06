@@ -91,6 +91,7 @@ Turtle.prototype.resize = function() {
     this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
     
     this.context_.putImageData(data,0,0);
+    this.updateTurtle();
 }
 
 
@@ -113,6 +114,11 @@ Turtle.prototype.reset = function() {
     this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
     this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
     
+    this.BBoxminX = this.view_.scrollWidth/2;
+    this.BBoxmaxX = this.BBoxminX;
+    this.BBoxminY = this.view_.scrollHeight/2;
+    
+    this.BBoxmaxY = this.BBoxminY;
     this.turtle_penDown = true;
     this.turtle_hidden = false;
     this.turtle_x = this.view_.scrollWidth/2;
@@ -127,14 +133,7 @@ Turtle.prototype.reset = function() {
     this.context_.fillRect(0,0,this.view_.width,this.view_.height);
     this.context_.lineWidth = 1;
     this.context_.strokeStyle = "black";
-    
-    // this.currentPath_ = document.createElementNS(svgNS,"path");
-    // this.currentPath_.setAttribute("stroke-width",this.turtle_width);
-    // this.currentPath_.setAttribute("stroke","black");
-    // this.currentPath_.setAttribute("d","M " + (this.view_.offsetWidth/2) + " " +  (this.view_.offsetHeight/2));
-    
-    // this.svg_.appendChild(this.currentPath_);
-   
+       
     this.updateTurtle();
     
     this.svg_.appendChild(this.turtle_svg_);
@@ -143,6 +142,11 @@ Turtle.prototype.reset = function() {
 
 
 Turtle.prototype.updateTurtle = function() {
+    if ( this.turtle_x < this.BBoxminX ) this.BBoxminX = this.turtle_x;
+    if ( this.turtle_x > this.BBoxmaxX ) this.BBoxmaxX = this.turtle_x;
+    if ( this.turtle_y < this.BBoxminY ) this.BBoxminY = this.turtle_y;
+    if ( this.turtle_y > this.BBoxmaxY ) this.BBoxmaxY = this.turtle_y;
+    
     var path = "m -10 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 -20 0 m 20 0 l -10 0";
     if ( this.turtle_penDown ) {
         path = path + " m -3 0 a 3 3 0 0 1 6 0 a 3 3 0 0 1 -6 0";

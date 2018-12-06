@@ -477,7 +477,7 @@ Abbozza.initCallView = function () {
     document.addEventListener("abz_start", function (event) {
         Abbozza.callCount = 0;
         Abbozza.lastCallStep = 0;
-        AbbozzaIntertpreter.threads[0].callList = [];
+        AbbozzaInterpreter.threads[0].callList = [];
         path.setAttribute("d", "M 0,0");
     });
     document.addEventListener("abz_step", function (event) {

@@ -71,7 +71,7 @@ TaskWindow.init = function() {
     
     TaskWindow.nav_.pageno_ = document.createElementNS(Blockly.HTML_NS, 'SPAN');
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
-    TaskWindow.nav_.pageno_.className = "taskFrameNAvButton";
+    TaskWindow.nav_.pageno_.className = "taskFrameNavButton";
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
     // TaskWindow.nav_.style.display = "none";
     content.appendChild(TaskWindow.nav_);
@@ -90,10 +90,20 @@ TaskWindow.init = function() {
     TaskWindow.nav_nextSketch.title = _("gui.task_tooltip_nextsketch");
     TaskWindow.nav_.appendChild(TaskWindow.nav_nextSketch);        
 
+    TaskWindow.frame.addTitleButton("<IMG src='/img/nav/edit.png'>", TaskWindow.editClicked_);
+    TaskWindow.frame.div.addEventListener("frame_resize", TaskWindow.resize );
+
+    TaskWindow.setContent('',true);
+
+    TaskWindow.editing_ = false;    
+    
+    TaskWindow.updateNav_();
+
 };
 
 TaskWindow.show = function() {
     TaskWindow.frame.show();
+    TaskWindow.triggerOnShow(TaskWindow.page_);
 };
 
 TaskWindow.hide = function() {
@@ -119,3 +129,59 @@ TaskWindow.getHeight = function() {
 
 TaskWindow.setEditable  = function(editable) {};
 TaskWindow.updateNav_ = function() {};
+
+
+TaskWindow.setEditorSize = function() {
+    if ( TaskWindow.ckeditor != null ) {
+        var height = TaskWindow.page_wrapper_.offsetHeight;
+        if ( TaskWindow.nav_.style.display != "none" ) {
+            height = height - TaskWindow.nav_.offsetHeight;
+        }
+            
+        try { 
+            TaskWindow.ckeditor.resize("100%",height,false);
+        }
+        catch (err) {
+            console.log("again");
+            window.setTimeout(TaskWindow.setEditorSize, 100);
+        }
+    }
+}
+
+TaskWindow.resize = function(event) {
+    /*
+    var w = TaskWindow.page_wrapper_.offsetWidth;
+    var h = TaskWindow.page_wrapper_.offsetHeight;
+    
+    if ( TaskWindow.ckeditor != null ) {
+        try { 
+        TaskWindow.ckeditor.resize(w,h,false);
+        } catch (err) {
+            window.setTimeout(TaskWindow.resize, 100);
+        }
+    }
+    */
+   console.log("resize");
+   // TaskWindow.setEditorSize();
+}
+
+TaskWindow.closeClicked_ = function(event) {
+    if ( !TaskWindow.closable ) return;
+    if (TaskWindow.editing_) {
+        TaskWindow.showContent(true);
+    }
+    TaskWindow.hide();
+}
+
+/**
+ * Handles the event, if the edit-button of the TaskWindow is clicked.
+ * 
+ * @param {type} event The event causing the handlers activation.
+ */
+TaskWindow.editClicked_ = function(event) {
+    if (TaskWindow.editing_ == false) {
+        TaskWindow.showEditor();
+    } else {
+        TaskWindow.showContent(true);
+    }
+}
