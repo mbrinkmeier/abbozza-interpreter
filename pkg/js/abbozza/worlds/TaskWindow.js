@@ -56,14 +56,17 @@ TaskWindow.init = function() {
     TaskWindow.nav_.value = '';
 
     TaskWindow.nav_prevSketch = document.createElement("SPAN");
-    TaskWindow.nav_prevSketch.innerHTML = "<img src='img/nav/prevsketch.png'/>";
+    // TaskWindow.nav_prevSketch.innerHTML = "<img src='img/nav/prevsketch.png'/>";
+    TaskWindow.nav_prevSketch.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M18,2 l-8,8 l8,8 l0,-16 M10,2 l-8,8 l8,8 l0,-16'></svg>";
     TaskWindow.nav_prevSketch.onclick = TaskWindow.prevSketch_;
     TaskWindow.nav_prevSketch.className = "taskFrameNavButton";
     TaskWindow.nav_prevSketch.title = _("gui.task_tooltip_prevsketch");
     TaskWindow.nav_.appendChild(TaskWindow.nav_prevSketch);        
     
     TaskWindow.nav_prev = document.createElementNS(Blockly.HTML_NS,'span');
-    TaskWindow.nav_prev.innerHTML = "<img src='img/nav/prev.png'/>";
+    // TaskWindow.nav_prev.innerHTML = "<img src='img/nav/prev.png'/>";
+    TaskWindow.nav_prev.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M18,2 l-16,8 l16,8 l0,-16'></svg>";
+    // TaskWindow.nav_prev.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
     TaskWindow.nav_prev.className = "taskFrameNavButton";
     TaskWindow.nav_prev.onclick = TaskWindow.prevPage_;
     TaskWindow.nav_prev.title = _("gui.task_tooltip_prev");
@@ -74,30 +77,46 @@ TaskWindow.init = function() {
     TaskWindow.nav_.pageno_.className = "taskFrameNavButton";
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
     // TaskWindow.nav_.style.display = "none";
-    content.appendChild(TaskWindow.nav_);
 
     TaskWindow.nav_next = document.createElementNS(Blockly.HTML_NS,'span');
-    TaskWindow.nav_next.innerHTML = "<img src='img/nav/next.png'/>";
+    // TaskWindow.nav_next.innerHTML = "<img src='img/nav/next.png'/>";
+    TaskWindow.nav_next.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M2,2 l16,8 l-16,8 l0,-16'></svg>";
     TaskWindow.nav_next.className = "taskFrameNavButton";
     TaskWindow.nav_next.onclick = TaskWindow.nextPage_;
     TaskWindow.nav_next.title = _("gui.task_tooltip_next");
     TaskWindow.nav_.appendChild(TaskWindow.nav_next);
  
     TaskWindow.nav_nextSketch = document.createElement("SPAN");
-    TaskWindow.nav_nextSketch.innerHTML = "<img src='img/nav/nextsketch.png'/>";
+    // TaskWindow.nav_nextSketch.innerHTML = "<img src='img/nav/nextsketch.png'/>";
+    TaskWindow.nav_nextSketch.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M2,2 l8,8 l-8,8 l0,-16 M11,2 l8,8 l-8,8 l0,-16'></svg>";
     TaskWindow.nav_nextSketch.onclick = TaskWindow.nextSketch_;
     TaskWindow.nav_nextSketch.className = "taskFrameNavButton";
     TaskWindow.nav_nextSketch.title = _("gui.task_tooltip_nextsketch");
     TaskWindow.nav_.appendChild(TaskWindow.nav_nextSketch);        
 
-    TaskWindow.frame.addTitleButton("<IMG src='/img/nav/edit.png'>", TaskWindow.editClicked_);
+    TaskWindow.nav_reload = TaskWindow.frame.addTitleButton(
+            "<svg viewBox='0 0 20 20'><path d='M15.65 4.35A8 8 0 1 0 17.4 13h-2.22a6 6 0 1 1-1-7.22L11 9h7V2z'/></svg>", 
+            TaskWindow.reload_
+    );
+    TaskWindow.nav_mainSketch = TaskWindow.frame.addTitleButton(
+            "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='none' d='M0,10 L10,2 L20,10 M2,8 l0,10 l6,0 l0,-8 l4,0 l0,8 l6,0 l0,-10'/></svg>", 
+            TaskWindow.mainSketch_
+    );
+
+    TaskWindow.frame.addTitleButton("<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='none' d='M4,1 l4,0 l0,4 l-3,3 l-4,0 l0,-4 l3,-3 M8,1 l9,9 l2,9 l-9,-2 l-9,-9 M8,5 l9,9 M5,8 l9,9 M17,13 l0,1 l-3,3 l-1,0'/><circle cx='4.5' cy='4.5' r='1.5'/></svg>", TaskWindow.editClicked_);
     TaskWindow.frame.div.addEventListener("frame_resize", TaskWindow.resize );
+    
+    TaskWindow.frame.div.addEventListener("frame_resize", TaskWindow.resize );
+
+    
+    content.appendChild(TaskWindow.nav_);
 
     TaskWindow.setContent('',true);
 
     TaskWindow.editing_ = false;    
     
     TaskWindow.updateNav_();
+    TaskWindow.frame.show();
 
 };
 
@@ -128,42 +147,74 @@ TaskWindow.getHeight = function() {
 
 
 TaskWindow.setEditable  = function(editable) {};
-TaskWindow.updateNav_ = function() {};
+
+TaskWindow.updateNav_ = function() {
+    if ( TaskWindow.editing_ == true ) {
+        // Hide the sketch navigation
+        TaskWindow.nav_prevSketch.style.display="none";        
+        TaskWindow.nav_nextSketch.style.display="none";        
+        // TaskWindow.nav_mainSketch.style.display="none";
+        // TaskWindow.nav_reload_.style.display="none";                
+    } else {
+        TaskWindow.nav_prevSketch.style.display="inline";        
+        TaskWindow.nav_nextSketch.style.display="inline";        
+        // TaskWindow.nav_mainSketch_.style.display="inline";
+        // TaskWindow.nav_reload_.style.display="inline";                
+
+        // TaskWindow.nav_reload_.className = "taskOverlayNavButton";
+
+        if ( (TaskWindow.prevSketch != null) && (TaskWindow.prevSketch != "")) {
+            // TaskWindow.nav_.prevSketch_.style.display="inline";
+            TaskWindow.nav_prevSketch.className = "taskFrameNavButton";
+        } else {
+            // TaskWindow.nav_.prevSketch_.style.display="none";        
+            TaskWindow.nav_prevSketch.className = "taskFrameNavButtonDisabled";
+        }
+    
+        if ( (TaskWindow.nextSketch != null) && (TaskWindow.nextSketch != "")) {
+            TaskWindow.nav_nextSketch_className = "taskFrameNavButton";
+        } else {
+            TaskWindow.nav_nextSketch.className = "taskFrameNavButtonDisabled";
+        }
+    
+        if ( (TaskWindow.mainSketch != null) && (TaskWindow.mainSketch != "")) {
+            // TaskWindow.nav_mainSketch.className = "taskFrameNavButton";
+        } else {
+            // TaskWindow.nav_mainSketch.className = "taskFrameNavButtonDisabled";
+        }    
+    }
+    
+    // Toggle nav bar
+    // if (TaskWindow.pages_.length > 1) {
+      if (TaskWindow.currentPage_ > 0) {
+        TaskWindow.nav_prev.className = "taskFrameNavButton";
+      } else {
+        TaskWindow.nav_prev.className = "taskFrameNavButtonDisabled";
+      }
+      if (TaskWindow.currentPage_ < TaskWindow.pages_.length -1 ) {
+        TaskWindow.nav_next.className = "taskFrameNavButton";
+      } else {
+        TaskWindow.nav_next.className = "taskFrameNavButtonDisabled";
+      }
+};
 
 
 TaskWindow.setEditorSize = function() {
     if ( TaskWindow.ckeditor != null ) {
         var height = TaskWindow.page_wrapper_.offsetHeight;
-        if ( TaskWindow.nav_.style.display != "none" ) {
-            height = height - TaskWindow.nav_.offsetHeight;
-        }
-            
-        try { 
-            TaskWindow.ckeditor.resize("100%",height,false);
-        }
-        catch (err) {
-            console.log("again");
-            window.setTimeout(TaskWindow.setEditorSize, 100);
-        }
+        TaskWindow.ckeditor.resize("100%",height,false);
     }
 }
 
 TaskWindow.resize = function(event) {
-    /*
     var w = TaskWindow.page_wrapper_.offsetWidth;
     var h = TaskWindow.page_wrapper_.offsetHeight;
     
     if ( TaskWindow.ckeditor != null ) {
-        try { 
         TaskWindow.ckeditor.resize(w,h,false);
-        } catch (err) {
-            window.setTimeout(TaskWindow.resize, 100);
-        }
     }
-    */
-   console.log("resize");
-   // TaskWindow.setEditorSize();
 }
+
 
 TaskWindow.closeClicked_ = function(event) {
     if ( !TaskWindow.closable ) return;
@@ -185,3 +236,52 @@ TaskWindow.editClicked_ = function(event) {
         TaskWindow.showContent(true);
     }
 }
+
+
+/**
+ * Switches to the editor perspective.
+ */
+TaskWindow.showEditor = function () {
+    if ( !TaskWindow.editable ) return;
+    TaskWindow.editing_ = true;
+    
+    // Insert ckeditor
+    if ( (TaskWindow.ckeditor == null) || (!TaskWindow.ckeditor) ) {
+        TaskWindow.ckeditor = CKEDITOR.replace( TaskWindow.page_ ,{
+            resize_enabled: false,
+            height: "100%",
+            width: "100%"
+        });
+        TaskWindow.ckeditor.on('instanceReady', TaskWindow.setEditorSize);
+        TaskWindow.ckeditor.on('change', TaskWindow.editorChange_ );
+    }
+    
+    TaskWindow.updateNav_();
+}
+
+
+
+/*
+ * Switches to the content perspective
+ */
+TaskWindow.showContent = function(getContentFromEditor) {   
+    if ( TaskWindow.ckeditor != null ) {
+       TaskWindow.ckeditor.destroy();
+       TaskWindow.ckeditor = null;
+       TaskWindow.storePageScript(TaskWindow.page_);
+    }
+   
+   /*
+    if ((TaskWindow.pages_.length > 1) || 
+       ( (TaskWindow.mainSketch != "") || (TaskWindow.nextSketch != "") || (TaskWindow.prevSketch != ""))
+        && ((TaskWindow.mainSketch != null) || (TaskWindow.nextSketch != null) || (TaskWindow.prevSketch != null)) ){
+      TaskWindow.nav_.style.display = "block";
+    } else {
+      TaskWindow.nav_.style.display = "none";
+    }
+    */
+   
+    TaskWindow.editing_ = false;
+    
+    TaskWindow.updateNav_();
+};

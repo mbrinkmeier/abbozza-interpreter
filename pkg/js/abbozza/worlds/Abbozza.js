@@ -96,6 +96,7 @@ Abbozza.initWorlds = function () {
     Abbozza.workspaceFrame.setPosition("50%", 0);
     Abbozza.workspaceFrame.setSize("50%", "100%");
     Abbozza.workspaceFrame.show();
+    Abbozza.workspaceFrame.bringToFront();
 
     World.init(Abbozza.worldView);
 
@@ -477,7 +478,7 @@ Abbozza.initCallView = function () {
     document.addEventListener("abz_start", function (event) {
         Abbozza.callCount = 0;
         Abbozza.lastCallStep = 0;
-        AbbozzaInterpreter.threads[0].callList = [];
+        if (AbbozzaInterpreter.threads[0]) AbbozzaInterpreter.threads[0].callList = [];
         path.setAttribute("d", "M 0,0");
     });
     document.addEventListener("abz_step", function (event) {

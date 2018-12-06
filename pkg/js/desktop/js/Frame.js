@@ -112,7 +112,6 @@ Frame = function (title, icon = null, closeable = false) {
             }
     , false);
 
-    this.div.ondragend = this.onDragEnd;
     this.div.style.visibility = "hidden";
 
     this.maximized = false;
@@ -142,7 +141,11 @@ Frame.prototype.show = function () {
 }
 
 Frame.prototype.bringToFront = function () {
-    Desktop.desktop.appendChild(this.div);
+    if ( Desktop.frameAtFront != null ) {
+        Desktop.frameAtFront.div.style.zIndex = Desktop.backLayer;
+    }
+    this.div.style.zIndex = Desktop.frontLayer;
+    Desktop.frameAtFront = this;
 }
 
 Frame.prototype.hide = function () {
@@ -211,13 +214,12 @@ Frame.prototype.setMinSize = function (mw, mh) {
 
 
 Frame.prototype.onDragEnd = function (event) {
-    console.log(event);
     var frame = this.frame;
     var rect = this.getBoundingClientRect();
     var x = this.offsetLeft + event.offsetX;
     var y = this.offsetTop + event.offsetY;
     frame.setPosition(x, y);
-    Desktop.desktop.appendChild(frame.div);
+    frame.bringToFront();
 }
 
 
@@ -247,7 +249,6 @@ Frame.prototype.minimize = function (event) {
 
 
 Frame.prototype.dragEnd = function (event) {
-    console.log("dragend");
     var frame = this.frame;
     frame.initialX = frame.currentX;
     frame.initialY = frame.currentY;
@@ -258,8 +259,6 @@ Frame.prototype.dragEnd = function (event) {
 Frame.prototype.drag = function (event) {
     var frame = this.frame;
     if (frame.active) {
-        console.log("dragging");
-        console.log(frame);
 
         event.preventDefault();
 
@@ -284,6 +283,6 @@ Frame.prototype.addTitleButton = function(html,clickHandler) {
     button.className = "titleButton";
     button.innerHTML = html;
     button.onmouseup = clickHandler;
-    this.titleRight.appendChild(button);
+    this.titleRight.insertBefore(button,this.minButton);
     return button;
 }

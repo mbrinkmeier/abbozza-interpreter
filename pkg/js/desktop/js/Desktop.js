@@ -30,6 +30,9 @@ Desktop.init = function (rootPath) {
     this.draggedFrame = null;
     this.dragStartX = 0;
     this.dragStartY = 0;
+    this.frameAtFront = null;
+    this.frontLayer = 10;
+    this.backLayer = 9;
 
     this.body = document.getElementsByTagName("BODY")[0];
 
@@ -148,11 +151,9 @@ Desktop.drag = function (event) {
         var ending = false;
         if (frame.currentX < 0) {
             frame.currentX = 0;
-            // ending = true;
         }
         if (frame.currentY < 0) {
             frame.currentY = 0;
-            // ending = true;
         }
         if ( frame.currentX > Desktop.desktop.offsetWidth - 20 ) {
             frame.currentX = Desktop.desktop.offsetWidth - 20;
@@ -171,6 +172,7 @@ Desktop.drag = function (event) {
 
 Desktop.dragEnd = function (event) {
     Desktop.dragging = false;
+    var frame = Desktop.draggedFrame;
     Desktop.draggedFrame = null;
     document.removeEventListener("mousemove", Desktop.drag, false);
     document.removeEventListener("mouseup", Desktop.dragEnd, false);
@@ -181,7 +183,8 @@ Desktop.dragFrame = function (frame) {
     if (Desktop.dragging == false) {
         Desktop.dragging = true;
         Desktop.draggedFrame = frame;
-        Desktop.desktop.appendChild(frame.div);
+        frame.bringToFront();
+        // Desktop.desktop.appendChild(frame.div);
         Desktop.dragStartX = event.clientX - frame.div.offsetLeft;
         Desktop.dragStartY = event.clientY - frame.div.offsetTop;
         frame.xOffset = 0;
@@ -220,7 +223,8 @@ Desktop.resizeFrame = function(frame) {
     if (Desktop.dragging == false) {
         Desktop.dragging = true;
         Desktop.resizedFrame = frame;
-        Desktop.desktop.appendChild(frame.div);
+        frame.bringToFront();
+        // Desktop.desktop.appendChild(frame.div);
         Desktop.dragStartX = event.clientX;
         Desktop.dragStartY = event.clientY;
         frame.startWidth = frame.div.offsetWidth;
@@ -286,3 +290,4 @@ Desktop.cascadeFrames = function() {
         }
     }
 }
+

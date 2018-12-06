@@ -908,6 +908,7 @@ Thread.prototype.setLocalSymbol = function (key, value, dim = null) {
     if (this.localSymbols.length == 0)
         return null;
 
+    key = "_" + key + "_";
     var symbols = this.localSymbols[this.localSymbols.length - 1];
     if (dim == null) {
         symbols[key] = value;
@@ -917,7 +918,8 @@ Thread.prototype.setLocalSymbol = function (key, value, dim = null) {
             ar = ar[dim[i]];
         }
         ar[dim[dim.length - 1]] = value;
-}
+    }
+    console.log(symbols);
 };
 
 
@@ -925,6 +927,7 @@ Thread.prototype.getLocalSymbol = function (key) {
     if (this.localSymbols.length == 0)
         return null;
 
+    key = "_" + key + "_";
     var symbols = this.localSymbols[this.localSymbols.length - 1];
     return symbols[key];
 };
