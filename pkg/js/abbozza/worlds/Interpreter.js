@@ -24,7 +24,7 @@
  */
 
 AbbozzaInterpreter = {
-    state: 0,
+    state: -1, // undefined state
     sourceState: 0,
     delay: 500,
     worker: null,
@@ -40,6 +40,7 @@ AbbozzaInterpreter = {
     objects: []
 };
 
+AbbozzaInterpreter.STATE_UNDEFINED = -1;
 AbbozzaInterpreter.STATE_READY = 0;     // The Interpreter is initialized and ready to run
 AbbozzaInterpreter.STATE_RUNNING = 1;   // The interpreter is running
 AbbozzaInterpreter.STATE_PAUSED = 2;     // The interpreter is paused, ready to continue

@@ -129,7 +129,7 @@ Abbozza.initWorlds = function () {
     if (Configuration.getParameter("option.source") == "true") {
         Abbozza.sourceFrame = Abbozza.createFrame(_("gui.source"), null, sourcePane, 0, "50%", "50%", "50%");
         sourcefont = document.getElementById("sourcefont");
-        sourcefont.value = "12";
+        sourcefont.value = Abbozza.overlayEditorFontSize;
         document.getElementById("sourcefontlabel").textContent = _("gui.font_size");
     } else {
         Abbozza.sourceFrame = null;
@@ -152,10 +152,14 @@ Abbozza.initWorlds = function () {
     });
     Abbozza.sourceEditor.setSize(null, "100%");
     
+    Abbozza.sourceEditor.getWrapperElement().style["font-size"] = Abbozza.overlayEditorFontSize + "px";
+    Abbozza.sourceEditor.refresh();
+            
     if ( Abbozza.sourceFrame != null ) {
         sourcefont.oninput = function(event) {
             Abbozza.sourceEditor.getWrapperElement().style["font-size"] = this.value + "px";
             Abbozza.sourceEditor.refresh();
+            Abbozza.overlayEditorFontSize = this.value;
         }
     }
     // tabs.openTab(infoPane);

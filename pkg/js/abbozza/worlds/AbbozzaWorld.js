@@ -72,7 +72,7 @@ AbbozzaWorld.prototype.purgeHooks = function() {
     this.onReset = null;
     this.onStart = null;
     this.onStep = null;
-    this.onTwrminate = null;
+    this.onTerminate = null;
     this.onError = null;
 }
 

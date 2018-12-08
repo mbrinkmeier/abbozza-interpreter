@@ -35,7 +35,6 @@ TaskWindow.init = function() {
     TaskWindow.frame = new Frame("Aufgabe",null);
     TaskWindow.frame.setPosition(0,"50%");
     TaskWindow.frame.setSize("50%","50%");
-    TaskWindow.show();
   
     var content = TaskWindow.frame.content;
 
@@ -116,26 +115,25 @@ TaskWindow.init = function() {
     TaskWindow.editing_ = false;    
     
     TaskWindow.updateNav_();
-    TaskWindow.frame.show();
+    // TaskWindow.show();
 
+    TaskWindow.frame.onShow = function() {
+        TaskWindow.onShow(TaskWindow.page_);        
+    };
+    
+    TaskWindow.frame.onHide = function() {
+        TaskWindow.onHide(TaskWindow.page_);        
+    };
+    
 };
 
-TaskWindow.show = function() {
-    TaskWindow.frame.show();
-    TaskWindow.triggerOnShow(TaskWindow.page_);
-};
+TaskWindow.show = function() { TaskWindow.frame.show(); };
 
-TaskWindow.hide = function() {
-    TaskWindow.frame.hide();
-};
+TaskWindow.hide = function() { TaskWindow.frame.hide(); };
 
-TaskWindow.isVisible = function() {
-    return (TaskWindow.frame.div.style.display == "block");
-};
+TaskWindow.isVisible = function() { TaskWindow.frame.isVisible(); };
 
-TaskWindow.setSize = function(width, height) {
-    TaskWindow.frame.setSize(width,height);
-}
+TaskWindow.setSize = function(width,height) { TaskWindow.frame.setSize(width,height); };
 
 TaskWindow.getWidth = function() {
     return TaskWindow.frame.div.offsetWidth;
@@ -144,7 +142,6 @@ TaskWindow.getWidth = function() {
 TaskWindow.getHeight = function() {
     return TaskWindow.frame.div.offsetHeight;
 }
-
 
 TaskWindow.setEditable  = function(editable) {};
 

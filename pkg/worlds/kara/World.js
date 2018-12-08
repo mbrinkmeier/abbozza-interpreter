@@ -477,7 +477,7 @@ Kara.prototype.drawSquare = function (x, y) {
 Kara.prototype.showCollision = function() {
     // Upper left corner of collision
     var x = this.karaX * this.squareSize + this.karaDX * this.squareSize/2+1;
-    var y = this.karaY * this.squareSize + this.karaDY * this.squareSize/2+1;
+    var y = this.karaY * this.squareSize + this.karaDY * this.squareSize/2+1+this.offsetY;
     this.collX = this.karaX;
     this.collY = this.karaY;
     this.collX2 = this.karaX + this.karaDX;
@@ -637,7 +637,7 @@ Kara.prototype.clicked = function(event) {
     
     var kara = World.kara;
     var x = Math.floor(event.offsetX/kara.squareSize);
-    var y = Math.floor(event.offsetY/kara.squareSize);
+    var y = Math.floor((event.offsetY-kara.offsetY)/kara.squareSize);
     kara.hideCollision();
     
     if ( event.ctrlKey && (kara.field[x][y] > 0)) {
@@ -659,7 +659,7 @@ Kara.prototype.rightclicked = function(event) {
     
     var kara = World.kara;
     var x = Math.floor(event.offsetX/kara.squareSize);
-    var y = Math.floor(event.offsetY/kara.squareSize);
+    var y = Math.floor((event.offsetY-kara.offsetY)/kara.squareSize);
     kara.hideCollision();
     
     if (( x != kara.karaX ) || ( y != kara.karaY )) {

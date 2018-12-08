@@ -135,10 +135,24 @@ Frame.prototype.toggleShow = function () {
 }
 
 Frame.prototype.show = function () {
+    this.onShow();
     this.div.style.visibility = "visible";
     this.content.style.visibility = "visible";
     this.div.style.zIndex = 30  ;
 }
+
+Frame.prototype.hide = function () {
+    this.onHide();
+    this.div.style.visibility = "hidden";
+    this.content.style.visibility = "hidden";
+    this.div.style.zIndex = 0;
+}
+
+// These operations provide hooks which will be called right
+// BEFORE the frame is shown or hidden.
+
+Frame.prototype.onShow = function() {};
+Frame.prototype.onHide = function() {};
 
 Frame.prototype.bringToFront = function () {
     if ( Desktop.frameAtFront != null ) {
@@ -148,10 +162,9 @@ Frame.prototype.bringToFront = function () {
     Desktop.frameAtFront = this;
 }
 
-Frame.prototype.hide = function () {
-    this.div.style.visibility = "hidden";
-    this.content.style.visibility = "hidden";
-    this.div.style.zIndex = 0;
+
+Frame.prototype.isVisible = function() {
+    return (this.div.style.visibility == "visible");
 }
 
 /**
