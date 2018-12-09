@@ -24,6 +24,7 @@ import de.uos.inf.did.abbozza.core.AbbozzaLogger;
 import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.core.AbbozzaServerException;
 import de.uos.inf.did.abbozza.core.AbbozzaSplashScreen;
+import de.uos.inf.did.abbozza.core.AbbozzaVersion;
 import de.uos.inf.did.abbozza.handler.JarDirHandler;
 import de.uos.inf.did.abbozza.tools.XMLTool;
 import de.uos.inf.did.abbozza.worlds.handler.LoadSourceHandler;
@@ -62,12 +63,10 @@ import org.xml.sax.SAXException;
  */
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
-    public static final int SYS_MAJOR = 0;
-    public static final int SYS_MINOR = 1;
-    public static final int SYS_REV = 0;
-    public static final int SYS_HOTFIX = 0;
-    public static final String SYS_REMARK = "(worlds)";
-    public static final String SYS_VERSION = SYS_MAJOR + "." + SYS_MINOR + "." + SYS_REV + "." + SYS_HOTFIX + " " + SYS_REMARK;
+    static {
+        AbbozzaVersion.setSystemVersion(0,2,0);
+        AbbozzaVersion.setSystemName("worlds");
+    }
 
     protected TrayIcon trayIcon;
     protected String localWorldPath;
