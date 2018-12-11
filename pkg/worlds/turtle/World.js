@@ -73,26 +73,7 @@ function Turtle(view) {
 };
 
 
-Turtle.prototype.resize = function() {
-    this.turtle_svg_ = document.createElementNS(svgNS,"path");
-    this.turtle_svg_.setAttribute("stroke-width","3");
-    this.turtle_svg_.setAttribute("fill","none");
-    
-    var w = this.view_.width;
-    var h = this.view_.height;
-    var data = this.context_.getImageData(0,0,w,h);
-    
-    // Reset context
-    this.view_.width = this.parent_.clientWidth;
-    this.view_.height = this.parent_.clientHeight;
-    
-    this.svg_.setAttribute("width",this.view_.offsetWidth + "px");
-    this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
-    this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
-    
-    this.context_.putImageData(data,0,0);
-    this.updateTurtle();
-}
+
 
 
 Turtle.prototype.reset = function() {
@@ -114,15 +95,15 @@ Turtle.prototype.reset = function() {
     this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
     this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
     
-    this.BBoxminX = this.view_.scrollWidth/2;
-    this.BBoxmaxX = this.BBoxminX;
-    this.BBoxminY = this.view_.scrollHeight/2;
+    this.BBoxminX = -this.view_.scrollWidth/2;
+    this.BBoxmaxX = -this.BBoxminX;
+    this.BBoxminY = -this.view_.scrollHeight/2;
+    this.BBoxmaxY = -this.BBoxminY;
     
-    this.BBoxmaxY = this.BBoxminY;
     this.turtle_penDown = true;
     this.turtle_hidden = false;
-    this.turtle_x = this.view_.scrollWidth/2;
-    this.turtle_y = this.view_.scrollHeight/2;
+    this.turtle_x = 0;
+    this.turtle_y = 0;
     this.turtle_dx = 0;
     this.turtle_dy = -1;
     this.turtle_dir = 270;
@@ -134,28 +115,73 @@ Turtle.prototype.reset = function() {
     this.context_.lineWidth = 1;
     this.context_.strokeStyle = "black";
        
-    this.updateTurtle();
+    this.updateTurtle(true);
     
     this.svg_.appendChild(this.turtle_svg_);
 };
 
 
-
-Turtle.prototype.updateTurtle = function() {
-    if ( this.turtle_x < this.BBoxminX ) this.BBoxminX = this.turtle_x;
-    if ( this.turtle_x > this.BBoxmaxX ) this.BBoxmaxX = this.turtle_x;
-    if ( this.turtle_y < this.BBoxminY ) this.BBoxminY = this.turtle_y;
-    if ( this.turtle_y > this.BBoxmaxY ) this.BBoxmaxY = this.turtle_y;
+Turtle.prototype.resize = function() {
+    // this.turtle_svg_ = document.createElementNS(svgNS,"path");
+    // this.turtle_svg_.setAttribute("stroke-width","3");
+    // this.turtle_svg_.setAttribute("fill","none");
     
-    var path = "m -10 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 -20 0 m 20 0 l -10 0";
-    if ( this.turtle_penDown ) {
-        path = path + " m -3 0 a 3 3 0 0 1 6 0 a 3 3 0 0 1 -6 0";
+    //this.resizeCanvas(this.parent_.clientWidth, this.parent_.clientHeight);
+    
+    this.updateTurtle();
+}
+
+Turtle.prototype.resizeCanvas = function(newW,newH,deltaX,deltaY) {
+    var oldW = this.view_.offsetWidth;
+    var oldH = this.view_.offsetHeight;
+    var data = this.context_.getImageData(0,0,oldW,oldH);
+
+    // Reset context
+    this.view_.width = newW;
+    this.view_.height = newH;
+
+    this.svg_.setAttribute("width",this.view_.offsetWidth + "px");
+    this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
+    this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
+    
+    this.context_.putImageData(data,deltaX,deltaY);    
+}
+
+Turtle.prototype.updateTurtle = function(penChanged = false) {
+    var dx = 0;
+    var dy = 0;
+    if ( this.turtle_x < this.BBoxminX + 40 ) {
+        dx = - (this.turtle_x-40) + this.BBoxminX;
+        this.BBoxminX = this.turtle_x - 40 ;
+    }
+    if ( this.turtle_x > this.BBoxmaxX - 40 ) this.BBoxmaxX = this.turtle_x + 40;
+    if ( this.turtle_y < this.BBoxminY + 40 ) {
+        dy = - (this.turtle_y-40) + this.BBoxminY;
+        this.BBoxminY = this.turtle_y - 40;
+    }
+    if ( this.turtle_y > this.BBoxmaxY -40 ) this.BBoxmaxY = this.turtle_y + 40;
+    
+    var newW = this.BBoxmaxX - this.BBoxminX;
+    var newH = this.BBoxmaxY - this.BBoxminY;
+    
+    if ( (newH != this.view_.offsetWidth) || (newW != this.view_.offsetHeight) ) { 
+        this.resizeCanvas(newW,newH,dx,dy);
     }
     
-    this.turtle_svg_.setAttribute("d",path);
+    if ( penChanged ) {
+        var path = "m -10 0 a 10 10 0 0 1 20 0 a 10 10 0 0 1 -20 0 m 20 0 l -10 0";
+        if ( this.turtle_penDown ) {
+            path = path + " m -3 0 a 3 3 0 0 1 6 0 a 3 3 0 0 1 -6 0";
+        }
+        this.turtle_svg_.setAttribute("d",path);
+    }
+    
     this.turtle_svg_.setAttribute("stroke",this.turtle_color);
     var transform = "";
-    transform = transform + " translate(" + Number(this.turtle_x) + "," + Number(this.turtle_y) + ")";
+    var x = Number(this.turtle_x) - this.BBoxminX;
+    var y = Number(this.turtle_y) - this.BBoxminY;
+    
+    transform = transform + " translate(" + x + "," + y + ")";
     transform = transform + " rotate(" + Number(this.turtle_dir) + ")";
     this.turtle_svg_.setAttribute("transform", transform);
 }
@@ -180,7 +206,7 @@ Turtle.prototype.setTurtleDir = function(dir) {
 
 Turtle.prototype.setTurtleColor = function(color) {
     this.turtle_color = color;
-    this.updateTurtle();
+    this.updateTurtle(true);
 }
 
 
@@ -196,27 +222,27 @@ Turtle.prototype.clear = function() {
 }
 
 Turtle.prototype.forward = function(dist) {
+
+    
+    var x = this.turtle_x;
+    var y = this.turtle_y;
+
+    this.turtle_x = this.turtle_x + this.turtle_dx * dist;
+    this.turtle_y = this.turtle_y + this.turtle_dy * dist;
+    this.updateTurtle();
     this.context_.strokeStyle = this.turtle_color;
     this.context_.lineWidth = this.turtle_width;
     
     this.context_.beginPath();
-    this.context_.moveTo(this.turtle_x,this.turtle_y);
+    this.context_.moveTo(x -this.BBoxminX,y - this.BBoxminY);
  
-    // var path = this.currentPath_.getAttribute("d");
-    this.turtle_x = this.turtle_x + this.turtle_dx * dist;
-    this.turtle_y = this.turtle_y + this.turtle_dy * dist;
     if ( this.turtle_penDown ) {
-        this.context_.lineTo(this.turtle_x,this.turtle_y);
-        // path = path + " L " + this.turtle_x + " " + this.turtle_y;
+        this.context_.lineTo(this.turtle_x -this.BBoxminX,this.turtle_y - this.BBoxminY);
     } else {
-        this.context_.moveTo(this.turtle_x,this.turtle_y);
-        // path = path + " M " + this.turtle_x + " " + this.turtle_y;
+        this.context_.moveTo(this.turtle_x -this.BBoxminX,this.turtle_y- this.BBoxminY);
     }
-    // this.currentPath_.setAttribute("d",path);
  
     this.context_.stroke();
-    
-    this.updateTurtle();
 }
 
 
@@ -255,7 +281,6 @@ Turtle.prototype.setColor = function(color) {
 
 Turtle.prototype.setRGBColor = function(red,green,blue) {
     var color = "rgb(" + red + "," + green + "," + blue + ")";
-    console.log(color);
     this.turtle_color = color;
     this.newPath();
     this.setTurtleColor(color);
@@ -264,13 +289,13 @@ Turtle.prototype.setRGBColor = function(red,green,blue) {
 Turtle.prototype.penUp = function() {
     this.newPath();
     this.turtle_penDown = false;
-    this.updateTurtle();
+    this.updateTurtle(true);
 }
 
 Turtle.prototype.penDown = function() {
     this.newPath();
     this.turtle_penDown = true;
-    this.updateTurtle();    
+    this.updateTurtle(true);    
 }
 
 

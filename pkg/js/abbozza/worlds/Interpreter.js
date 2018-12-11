@@ -920,7 +920,6 @@ Thread.prototype.setLocalSymbol = function (key, value, dim = null) {
         }
         ar[dim[dim.length - 1]] = value;
     }
-    console.log(symbols);
 };
 
 
