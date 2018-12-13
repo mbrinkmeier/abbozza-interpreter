@@ -46,6 +46,11 @@ public class World {
     private Node options;
     private String infoPane;
     
+    /**
+     * Insert a world without id at a given path
+     * 
+     * @param path 
+     */
     public World(String path) {
         basePath = path;
         baseURL = null;

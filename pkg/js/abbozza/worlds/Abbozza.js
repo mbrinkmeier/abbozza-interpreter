@@ -43,12 +43,18 @@ Abbozza.initWorlds = function () {
     Abbozza.workspaceDiv = document.createElement("DIV");
     Abbozza.workspaceDiv.id = "workspace";
     Abbozza.workspaceFrame.content.appendChild(Abbozza.workspaceDiv);
+    Abbozza.workspaceFrame.setPosition("50%", 0);
+    Abbozza.workspaceFrame.setSize("50%", "100%");
+    Abbozza.workspaceFrame.show();
+    Abbozza.workspaceFrame.bringToFront();
 
     try {
         Abbozza.initSystem('worlds', true, 'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
     } catch (ex) {
     }
     Abbozza.worldId = worldId;
+
+
 
     // Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
     // World.init(document.getElementById(".topleft"));
@@ -92,11 +98,6 @@ Abbozza.initWorlds = function () {
     
     ToolboxMgr.rebuild();
     Blockly.svgResize(Blockly.mainWorkspace);
-
-    Abbozza.workspaceFrame.setPosition("50%", 0);
-    Abbozza.workspaceFrame.setSize("50%", "100%");
-    Abbozza.workspaceFrame.show();
-    Abbozza.workspaceFrame.bringToFront();
 
     World.init(Abbozza.worldView);
 

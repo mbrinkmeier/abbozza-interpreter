@@ -26,12 +26,12 @@ import de.uos.inf.did.abbozza.core.AbbozzaServerException;
 import de.uos.inf.did.abbozza.core.AbbozzaSplashScreen;
 import de.uos.inf.did.abbozza.core.AbbozzaVersion;
 import de.uos.inf.did.abbozza.handler.JarDirHandler;
+import de.uos.inf.did.abbozza.plugin.Plugin;
 import de.uos.inf.did.abbozza.tools.XMLTool;
 import de.uos.inf.did.abbozza.worlds.handler.LoadSourceHandler;
 import de.uos.inf.did.abbozza.worlds.handler.SaveSourceHandler;
 import de.uos.inf.did.abbozza.worlds.handler.WorldFeatureHandler;
 import de.uos.inf.did.abbozza.worlds.handler.WorldHandler;
-import de.uos.inf.did.abbozza.worlds.monitor.WorldsMonitorHandler;
 import java.awt.AWTException;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -41,7 +41,9 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -92,9 +94,10 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
         AbbozzaSplashScreen.showSplashScreen("de/uos/inf/did/abbozza/worlds/icons/abbozza-worlds-splash.png");
 
+        worldManager = new WorldManager(this);
+
         super.init(system, args);
 
-        worldManager = new WorldManager(this);
         worldManager.registerWorld(new World("worlds/console"));
         worldManager.registerWorld(new World("worlds/kara"));
         worldManager.registerWorld(new World("worlds/turtle"));
@@ -426,6 +429,28 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
             }
         }
+    }
+    
+    /**
+     * 
+     * @param plugin 
+     */
+    public void registerPlugin(Plugin plugin) {
+       String id; 
+       URL url;
+       Document xml = plugin.getXml();
+       NodeList worlds = xml.getElementsByTagName("world");
+       if ( worlds.getLength() > 0 ) {
+           Node world = worlds.item(0);
+           id = world.getAttributes().getNamedItem("id").getNodeValue();
+           try {
+               url = new URL(this.getRootURL() + "plugin/" + plugin.getId() + "/world/" + id );
+               this.worldManager.registerWorld(new World(id,url));
+           } catch (MalformedURLException ex) {
+               AbbozzaLogger.err("[Worlds] Could not register world " + id + " from plugin " + plugin.getId() );
+           }
+           
+       }
     }
 
 }
