@@ -43,8 +43,6 @@ Abbozza.initWorlds = function () {
     Abbozza.workspaceDiv = document.createElement("DIV");
     Abbozza.workspaceDiv.id = "workspace";
     Abbozza.workspaceFrame.content.appendChild(Abbozza.workspaceDiv);
-    Abbozza.workspaceFrame.setPosition("50%", 0);
-    Abbozza.workspaceFrame.setSize("50%", "100%");
     Abbozza.workspaceFrame.show();
     Abbozza.workspaceFrame.bringToFront();
 
@@ -53,6 +51,8 @@ Abbozza.initWorlds = function () {
     } catch (ex) {
     }
     Abbozza.worldId = worldId;
+    Abbozza.workspaceFrame.setPosition("50%", 0);
+    Abbozza.workspaceFrame.setSize("50%", "100%");
 
 
 
@@ -166,6 +166,14 @@ Abbozza.initWorlds = function () {
     // tabs.openTab(infoPane);
 
     Abbozza.parseQuery();
+    
+    /*
+    LevelMgr.delete("test");
+    LevelMgr.init("test",10,5,false);
+    LevelMgr.setStars(0,2);
+    Abbozza.openOverlayDialog(LevelMgr.getStarsView(0,64,true,true),null);
+    */
+   
 };
 
 
