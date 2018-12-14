@@ -171,7 +171,7 @@ Abbozza.initWorlds = function () {
     LevelMgr.delete("test");
     LevelMgr.init("test",10,5,false);
     LevelMgr.setStars(0,2);
-    Abbozza.openOverlayDialog(LevelMgr.getStarsView(0,64,true,true),null);
+    LevelMgr.openLevelOverlay(0,48,"Hallo");
     */
    
 };

@@ -334,3 +334,15 @@
     width: auto;
     height: 48px;
 }
+
+.levelButton {
+    border-radius: 5px;
+    border : 2pt solid darkgray;
+    height : 36px;
+    font-weight: bold;
+}
+
+.levelMsg {
+    font-weight: bold;
+    font-size: 200%;
+}

@@ -178,12 +178,13 @@ LevelMgr.setData = function(level,data) {
  * 
  * @returns {LevelMgr.getStarsView.element}
  */
-LevelMgr.getStarsView = function(level,size,failed = true, animated = false) {
-    console.log(Levels);
+LevelMgr.getStarsView = function(level,size, msg = "", failed = true, animated = false) {
     if ( (level < 0) || (level >= Levels.stars.length)) return null;
     
     var stars = Levels.stars[level];
+    var div = document.createElement("DIV");
     var element = document.createElement("SPAN");
+    div.appendChild(element);
     element.className = "levelStars";
     var m = size/2;
     
@@ -232,5 +233,42 @@ LevelMgr.getStarsView = function(level,size,failed = true, animated = false) {
         }
     }
     
-    return element;
+    element = document.createElement("DIV");
+    element.className = "levelMsg";
+    element.textContent = msg;
+    
+    div.appendChild(element);
+    
+    return div;
+}
+
+
+LevelMgr.openLevelOverlay = function(level,size,msg) {
+    Abbozza.createOverlayDialog(
+            LevelMgr.getStarsView(level,size,msg,true,true),
+            [
+                {
+                    msg : "Weiter",
+                    cmd : "next",
+                    callback: null,
+                    obj: null ,
+                    class: "levelButton"
+                },
+                {
+                    msg : "Nochmal",
+                    cmd : "retry",
+                    callback: null,
+                    obj: null,
+                    class: "levelButton"
+                },
+                {
+                    msg : "Zurück",
+                    cmd : "back",
+                    callback: null,
+                    obj: null,
+                    class: "levelButton"
+                }
+            ],
+            null
+            );
 }
