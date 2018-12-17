@@ -36,7 +36,8 @@ Abbozza.initWorlds = function () {
     Abbozza.workspaceFrame.div.addEventListener("frame_resize",
             function (event) {
                 Abbozza.workspaceFrame.content.width = "100%";
-                Blockly.svgResize(Blockly.mainWorkspace);
+                if ( Blockly.mainWorkspace )
+                  Blockly.svgResize(Blockly.mainWorkspace);
             }
     );
 
@@ -44,6 +45,8 @@ Abbozza.initWorlds = function () {
     Abbozza.workspaceDiv.id = "workspace";
     Abbozza.workspaceFrame.content.appendChild(Abbozza.workspaceDiv);
     Abbozza.workspaceFrame.show();
+    Abbozza.workspaceFrame.setPosition("50%", 0);
+    Abbozza.workspaceFrame.setSize("50%", "100%");
     Abbozza.workspaceFrame.bringToFront();
 
     try {
@@ -51,8 +54,6 @@ Abbozza.initWorlds = function () {
     } catch (ex) {
     }
     Abbozza.worldId = worldId;
-    Abbozza.workspaceFrame.setPosition("50%", 0);
-    Abbozza.workspaceFrame.setSize("50%", "100%");
 
 
 
@@ -95,6 +96,7 @@ Abbozza.initWorlds = function () {
         document.adoptNode(desktopBody);
         Desktop.desktop.appendChild(desktopBody);
     }
+    
     
     ToolboxMgr.rebuild();
     Blockly.svgResize(Blockly.mainWorkspace);
