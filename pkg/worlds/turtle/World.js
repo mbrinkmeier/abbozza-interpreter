@@ -144,7 +144,7 @@ Turtle.prototype.resizeCanvas = function(newW,newH,deltaX,deltaY) {
     this.svg_.setAttribute("height",this.view_.offsetHeight + "px");
     this.svg_.setAttribute("viewBox","0 0 " + this.view_.offsetWidth + " " + this.view_.offsetHeight);
     
-    this.context_.putImageData(data,deltaX,deltaY);    
+    this.context_.putImageData(data,Math.round(deltaX),Math.round(deltaY));
 }
 
 Turtle.prototype.updateTurtle = function(penChanged = false) {
@@ -223,7 +223,6 @@ Turtle.prototype.clear = function() {
 
 Turtle.prototype.forward = function(dist) {
 
-    
     var x = this.turtle_x;
     var y = this.turtle_y;
 
@@ -247,7 +246,7 @@ Turtle.prototype.forward = function(dist) {
 
 
 Turtle.prototype.backward = function(dist) {
-    this.forward(-Number(dist));
+    this.forward(-1.0*dist);
 }
 
 
