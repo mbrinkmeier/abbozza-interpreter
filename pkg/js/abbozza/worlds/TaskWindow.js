@@ -33,8 +33,6 @@
 
 TaskWindow.init = function() {
     TaskWindow.frame = new Frame("Aufgabe",null);
-    TaskWindow.frame.setPosition(0,"50%");
-    TaskWindow.frame.setSize("50%","50%");
   
     var content = TaskWindow.frame.content;
 
@@ -73,7 +71,7 @@ TaskWindow.init = function() {
     
     TaskWindow.nav_.pageno_ = document.createElementNS(Blockly.HTML_NS, 'SPAN');
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
-    TaskWindow.nav_.pageno_.className = "taskFrameNavButton";
+    TaskWindow.nav_.pageno_.className = "taskFrameNavPage";
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
     // TaskWindow.nav_.style.display = "none";
 
@@ -124,6 +122,9 @@ TaskWindow.init = function() {
     TaskWindow.frame.onHide = function() {
         TaskWindow.onHide(TaskWindow.page_);        
     };
+
+    TaskWindow.frame.setPosition(0,"50%");
+    TaskWindow.frame.setSize("50%","50%");
     
 };
 

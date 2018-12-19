@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features>
+
+    <!-- The basic features, w/o variables, operations, arrays ... -->    
+    <feature id="feat.HATHI">
+       <category id="cat.HATHI" color="#00A000">
+            <block type="hathi_forward"/>
+            <block type="hathi_moved"/>
+            <block type="hathi_turn"/>
+            <block type="hathi_pick_up"/>
+            <block type="hathi_drop"/>
+            <block type="hathi_is_empty"/>
+            <block type="hathi_is_on_peanut"/>
+            <block type="hathi_is_forward"/>
+        </category>             
+    </feature>
+</features>

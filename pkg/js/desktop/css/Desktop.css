@@ -19,6 +19,8 @@ limitations under the License.
 */
 
 .abzHeader {
+    display: flex;
+    align-items: center;
     position: fixed;
     width: 100%;
     left: 0px;
@@ -242,3 +244,5 @@ limitations under the License.
     background-position: center;
     background-repeat: no-repeat;
 }
+
+

@@ -153,8 +153,9 @@ AbbozzaInterpreter.doStep = function () {
     if (!Abbozza.waitingForAnimation) {
         AbbozzaInterpreter.executeStep();
         // If RUNNING automatically execute the next step
-        if (AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_RUNNING)
+        if (AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_RUNNING) {
             window.setTimeout(AbbozzaInterpreter.doStep, AbbozzaInterpreter.delay);
+        }
     } else {
         window.setTimeout(AbbozzaInterpreter.doStep, 0);
     }

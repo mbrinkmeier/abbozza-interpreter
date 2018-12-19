@@ -108,7 +108,7 @@ Frame = function (title, icon = null, closeable = false) {
     this.div.appendChild(this.resizeHandle);
     this.resizeHandle.addEventListener("mousedown",
             function (event) {
-                Desktop.resizeFrame(frame);
+                Desktop.resizeFrame(frame,event);
             }
     , false);
 

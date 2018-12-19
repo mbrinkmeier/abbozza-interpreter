@@ -211,7 +211,7 @@ Desktop.resizing = function (event) {
 };
 
 
-Desktop.resizeEnd = function (event) {
+Desktop.resizeEnd = function(event) {
     Desktop.dragging = false;
     Desktop.resizedFrame = null;
     document.removeEventListener("mousemove", Desktop.resizing, false);
@@ -219,7 +219,7 @@ Desktop.resizeEnd = function (event) {
 };
 
 
-Desktop.resizeFrame = function(frame) {
+Desktop.resizeFrame = function(frame,event) {
     if (Desktop.dragging == false) {
         Desktop.dragging = true;
         Desktop.resizedFrame = frame;
