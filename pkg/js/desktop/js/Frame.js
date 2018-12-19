@@ -57,7 +57,7 @@ Frame = function (title, icon = null, closeable = false) {
     
     this.titleBar.addEventListener("mousedown",
             function (event) {
-                Desktop.dragFrame(frame);
+                Desktop.dragFrame(frame,event);
             }
     , false);
    

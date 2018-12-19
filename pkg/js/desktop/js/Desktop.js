@@ -179,7 +179,7 @@ Desktop.dragEnd = function (event) {
 };
 
 
-Desktop.dragFrame = function (frame) {
+Desktop.dragFrame = function (frame,event) {
     if (Desktop.dragging == false) {
         Desktop.dragging = true;
         Desktop.draggedFrame = frame;
