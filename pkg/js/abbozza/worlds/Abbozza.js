@@ -71,15 +71,15 @@ Abbozza.initWorlds = function () {
     );
     Abbozza.worldView = document.createElement("DIV");
     Abbozza.worldView.className = "abzWorldView";    
-    Abbozza.worldSpeed = document.createElement("DIV");
-    Abbozza.worldSpeed.className = "abzWorldSpeed";
+    // Abbozza.worldSpeed = document.createElement("DIV");
+    // Abbozza.worldSpeed.className = "abzWorldSpeed";
     Abbozza.worldControl = document.createElement("DIV");
     Abbozza.worldControl.className = "abzWorldControl";
     Abbozza.worldFrame.content.appendChild(Abbozza.worldView);
-    Abbozza.worldFrame.content.appendChild(Abbozza.worldSpeed);
+    // Abbozza.worldFrame.content.appendChild(Abbozza.worldSpeed);
     Abbozza.worldFrame.content.appendChild(Abbozza.worldControl);
     // Desktop.header.appendChild(document.getElementById("speedslider"));
-    Abbozza.worldSpeed.appendChild(document.getElementById("speedslider"));
+    Abbozza.worldControl.appendChild(document.getElementById("speedslider"));
     
     var controls = document.getElementById("infoFrame").contentDocument.getElementById("controls");
     if ( controls ) {
