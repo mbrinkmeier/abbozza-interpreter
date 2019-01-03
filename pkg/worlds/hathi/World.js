@@ -216,7 +216,7 @@ Hathi.ROCK = -1;
 Hathi.HOLE = -2;
 Hathi.TREE = -3;
 Hathi.OASIS = -4;
-Hathi.REANUT = 1;
+Hathi.PEANUT = 1;
 
 
 Hathi.prototype.reset = function () {
