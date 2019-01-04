@@ -111,37 +111,6 @@ function Hathi(view) {
     this.svg_layer_.className = "hathiSvgLayer";
     this.parent_.appendChild(this.svg_layer_);
     
-    /*
-    // Preload the images
-    this.pic_hathi_up_ = document.createElement("img");
-    this.pic_hathi_up_.style.display = "none";
-    this.pic_hathi_up_.src = "img/hathi_back.png";
-    this.pic_hathi_up_.onload = function (event) {
-        World.hathi.redraw();
-    };
-
-    this.pic_hathi_right_ = document.createElement("img");
-    this.pic_hathi_right_.style.display = "none";
-    this.pic_hathi_right_.src = "img/hathi_right.png";
-    this.pic_hathi_right_.onload = function (event) {
-        World.hathi.redraw();
-    };
-
-
-    this.pic_hathi_left_ = document.createElement("img");
-    this.pic_hathi_left_.style.display = "none";
-    this.pic_hathi_left_.src = "img/hathi_left.png";
-    this.pic_hathi_left_.onload = function (event) {
-        World.hathi.redraw();
-    };
-
-    this.pic_hathi_down_ = document.createElement("img");
-    this.pic_hathi_down_.style.display = "none";
-    this.pic_hathi_down_.src = "img/hathi_front.png";
-    this.pic_hathi_down_.onload = function (event) {
-        World.hathi.redraw();
-    };
-    */
 
     // The svg layer
     this.hathi_svg = document.createElementNS(svgNS,"svg");
@@ -160,6 +129,12 @@ function Hathi(view) {
     this.hathi_svg.appendChild(this.hathi_svg_g);
     this.hathi_svg_g.appendChild(this.hathi_svg_img);
     
+    this.collision = document.createElementNS(svgNS,"g");
+    this.collision_img = document.createElementNS(svgNS,"image");
+    this.collision_img.setAttribute("href","img/collision.png");
+    this.collision_img.setAttribute("width","80");
+    this.collision_img.setAttribute("height","80");
+    this.collision.appendChild(this.collision_img);
     
     this.rock_svg_img = document.createElementNS(svgNS,"image");
     this.rock_svg_img.style.visibility = "hidden";
@@ -167,50 +142,6 @@ function Hathi(view) {
     this.rock_svg_img.setAttribute("width","80");
     this.rock_svg_img.setAttribute("height","80");
     this.hathi_svg.appendChild(this.rock_svg_img);
-
-    
-    /*
-    this.pic_rock_ = document.createElement("img");
-    this.pic_rock_.style.display = "none";
-    this.pic_rock_.src = "img/rock.png";
-    this.pic_rock_.onload = function (event) {
-        World.hathi.redraw();
-    };
-    */
-   
-    /*
-    this.pic_peanut_ = document.createElement("img");
-    this.pic_peanut_.style.display = "none";
-    this.pic_peanut_.src = "img/peanut.png";
-    this.pic_peanut_.onload = function (event) {
-        World.hathi.redraw();
-    };
-    */
-   
-    /*
-    this.pic_hole_ = document.createElement("img");
-    this.pic_hole_.style.display = "none";
-    this.pic_hole_.src = "img/hole.png";
-    this.pic_hole_.onload = function (event) {
-        World.hathi.redraw();
-    };
-    */
-
-    /*
-    this.pic_tree_ = document.createElement("img");
-    this.pic_tree_.style.display = "none";
-    this.pic_tree_.src = "img/tree.png";
-    this.pic_tree_.onload = function (event) {
-        World.hathi.redraw();
-    };
-
-    this.pic_oasis_ = document.createElement("img");
-    this.pic_oasis_.style.display = "none";
-    this.pic_oasis_.src = "img/oasis.png";
-    this.pic_oasis_.onload = function (event) {
-       World.hathi.redraw();
-    };
-    */
    
     this.width = 20;
     this.height = 20;
@@ -237,6 +168,11 @@ Hathi.HOLE = -2;
 Hathi.TREE = -3;
 Hathi.OASIS = -4;
 Hathi.PEANUT = 1;
+Hathi.COLLISION = -5;
+
+Hathi.OK = 0;
+Hathi.BUMPED_TREE = 1;
+Hathi.FELL_INTO_HOLE = 2;
 
 
 Hathi.prototype.loadImages = function() {
@@ -249,74 +185,28 @@ Hathi.prototype.loadImages = function() {
     this.backgroundImages[4] = this.backgroundImages[0];
     this.backgroundImages[5] = this.backgroundImages[0];
     this.backgroundImages[6] = this.backgroundImages[0];
-    this.backgroundImages[7] = this.loadImage("img/background1.png");
-    this.backgroundImages[8] = this.backgroundImages[7];
+    this.backgroundImages[7] = this.backgroundImages[0];
+    this.backgroundImages[8] = this.loadImage("img/background1.png");
     this.backgroundImages[9] = this.loadImage("img/background2.png");
-    
-    this.holeImages = [];
-    this.holeImages[0] = this.loadImage("img/hole0.png");
-    this.holeImages[1] = this.loadImage("img/hole1.png");
-    this.holeImages[2] = this.loadImage("img/hole2.png");
-    this.holeImages[3] = this.loadImage("img/hole3.png");
-    this.holeImages[4] = this.loadImage("img/hole4.png");
-    this.holeImages[5] = this.loadImage("img/hole5.png");
-    this.holeImages[6] = this.loadImage("img/hole6.png");
-    this.holeImages[7] = this.loadImage("img/hole7.png");
-    this.holeImages[8] = this.loadImage("img/hole8.png");
-    this.holeImages[9] = this.loadImage("img/hole9.png");
-    this.holeImages[10] = this.loadImage("img/hole10.png");
-    this.holeImages[11] = this.loadImage("img/hole11.png");
-    this.holeImages[12] = this.loadImage("img/hole12.png");
-    this.holeImages[13] = this.loadImage("img/hole13.png");
-    this.holeImages[14] = this.loadImage("img/hole14.png");
-    this.holeImages[15] = this.loadImage("img/hole15.png");
-    
+
+   
+    this.wallImages = [];
+    this.wallImages[0] = this.loadImage("img/holeT0.png");
+    this.wallImages[1] = this.loadImage("img/holeT1.png");
+    this.wallImages[2] = this.loadImage("img/holeB0.png");
+    this.wallImages[3] = this.loadImage("img/holeB1.png");
+    this.wallImages[4] = this.loadImage("img/holeL0.png");
+    this.wallImages[5] = this.loadImage("img/holeL1.png");
+    this.wallImages[6] = this.loadImage("img/holeR0.png");
+    this.wallImages[7] = this.loadImage("img/holeR1.png");
+   
     this.images=[];
     this.images[-Hathi.ROCK] = this.loadImage("img/rock.png");
     this.images[-Hathi.TREE] = this.loadImage("img/tree.png");
     this.images[-Hathi.OASIS] = this.loadImage("img/oasis.png");
     this.images[-Hathi.PEANUT] = this.loadImage("img/peanut.png");
-    
-    /*
-    this.imageSvgs = [];
-    
-    var g = document.createElementNS(svgNS,"g");
-    g.id = "svgRock";
-    var img = document.createElementNS(svgNS,"image");
-    img.setAttribute("href","img/rock.png");
-    img.setAttribute("width","80");
-    img.setAttribute("height","80");
-    g.appendChild(img);
-    this.imageSvgs[-Hathi.ROCK] = g;
-    
-    g = document.createElementNS(svgNS,"g");
-    g.id = "svgTree";
-    var img = document.createElementNS(svgNS,"image");
-    img.setAttribute("href","img/tree.png");
-    img.setAttribute("width","80");
-    img.setAttribute("height","80");
-    g.appendChild(img);
-    this.imageSvgs[-Hathi.TREE] = g;
-    
-    g = document.createElementNS(svgNS,"g");
-    g.id = "svgOasis";
-    var img = document.createElementNS(svgNS,"image");
-    img.setAttribute("href","img/oasis.png");
-    img.setAttribute("width","80");
-    img.setAttribute("height","80");
-    g.appendChild(img);
-    this.imageSvgs[-Hathi.OASIS] = g;
-
-    g = document.createElementNS(svgNS,"g");
-    g.id = "svgPeanut";
-    var img = document.createElementNS(svgNS,"image");
-    img.setAttribute("href","img/peanut.png");
-    img.setAttribute("width","80");
-    img.setAttribute("height","80");
-    g.appendChild(img);
-    this.imageSvgs[-Hathi.PEANUT] = g;
-    */
-   
+    this.images[-Hathi.COLLISION] = this.loadImage("img/collision.png");
+       
     this.hathiImages = [];
     this.hathiImages[Hathi.UP] = this.loadImage("img/hathi_back.png");
     this.hathiImages[Hathi.LEFT] = this.loadImage("img/hathi_left.png");
@@ -427,6 +317,8 @@ Hathi.prototype.resize = function() {
     this.hathi_svg_img.setAttribute("height",this.squareSize);
     this.rock_svg_img.setAttribute("width",this.squareSize);
     this.rock_svg_img.setAttribute("height",this.squareSize);
+    this.collision_img.setAttribute("width",this.squareSize);
+    this.collision_img.setAttribute("height",this.squareSize);
     
     var w = this.width * this.squareSize;
     var h = this.height * this.squareSize + this.squareSize/2;
@@ -553,19 +445,8 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
     var ypos = y * this.squareSize + 1 + this.squareSize/2;
     var siz = this.squareSize - 2;
 
-    /*
-    var svg = this.svgs[x][y];
-    if ( svg != null ) {
-        svg.setAttribute("transform","translate(" + xpos + "," + ypos + ")");
-        svg.setAttribute("width",siz+"px");
-        svg.setAttribute("height",siz+"px");
-        svg.setAttribute("viewBox","0 0 " + siz + " " + siz);
-    }
-    */
-   
-    // Draw empty square as basis
-
     
+    // Draw empty square as basis    
     this.context_.fillStyle = "#316428";
     this.context_.fillRect(x * this.squareSize, y * this.squareSize+ this.squareSize/2,
             this.squareSize, this.squareSize
@@ -592,32 +473,38 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
                 break;
             case Hathi.HOLE:
                 // The hole is drawn to the canvas
-                var border = 0;
                 if ( ( y > 0 ) && ( this.field[x][y-1] == Hathi.HOLE ) ) {
-                    border = border + 1;
-                }
-                if ( ( x < this.width-1) && ( this.field[x+1][y] == Hathi.HOLE ) ) {
-                    border = border + 2;
-                }
-                if ( ( y < this.height-1 ) && ( this.field[x][y+1] == Hathi.HOLE ) ) {
-                    border = border + 4;
-                }
-                if ( ( x > 0 ) && ( this.field[x-1][y] == Hathi.HOLE ) ) {
-                    border = border + 8;
-                }
-                this.context_.drawImage(this.holeImages[border], xpos, ypos, siz, siz);
-                
-                /*
-                if ( this.field[x][y-1] == Hathi.HOLE) {
-                    this.context_.drawImage(this.images[-Hathi.HOLE], xpos, ypos, siz, siz);
+                    this.context_.drawImage(this.wallImages[0], xpos, ypos, siz, siz);
                 } else {
-                    this.context_.drawImage(this.images[-Hathi.HOLEWALL], xpos, ypos, siz, siz);                    
+                    this.context_.drawImage(this.wallImages[1], xpos, ypos, siz, siz);                    
                 }
-                */
+                
+                if ( ( y < this.height-1 ) && ( this.field[x][y+1] == Hathi.HOLE ) ) {
+                    this.context_.drawImage(this.wallImages[2], xpos, ypos, siz, siz);
+                } else {
+                    this.context_.drawImage(this.wallImages[3], xpos, ypos, siz, siz);                    
+                }
+
+                if ( ( x == this.width-1) || (( x < this.width-1 ) && ( this.field[x+1][y] != Hathi.HOLE )) ) {
+                    this.context_.drawImage(this.wallImages[6], xpos, ypos, siz, siz);                                            
+                } else {
+                    if ( ( x < this.width-1) && ( y > 0 ) && ( this.field[x+1][y-1] != Hathi.HOLE) ) {
+                        this.context_.drawImage(this.wallImages[7], xpos, ypos, siz, siz);                                        
+                    }
+                }
+                
+                if ( (x==0) || (( x > 0 ) && ( this.field[x-1][y] != Hathi.HOLE ))) {
+                    this.context_.drawImage(this.wallImages[4], xpos, ypos, siz, siz);                                            
+                } else {
+                    if ( ( x > 0 ) &&  ( y > 0 ) && (this.field[x-1][y-1] != Hathi.HOLE) ) {
+                        this.context_.drawImage(this.wallImages[5], xpos, ypos, siz, siz);                                        
+                    }
+                }
+                
                 break;
             case Hathi.OASIS:
                 // The oasis is drawn to the canvas
-                // this.context_.drawImage(this.images[-Hathi.OASIS], xpos, ypos, siz, siz);
+                this.context_.drawImage(this.images[-Hathi.OASIS], xpos, ypos, siz, siz);
                 break;
         }
     } else {
@@ -627,7 +514,7 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
             this.context_.fillStyle = "white";
             this.context_.font = "bold " + this.squareSize / 2 + "px arial";
             var w = this.context_.measureText(this.field[x][y]).width;
-            this.context_.fillText(this.field[x][y], xpos + siz / 2 - (w / 2), ypos + 4 * siz / 6);
+            this.context_.fillText(this.field[x][y], xpos + siz / 2 - (w / 2) - siz/5 , ypos + 4 * siz / 6 - siz/4);
         }
     }
 
@@ -653,7 +540,8 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
                 break;
         }
         this.hathi_svg_img.setAttribute("href",href);
-        this.hathi_svg_img.setAttribute("transform","translate(" + xpos + "," + ypos + ")");
+        this.hathi_svg_img.setAttribute("transform","translate(" + (xpos+1) + "," + (ypos+1-siz/4) + ")");
+        this.moveHathiTo(this.hathiX,this.hathiY);
     }
     
     if (neighbors) {
@@ -661,6 +549,10 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
         this.drawSquare(x+1,y,false);
         this.drawSquare(x,y-1,false);
         this.drawSquare(x,y+1,false);
+        this.drawSquare(x-1,y-1,false);
+        this.drawSquare(x+1,y-1,false);
+        this.drawSquare(x-1,y+1,false);
+        this.drawSquare(x+1,y+1,false);
     }
 };
 
@@ -668,20 +560,16 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
 Hathi.prototype.showCollision = function() {
     // Upper left corner of collision
     var x = this.hathiX * this.squareSize + this.hathiDX * this.squareSize/2+1;
-    var y = this.hathiY * this.squareSize + this.hathiDY * this.squareSize/2+1+this.offsetY;
-    this.collX = this.hathiX;
-    this.collY = this.hathiY;
-    this.collX2 = this.hathiX + this.hathiDX;
-    this.collY2 = this.hathiY + this.hathiDY;    
+    var y = this.hathiY * this.squareSize + this.hathiDY * this.squareSize/2+1+this.squareSize/2;
     var siz = this.squareSize-2;
     
-    this.context_.drawImage(this.pic_collision_, x, y, siz, siz);
+    this.hathi_svg.appendChild(this.collision);
+    this.collision.setAttribute("transform","translate(" + x + "," + y + ")");
 }
 
 Hathi.prototype.hideCollision = function() {
-    if ( this.collX ) {
-        this.drawSquare(this.collX,this.collY);
-        this.drawSquare(this.collX2,this.collY2);
+    if ( this.collision.parentNode == this.hathi_svg ) {
+        this.hathi_svg.removeChild(this.collision);
     }
 }
 
@@ -720,9 +608,6 @@ Hathi.prototype.put = function (type, x, y) {
     } else if ( type == Hathi.TREE ) {
        img.setAttribute("href","img/tree.png");
        img.setAttribute("height","120");
-    } else if ( type == Hathi.OASIS ) {
-       img.setAttribute("href","img/oasis.png");
-       img.setAttribute("height","80");
     }
     img.setAttribute("width","80");
     this.putSvgAt(img,x,y);
@@ -740,7 +625,7 @@ Hathi.prototype.putSvgAt = function(svg,x,y) {
     var oldSvg = this.svgs[x][y];
     this.svgs[x][y] = svg;
     
-    if ( oldSvg != null) {
+    if ( (oldSvg != null) && (oldSvg != svg)) {
         this.hathi_svg.insertBefore(svg,oldSvg);
         this.hathi_svg.removeChild(oldSvg);
     } else {
@@ -777,6 +662,35 @@ Hathi.prototype.putSvgAt = function(svg,x,y) {
     svg.setAttribute("viewBox","0 0 " + siz + " " + siz);
 };
 
+// Puts the svg at the given position.
+Hathi.prototype.moveHathiTo = function(x,y) {
+    x = ( x + this.width ) % this.width;
+    y = ( y + this.height ) % this.height;
+
+    var oldSvg = this.svgs[x][y];
+    
+    if (oldSvg != null) {
+        this.hathi_svg.insertBefore(this.hathi_svg_img,oldSvg);
+        this.hathi_svg.insertBefore(oldSvg,this.hathi_svg_img);
+    } else {
+        // Insert svg at correct position
+        var nx = x;
+        var ny = y;
+        while ( (this.svgs[nx][ny] == null) && ( ny < this.height) ) {
+            nx = nx+1;
+            if ( nx >= this.width ) {
+                ny = ny +1;
+                nx = 0;
+            }
+        }
+        if ( this.svgs[nx][ny] != null ) {
+            var s = this.svgs[nx][ny];
+            this.hathi_svg.insertBefore(this.hathi_svg_img,s);
+        } else {
+            this.hathi_svg.appendChild(this.hathi_svg_img);
+        }
+    }
+};
 
 /**
  * Remove the svg
@@ -833,35 +747,36 @@ Hathi.prototype.forward = function () {
                 this.hathiY = newY;
                 this.moved = true;
                 this.moveRock(oldX,oldY,newX,newY,newX+this.hathiDX,newY+this.hathiDY);
-                // this.moveHathi(oldX,oldY,newX,newY);
             } else if ( this.field[newX+this.hathiDX][newY+this.hathiDY] == Hathi.HOLE ) {
                 // Fill hole with rock
-                // this.put(Hathi.EMPTY,newX+this.hathiDX,newY+this.hathiDY);
-                // this.put(Hathi.EMPTY,newX,newY);                
-                // this.drawSquare(newX+this.hathiDX,newY+this.hathiDY);
-                // this.drawSquare(newX,newY,true);
                 this.hathiX = newX;
                 this.hathiY = newY;
                 this.moved = true;
                 this.moveRock(oldX,oldY,newX,newY,newX+this.hathiDX,newY+this.hathiDY,true);
-                // this.moveHathi(oldX,oldY,newX,newY);
             } else {
-                // Collision without abort!
-                this.collision();
+                // Collide but don't abort!
+                this.onCollision();
                 this.moved = false;
-                return 0;
+                return Hathi.OK;
             }
         } else if ( this.field[newX][newY] == Hathi.TREE ) {
-            // Collision with out abort!
-            this.collision();
-            this.moved = false;
-            return 0;
-        } else {
-            // Collision with abort
-            this.collision();
+            // Collide and abort!
+            this.onCollision();
             this.showCollision();
             this.moved = false;
-            return 2;
+            return Hathi.BUMPED_TREE;
+        } else if ( this.field[newX][newY] == Hathi.HOLE ) {
+            // Collide and abort!
+            this.onCollision();
+            this.showCollision();
+            this.moved = false;
+            return Hathi.FELL_INTO_HOLE;
+        } else {
+            // Do not collide!
+            this.hathiX = newX;
+            this.hathiY = newY;
+            this.moved = true;
+            this.moveHathi(oldX,oldY,newX,newY);
         }
     } else {
         this.hathiX = newX;
@@ -869,9 +784,7 @@ Hathi.prototype.forward = function () {
         this.moved = true;
         this.moveHathi(oldX,oldY,newX,newY);
     }
-    // this.drawSquare(oldX, oldY);
-    this.redraw();
-    return 0;
+    return Hathi.OK;
 };
 
 
@@ -883,8 +796,8 @@ Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY) {
     var oy = oldY * this.squareSize;
         var anim = this.hathi_svg_img.animate(
             [
-                { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/2) + "px)" },
-                { transform: "translate(" + nx + "px," + (ny+2 + this.squareSize/2) + "px)" }
+                { transform: "translate(" + (ox+2) + "px," + (oy + 2 + this.squareSize/4) + "px)" },
+                { transform: "translate(" + (nx+2) + "px," + (ny + 2 + this.squareSize/4) + "px)" }
             ],
             {
                 duration: 250,
@@ -911,29 +824,35 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
     var svg = this.svgs[oldX][oldY];
     
     var keyframes;
+    var hframes;
     var duration;
     if ( vanish ) {
         keyframes = [
                 { transform: "translate(" + ox + "px," + (oy - this.squareSize/2 + 2 + this.squareSize/2) + "px)" },
                 { transform: "translate(" + nx + "px," + (ny + 2) + "px )" },
                 { transform: "translate(" + (nx + this.squareSize/2) + "px," + (ny+this.squareSize) + "px) scale(0.1)" }
-            ];         
+            ];  
+        hframes = [
+               { transform: "translate(" + hx + "px," + (hy+2 + this.squareSize/4) + "px)" },
+               { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/4) + "px)" },
+               { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/4) + "px)" }
+            ];  
         duration = 500;
     } else {
         keyframes = [
                 { transform: "translate(" + ox + "px," + (oy - this.squareSize/2 + 2 + this.squareSize/2) + "px)" },
                 { transform: "translate(" + nx + "px," + (ny + 2) + "px)" }
             ]; 
+            hframes =             [
+               { transform: "translate(" + hx + "px," + (hy+2 + this.squareSize/4) + "px)" },
+               { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/4) + "px)" }
+            ];
         duration = 250;
     }
     
-    var hanim = this.hathi_svg_img.animate(
-            [
-               { transform: "translate(" + hx + "px," + (hy+2+ this.squareSize/2) + "px)" },
-               { transform: "translate(" + ox + "px," + (oy+2+ this.squareSize/2) + "px)" }
-            ],
+    var hanim = this.hathi_svg_img.animate(hframes,
             {
-                duration: 250,
+                duration: duration,
                 additive: "replace",
                 accumulate: "sum"
             });
@@ -976,7 +895,7 @@ Hathi.prototype.isEmpty = function(x,y) {
     return ( this.field[x][y] == 0 );
 };
 
-Hathi.prototype.collision = function () {
+Hathi.prototype.onCollision = function () {
 };
 
 Hathi.prototype.isOnPeanut = function() {
@@ -985,7 +904,7 @@ Hathi.prototype.isOnPeanut = function() {
 
 Hathi.prototype.pickUpPeanut = function() {
     if ( this.field[this.hathiX][this.hathiY] <= 0 ) {
-        this.collision();
+        this.onCollision();
         return;
     }
     this.field[this.hathiX][this.hathiY]--;
@@ -995,7 +914,7 @@ Hathi.prototype.pickUpPeanut = function() {
 
 Hathi.prototype.dropPeanut = function() {
     if ( this.field[this.hathiX][this.hathiY] < 0 ) {
-        this.collision();
+        this.onCollision();
         return;
     }
     this.field[this.hathiX][this.hathiY]++;
@@ -1026,8 +945,8 @@ Hathi.prototype.clicked = function(event) {
     hathi.hideCollision();
     
     if ( event.ctrlKey && (hathi.field[x][y] > 0)) {
-        hathi.field[x][y]++;
-        // hathi.put(hathi.field[x][y],x,y);
+        hathi.field[x][y] = (hathi.field[x][y] + 1) % 33;
+        if ( hathi.field[x][y] == 0 ) hathi.field[x][y] = 1;
     } else {
         if (( x == hathi.hathiX ) && ( y == hathi.hathiY )) {
             hathi.turnRight();

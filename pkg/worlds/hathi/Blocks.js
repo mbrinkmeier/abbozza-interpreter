@@ -12,10 +12,13 @@ Abbozza.HathiForward = {
     
     execute : function(entry) {
         var res = World.hathi.forward();
-        if ( res != 0 ) {
+        if ( res == Hathi.BUMPED_TREE ) {
             entry.state = 1;
-            entry.stateMsg = "hathi.bumped_stone";
-        } else 
+            entry.stateMsg = "hathi.bumped_tree";
+        } else if ( res == Hathi.FELL_INTO_HOLE ) {
+            entry.state = 2;
+            entry.stateMsg = "hathi.fell_into_hole";            
+        }
         entry.finished();
         return true;    
     }    
