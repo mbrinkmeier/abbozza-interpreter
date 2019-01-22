@@ -289,13 +289,10 @@ World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
       'moveDisc','getNumberOfDiscs','getSize','reset'
     ];
-    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hanoi,funcs);
-    /*
     for ( var i = 0; i < funcs.length; i++ ) {
         interpreter.setProperty(scope,funcs[i],
             interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
         );        
     }
-    */
 }
 

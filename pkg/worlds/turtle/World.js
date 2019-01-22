@@ -417,14 +417,10 @@ World.initSourceInterpreter = function (interpreter, scope) {
         'getColor', 'isHidden', 'isPenDown', 'getPixelRed', 'getPixelGreen',
         'getPixelBlue'
     ];
-    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.turtle,funcs);
-    /*
     for (var i = 0; i < funcs.length; i++) {
         interpreter.setProperty(scope, funcs[i],
-                AbbozzaInterpreter.createWrapper(interpreter,false,World.turtle,World.turtle[funcs[i]])
-                        // interpreter.createNativeFunction(World.createWrapper(funcs[i]))
+                interpreter.createNativeFunction(World.createWrapper(funcs[i]))
                 );
     }
-    */
 }
 
