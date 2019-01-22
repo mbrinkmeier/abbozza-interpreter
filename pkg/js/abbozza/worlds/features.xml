@@ -6,6 +6,11 @@
         
         <!-- Basic control structures -->
         <category id="cat.CTRL">
+            <block type="loop_delay">
+                <value name="TIME">
+                    <block type="math_number"><mutation confirmed="false"/>100</block>
+                </value>
+            </block>  
             <block type="cond_if"></block>
             <block type="cond_if_else"></block>            
             <block type="loop_endless"></block>
@@ -29,6 +34,13 @@
                     <block type="var_block"></block>
                 </value>
             </block>
+            <block type="var_int_step_up"></block>
+            <block type="var_int_step_down"></block>
+            <block type="var_int_change_by">
+                <value name="VALUE">
+                    <block type="math_number"><mutation confirmed="false"/>100</block>
+                </value>
+            </block>            
         </category>
 
         <!-- Operations -->

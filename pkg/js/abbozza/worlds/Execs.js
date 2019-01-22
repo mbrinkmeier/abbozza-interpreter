@@ -1466,7 +1466,7 @@ AbbozzaInterpreter.exec["bintree_get_data"] = function(entry) {
 /**
  * Check if bytes are available from USB
  */
-AbbozzaInterpreter.exec["serial_open"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_open"] = function(entry) {
     var url = this.getFieldValue("URL","TEXT");
     // var port = Number(Abbozza.serverPort)+1;
     entry.returnValue = ABZWebSocket.open(url);
@@ -1476,7 +1476,7 @@ AbbozzaInterpreter.exec["serial_open"] = function(entry) {
 /**
  * Check if bytes are available from USB
  */
-AbbozzaInterpreter.exec["serial_close"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_close"] = function(entry) {
     entry.returnValue = ABZWebSocket.close();
     entry.finished();
 }
@@ -1484,7 +1484,7 @@ AbbozzaInterpreter.exec["serial_close"] = function(entry) {
 /**
  * Check if bytes are available from USB
  */
-AbbozzaInterpreter.exec["serial_available"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_available"] = function(entry) {
     entry.returnValue = ABZWebSocket.isAvailable();
     entry.finished();
 }
@@ -1492,7 +1492,7 @@ AbbozzaInterpreter.exec["serial_available"] = function(entry) {
 /**
  * Write line to USB
  */
-AbbozzaInterpreter.exec["serial_println"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_println"] = function(entry) {
     switch ( entry.phase ) {
         case 0 :
             AbbozzaInterpreter.callInput(this,"VALUE","TEXT");
@@ -1511,7 +1511,7 @@ AbbozzaInterpreter.exec["serial_println"] = function(entry) {
 /**
  * Read a line from USB
  */
-AbbozzaInterpreter.exec["serial_readln"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_readln"] = function(entry) {
     entry.returnValue = ABZWebSocket.getLine();
     entry.finished();
 }
@@ -1519,7 +1519,7 @@ AbbozzaInterpreter.exec["serial_readln"] = function(entry) {
 /**
  * Read the whole buffer
  */
-AbbozzaInterpreter.exec["serial_read_all"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_read_all"] = function(entry) {
     entry.returnValue = ABZWebSocket.getAll();
     entry.finished();
 }
@@ -1527,7 +1527,7 @@ AbbozzaInterpreter.exec["serial_read_all"] = function(entry) {
 /**
  * Write byte to USB
  */
-AbbozzaInterpreter.exec["serial_write_byte"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_write_byte"] = function(entry) {
     switch ( entry.phase ) {
         case 0 :
             AbbozzaInterpreter.callInput(this,"VALUE","NUMBER");
@@ -1546,7 +1546,7 @@ AbbozzaInterpreter.exec["serial_write_byte"] = function(entry) {
 /**
  * Read a byte
  */
-AbbozzaInterpreter.exec["serial_read_byte"] = function(entry) {
+AbbozzaInterpreter.exec["websocket_read_byte"] = function(entry) {
     entry.returnValue = ABZWebSocket.getByte();
     entry.finished();
 }
