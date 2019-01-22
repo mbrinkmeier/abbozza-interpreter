@@ -227,7 +227,8 @@ AbbozzaInterpreter.executeStep = function () {
     for (idx = 0; idx < threadMsgs.length; idx++) {
         var msg = threadMsgs[idx];
         window.setTimeout(function () {
-            alert(_(msg))
+            Abbozza.openOverlay(_(msg));
+            Abbozza.overlayWaitForClose();
         }, 1);
     }
 
@@ -1119,5 +1120,50 @@ AbbozzaInterpreter.executeSourceStep = function () {
         Abbozza.appendOverlayText("\n");
         Abbozza.appendOverlayText(e);
         Abbozza.overlayWaitForClose();
+    }
+}
+
+AbbozzaInterpreter.createWrappers = function(interpreter,scope,wrappers) {
+    for ( var i = 0; i < wrappers.length; i++) {
+        var name = wrappers[i][0];
+        var async = wrappers[i][1];
+        var object = wrappers[i][2];
+        var func = wrappers[i][3];
+        console.log(wrappers[i]);
+        interpreter.setProperty(scope,name,
+            AbbozzaInterpreter.createWrapper(interpreter,async,object,func)
+        );
+    }
+}
+
+AbbozzaInterpreter.createWrapper = function(interpreter,async,obj,func) {
+    var object = obj;
+    var method = func;
+    if ( async ) {
+        return interpreter.createAsyncFunction(
+            function() {
+                return method.apply(object,Array.from(arguments));
+            }       
+        );
+    } else {
+        return interpreter.createNativeFunction(
+            function() {
+                return method.apply(object,Array.from(arguments));
+            }       
+        );
+    }
+}
+
+AbbozzaInterpreter.createNativeWrappersByName = function(interpreter,scope,obj,funcs) {
+    for (var i = 0; i < funcs.length; i++) {
+        interpreter.setProperty(scope, funcs[i],
+                AbbozzaInterpreter.createWrapper(interpreter,false,obj,obj[funcs[i]]));
+    }
+}
+
+AbbozzaInterpreter.createAsyncWrappersByName = function(interpreter,scope,obj,funcs) {
+    for (var i = 0; i < funcs.length; i++) {
+        interpreter.setProperty(scope, funcs[i],
+                AbbozzaInterpreter.createWrapper(interpreter,true,obj,obj[funcs[i]]));
     }
 }

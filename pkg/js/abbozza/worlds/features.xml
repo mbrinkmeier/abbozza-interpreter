@@ -325,5 +325,34 @@
         </category>
     </feature>
             
+    <!-- serial communication -->
+    <feature id="feat.WEB" option="websocket">
+        <category id="cat.SERIAL">
+            <block type="websocket_open"></block>
+            <block type="websocket_close"></block>
+            <block type="websocket_available"></block>
+            <block type="websocket_println">
+                <value name ="VALUE">
+                    <block type="text_const"><mutation confirmed="false"/></block>
+                </value>
+            </block>
+            <block type="websocket_readln"></block>
+            <block type="websocket_read_all"></block>
+            <block type="websocket_write_byte">
+                <value name ="VALUE">
+                    <block type="math_number"><mutation confirmed="false"/></block>
+                </value>                
+            </block>
+            <block type="websocket_read_byte"></block>
+            <!-- block type="websocket_write_int">
+                <value name ="VALUE">
+                    <block type="math_number"><mutation confirmed="false"/></block>
+                </value>                
+            </block>
+            <block type="websocket_read_int"></block -->
+        </category>
+    </feature>
+           
+            
 </features>
     

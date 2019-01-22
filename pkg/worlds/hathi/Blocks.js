@@ -13,7 +13,7 @@ Abbozza.HathiForward = {
     execute : function(entry) {
         var res = World.hathi.forward();
         if ( res == Hathi.BUMPED_TREE ) {
-            entry.state = 1;
+            entry.state = 0;
             entry.stateMsg = "hathi.bumped_tree";
         } else if ( res == Hathi.FELL_INTO_HOLE ) {
             entry.state = 2;
@@ -85,7 +85,9 @@ Abbozza.HathiPickUp = {
         this.setTooltip('');
     },
     execute : function(entry) {
-        World.hathi.pickUpPeanut();
+        if ( World.hathi.pickUpPeanut() == Hathi.NO_PEANUT ) {
+            return false;
+        };
         entry.finished();
         return true;    
     }    
@@ -110,6 +112,25 @@ Abbozza.HathiDrop = {
     }    
 }
 
+
+Abbozza.HathiGetBananas = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.HATHI"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(true, "NUMBER");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldImage("img/hathi_right.png",16,16))
+            .appendField(_("hathi.get_bananas"));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        entry.returnValue = World.hathi.getBananas();
+        entry.finished();
+        return true;    
+    }    
+}
 
 
 Abbozza.HathiIsEmpty = {
@@ -146,7 +167,7 @@ Abbozza.HathiMoved = {
     execute : function(entry) {
         entry.returnValue = World.hathi.steppedForward();
         entry.finished();
-        return true;    
+        return true;
     }    
 }
 
@@ -185,7 +206,7 @@ Abbozza.HathiIsForward = {
             .appendField(_("hathi.is_forward"))
             .appendField(new Blockly.FieldDropdown(
                 [
-                    [ _("hathi.PEANUT"), "" + Hathi.PEANUT ],
+                    [ _("hathi.BANANA"), "" + Hathi.BANANA ],
                     [ _("hathi.ROCK"), "" + Hathi.ROCK ],
                     [ _("hathi.TREE"), "" + Hathi.TREE ],
                     [ _("hathi.HOLE"), "" + Hathi.HOLE ],
@@ -208,6 +229,7 @@ Blockly.Blocks['hathi_turn'] = Abbozza.HathiTurn;
 Blockly.Blocks['hathi_turn_right'] = Abbozza.HathiTurnRight;
 Blockly.Blocks['hathi_pick_up'] = Abbozza.HathiPickUp;
 Blockly.Blocks['hathi_drop'] = Abbozza.HathiDrop;
+Blockly.Blocks['hathi_get_bananas'] = Abbozza.HathiGetBananas;
 Blockly.Blocks['hathi_is_empty'] = Abbozza.HathiIsEmpty;
 Blockly.Blocks['hathi_moved'] = Abbozza.HathiMoved;
 Blockly.Blocks['hathi_is_on_peanut'] = Abbozza.HathiIsOnPeanut;
@@ -216,10 +238,10 @@ Blockly.Blocks['hathi_is_forward'] = Abbozza.HathiIsForward;
 
 AbbozzaCode['hathi_forward'] = [ 'forward();',[]];
 AbbozzaCode['hathi_turn'] = [ 'turn#();',["F_DIRECTION"]];
-AbbozzaCode['hathi_turn_right'] = [ 'turnRight();',[]];
 AbbozzaCode['hathi_pick_up'] = [ 'pickUpPeanut();',[]];
 AbbozzaCode['hathi_drop'] = [ 'dropPeanut();',[]];
+AbbozzaCode['hathi_get_bananas'] = [ 'getBananas();',[]];
 AbbozzaCode['hathi_is_empty'] = [ 'isForwardEmpty()',[]];
 AbbozzaCode['hathi_moved'] = [ 'steppedForward()',[]];
-AbbozzaCode['hathi_is_on_peanut'] = [ 'isOnPeanut()',[]];
+AbbozzaCode['hathi_is_on_peanut'] = [ 'isOnBanana()',[]];
 AbbozzaCode['hathi_is_forward'] = [ 'isForward(#)',["F_TYPE"]];

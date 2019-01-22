@@ -187,7 +187,7 @@ Abbozza.createFrame = function (title, icon, content, x, y, w, h) {
     frame.hide();
     frame.div.addEventListener("frame_resize",
             function (event) {
-                frame.content.resize();
+                if (frame.content.resize) frame.content.resize();
             }
     );
     return frame;

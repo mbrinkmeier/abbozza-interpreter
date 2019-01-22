@@ -342,3 +342,12 @@ AbbozzaCode['bintree_del'] = ["#.delete#();",["F_NAME","F_FUNC"]];
 AbbozzaCode['bintree_set_data'] = ["#.setData(#);",["F_NAME","V_VALUE"]];
 AbbozzaCode['bintree_get_data'] = ["#.getData()",["F_NAME"]];
 AbbozzaCode['bintree_is_leaf'] = ["#.isLeaf()",["F_NAME"]];
+
+AbbozzaCode['serial_open'] = ["WSopen('#');",["F_URL"]];
+AbbozzaCode['serial_close'] = ["WSclose();",[]];
+AbbozzaCode['serial_available'] = ["WSisAvailable()",[]];
+AbbozzaCode['serial_println'] = ["WSsend(#);",["V_VALUE"]];
+AbbozzaCode['serial_readln'] = ["WSreadln()",[]];
+AbbozzaCode['serial_read_all'] = ["WSreadAll()",[]];
+AbbozzaCode['serial_write_byte'] = ["WSsendByte(#);",["V_VALUE"]];
+AbbozzaCode['serial_read_byte'] = ["WSreadByte()",[]];

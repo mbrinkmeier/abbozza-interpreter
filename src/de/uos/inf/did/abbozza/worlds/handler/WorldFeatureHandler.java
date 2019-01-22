@@ -77,7 +77,7 @@ public class WorldFeatureHandler extends AbstractHandler {
         } catch (Exception ex) {
             AbbozzaLogger.stackTrace(ex);
         }
-        System.out.println(XMLTool.documentToString(globalFeaturesXml));        
+        // System.out.println(XMLTool.documentToString(globalFeaturesXml));        
         // Get th worlds specific features
         Document featureXml = null;
         
@@ -100,11 +100,12 @@ public class WorldFeatureHandler extends AbstractHandler {
             path = null;
         }       
         featureXml = world.getFeatures();
-        System.out.println(XMLTool.documentToString(featureXml));        
-        
+        // System.out.println(XMLTool.documentToString(featureXml));        
+        XMLTool.documentToString(featureXml);
+                
         // Merge featureXml into globalFeaturesXml
         this.mergeFeatures(globalFeaturesXml, featureXml);
-        System.out.println(XMLTool.documentToString(globalFeaturesXml));        
+        // System.out.println(XMLTool.documentToString(globalFeaturesXml));        
         
         // Merge features from plugins
         AbbozzaServer.getPluginManager().mergeFeatures(globalFeaturesXml);

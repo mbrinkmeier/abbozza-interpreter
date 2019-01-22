@@ -213,6 +213,20 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     interpreter.setProperty(scope, "getPressedKey", interpreter.createNativeFunction(World.getPressedKey));
     interpreter.setProperty(scope, "getLastKey", interpreter.createNativeFunction(World.getLastKey));
 
+    // Add the functions for WS communication
+    console.log(WebSocket);
+    AbbozzaInterpreter.createWrappers(interpreter,scope,
+        [
+            ["WSopen",false,WebSocket,WebSocket.open],
+            ["WSclose",false,WebSocket,WebSocket.close],
+            ["WSisAvailable",false,WebSocket,WebSocket.isAvailable],
+            ["WSsend",false,WebSocket,WebSocket.sendln],
+            ["WSreadln",false,WebSocket,WebSocket.getLine],
+            ["WSreadAll",false,WebSocket,WebSocket.getAll],
+            ["WSsendByte",false,WebSocket,WebSocket.sendByte],
+            ["WSreadByte",false,WebSocket,WebSocket.getByte]
+        ]);
+    
     // Stack constructor.
     var stackWrapper = function () {
         if (interpreter.calledWithNew()) {
