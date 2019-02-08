@@ -4,6 +4,7 @@
         <msg id="block.MAIN">Hauptprogramm</msg> 
     </blocks>
     <categories>
+        <msg id="cat.web">Internet</msg>
     </categories>
     <gui>
         <msg id="gui.worlds">Welten</msg> 
@@ -24,6 +25,7 @@
         <msg id="gui.settings">Einstellungen</msg>
         <msg id="gui.font_size">Schriftgröße</msg>
         <msg id="gui.websocket">WebSockets</msg>
+        <msg id="gui.datastructures">Datenstrukturen</msg>        
     </gui>
     <blocks>
         <msg id="msg.save_source">Quelltext wird gespeichert</msg> 

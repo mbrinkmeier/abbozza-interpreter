@@ -1,4 +1,4 @@
-/* 
+    ^/* 
  * Copyright 2018 Michael Brinkmeier (mbrinkmeier@uni-osnabrueck.de).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,20 +85,23 @@ World.resize = function() {}
 var svgNS = "http://www.w3.org/2000/svg";
 
 /**
- * The turtle as view for the context.
+ * Hathis world as view for the context.
  */
 
 
-function Hathi(view) {
-    
+
+function Hathi(view) {    
+    // The prent div, containing all elements
     this.parent_ = document.createElement("div");
     this.parent_.className = "hathiParent";
     view.appendChild(this.parent_);
 
+    // The wrapper containig the canvas and the svg elements
     this.wrapper_ = document.createElement("div");
     this.wrapper_.className = "hathiWrapper";
     this.parent_.appendChild(this.wrapper_);
     
+    // The canvas to which the background is drawn
     this.view_ = document.createElement("canvas");
     this.view_.hathi = this;
     this.view_.className = "hathiView";
@@ -107,20 +110,19 @@ function Hathi(view) {
     this.context_ = this.view_.getContext("2d");
     this.wrapper_.appendChild(this.view_);
 
+    // The div containing the svg above the canvas' parent
     this.svg_layer_ = document.createElement("div");
     this.svg_layer_.className = "hathiSvgLayer";
     this.parent_.appendChild(this.svg_layer_);
     
-
     // The svg layer
     this.hathi_svg = document.createElementNS(svgNS,"svg");
     this.hathi_svg.className = "hathiSvg";
     this.hathi_svg.onclick = this.clicked;
     this.hathi_svg.oncontextmenu = this.rightclicked;
-        
     this.svg_layer_.appendChild(this.hathi_svg);
     
-    // Hathi
+    // Hathis SVG object
     this.hathi_svg_g = document.createElementNS(svgNS,"g");
     this.hathi_svg_img = document.createElementNS(svgNS,"g");
     this.hathi_svg_i = document.createElementNS(svgNS,"image");
@@ -131,29 +133,31 @@ function Hathi(view) {
     this.hathi_svg_g.appendChild(this.hathi_svg_img);
     this.hathi_svg_img.appendChild(this.hathi_svg_i);
     
+    // The bubbles SVG object
     this.hathi_bubble = document.createElementNS(svgNS,"g");
     this.hathi_bubble_path = document.createElementNS(svgNS,"path");
-    this.hathi_bubble_path.setAttribute("d","M40,30 l10,-3 l0,-10 a3,3 0 0,1 3,-3 l26,0 a3,3 0 0,1 3,3 l0,26 a3,3 0 0,1 -3,3 l-26,0 a3,3 0 0,1 -3,-3 l0,-10 Z");
-    // this.hathi_bubble_path.setAttribute("d","M0,0 l-3,-10 l0,-10 a3,3 0 0,1 3,-3 l26,0 a3,3 0 0,1 3,3 l0,26 a3,3 0 0,1 -3,3 l-26,0 a3,3 0 0,1 -3,-3 l0,-26 Z"); // a3,3 0 0,1 -3,-3 10,-10 Z");
     this.hathi_bubble_path.setAttribute("stroke","black");
     this.hathi_bubble_path.setAttribute("fill","white");
     this.hathi_bubble_img = document.createElementNS(svgNS,"image");
     this.hathi_bubble_img.setAttribute("href","img/collision.png");
-    this.hathi_bubble_img.setAttribute("x","52");
-    this.hathi_bubble_img.setAttribute("y","16");
-    this.hathi_bubble_img.setAttribute("width","28");
-    this.hathi_bubble_img.setAttribute("height","28");
+    this.hathi_bubble_img.setAttribute("x","103");
+    this.hathi_bubble_img.setAttribute("y","-20");
+    this.hathi_bubble_img.setAttribute("width","50");
+    this.hathi_bubble_img.setAttribute("height","50");
     this.hathi_bubble.appendChild(this.hathi_bubble_path);
     this.hathi_bubble.appendChild(this.hathi_bubble_img);
-    // this.hathi_bubble.style.display = "none";
+    this.hideBubble();
    
+    /*
     this.collision = document.createElementNS(svgNS,"g");
     this.collision_img = document.createElementNS(svgNS,"image");
     this.collision_img.setAttribute("href","img/collision.png");
     this.collision_img.setAttribute("width","80");
     this.collision_img.setAttribute("height","80");
     this.collision.appendChild(this.collision_img);
-    
+    */
+   
+    // The moving rock SVG object
     this.rock_svg_img = document.createElementNS(svgNS,"image");
     this.rock_svg_img.style.visibility = "hidden";
     this.rock_svg_img.setAttribute("href","img/rock.png");
@@ -174,6 +178,7 @@ function Hathi(view) {
     this.put(Hathi.ROCK,2,0);
     this.put(Hathi.HOLE,6,0);
     this.redraw();
+    this.hideBubble();
 };
 
 
@@ -224,7 +229,7 @@ Hathi.prototype.loadImages = function() {
    
     this.images=[];
     this.images[-Hathi.ROCK] = this.loadImage("img/rock.png");
-    this.images[-Hathi.TREE] = this.loadImage("img/tree.png");
+    this.images[-Hathi.TREE] = this.loadImage("img/tree2.png");
     this.images[-Hathi.OASIS] = this.loadImage("img/oasis.png");
     this.images[-Hathi.BANANA] = this.loadImage("img/banana.png");
     this.images[-Hathi.COLLISION] = this.loadImage("img/collision.png");
@@ -253,6 +258,8 @@ Hathi.prototype.loadImage = function(path, redraw = true) {
 
 
 Hathi.prototype.reset = function(newBackground = true) {
+    this.hideBubble();
+    
     this.bananas = 0;
     this.offsetY = 0;
     this.hathiX = 0;
@@ -327,7 +334,7 @@ Hathi.prototype.reset = function(newBackground = true) {
         }
     }
     
-    this.resize();   
+    this.resize();
 };
 
 
@@ -359,8 +366,8 @@ Hathi.prototype.resize = function() {
     this.collision_img.setAttribute("width",this.squareSize);
     this.collision_img.setAttribute("height",this.squareSize);
     
-    var w = this.width * this.squareSize;
-    var h = this.height * this.squareSize + this.squareSize/2;
+    var w = (this.width+2) * this.squareSize;
+    var h = (this.height+2) * this.squareSize;
 
     if ( parHeight > h ) {
         this.offsetY = (parHeight - h)/2;    
@@ -389,6 +396,7 @@ Hathi.prototype.resize = function() {
 
 Hathi.prototype.onStart = function() {
     this.hideCollision();
+    this.hideBubble();
 }
 
 
@@ -460,8 +468,8 @@ Hathi.prototype.drawGrid = function() {
         this.context_.stroke();
     }
     for (var i = 0; i <= this.height; i++) {
-        this.context_.moveTo(0, this.squareSize * i + this.squareSize/2);
-        this.context_.lineTo(this.view_.width, this.squareSize * i + this.squareSize/2);
+        this.context_.moveTo(this.squareSize, this.squareSize * (i+1));
+        this.context_.lineTo(this.view_.width-this.squareSize, this.squareSize * (i+1));
         this.context_.stroke();
     }
 }
@@ -473,6 +481,9 @@ Hathi.prototype.redraw = function () {
             this.drawSquare(x, y);
         }
     }
+    if ( this.bubble_shown ) {
+        this.showBubble();
+    }
 };
 
 Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
@@ -480,19 +491,19 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
 
-    var xpos = x * this.squareSize + 1;
-    var ypos = y * this.squareSize + 1 + this.squareSize/2;
+    var xpos = (x+1) * this.squareSize + 1;
+    var ypos = (y+1) * this.squareSize + 1;
     var siz = this.squareSize - 2;
 
     
-    // Draw empty square as basis    
+    // Draw empty square as basis
     this.context_.fillStyle = "#316428";
-    this.context_.fillRect(x * this.squareSize, y * this.squareSize+ this.squareSize/2,
+    this.context_.fillRect((x+1) * this.squareSize, (y+1) * this.squareSize,
             this.squareSize, this.squareSize
             );
     this.context_.fillStyle = "#316428";
     this.context_.fillRect(
-            x * this.squareSize + 1, y * this.squareSize + this.squareSize/2+ 1,
+            (x+1) * this.squareSize + 1, (y+1) * this.squareSize + 1,
             this.squareSize - 2, this.squareSize - 2
             );
 
@@ -503,12 +514,10 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
             case Hathi.EMPTY:
                 break;
             case Hathi.ROCK:
-                // The rock is drawn to the canvas                
-                // this.context_.drawImage(this.images[-Hathi.ROCK], xpos, ypos, siz, siz);
+                // The rock is an svg
                 break;
             case Hathi.TREE:
-                // The tree is drawn to the canvas
-                // this.context_.drawImage(this.images[-Hathi.TREE], xpos, ypos, siz, siz);
+                // The tree is an svg
                 break;
             case Hathi.FILLED:
             case Hathi.HOLE:
@@ -603,8 +612,8 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
 
 Hathi.prototype.showCollision = function() {
     // Upper left corner of collision
-    var x = this.hathiX * this.squareSize + this.hathiDX * this.squareSize/2+1;
-    var y = this.hathiY * this.squareSize + this.hathiDY * this.squareSize/2+1+this.squareSize/2;
+    var x = (this.hathiX+1) * this.squareSize + this.hathiDX * this.squareSize/2+1;
+    var y = (this.hathiY+1) * this.squareSize + this.hathiDY * this.squareSize/2+1;
     var siz = this.squareSize-2;
     
     this.hathi_svg_g.appendChild(this.collision);
@@ -618,12 +627,46 @@ Hathi.prototype.hideCollision = function() {
 }
 
 
-Hathi.prototype.showBubble = function() {
+Hathi.prototype.showBubble = function(img = null) {
+    if ( img != null ) {
+       this.hathi_bubble_img.setAttribute("href",img);
+    }
+    this.bubble_shown = true;
     this.hathi_bubble.style.display = "block";
+    var xpos = (this.hathiX+1)*this.squareSize;
+    var ypos = (this.hathiY+1)*this.squareSize;
+    var ixpos;
+    var iypos;
+    switch ( this.hathiDir ) {
+        case 0:  // RIGHT
+            this.hathi_bubble_path.setAttribute("d","M80,30 l15,-5 l0,15 a3,3 0 0,1 3,3 l50,0 a3,3 0 0,1 3,-3 l0,-50 a3,3 0 0,1 -3,-3 l -50,0 ,a3,3 0 0,1, -3,3 l0,25 Z");
+            ixpos = 98;
+            iypos = -10;
+            break;
+        case 1: // UP
+        case 3: //DOWN
+            ixpos = 15;
+            iypos = -73;
+            this.hathi_bubble_path.setAttribute("d","M40,-5 l5,-15 l20,0 a3,3 0 0,1 3,-3 l0,-50 a3,3 0 0,1 -3,-3 l-50,0 a3,3 0 0,1 -3,3 l0,50 a3,3 0 0,1 3,3 l20,0 Z");
+            break;
+        case 2: // LEFT
+            ixpos = -68;
+            iypos = -10;
+            this.hathi_bubble_path.setAttribute("d","M0,30 l-15,-5 l0,15 a3,3 0 0,1 -3,3 l-50,0 a-3,3 0 0,1 -3,-3 l0,-50 a3,3 0 0,1 3,-3 l50,0 a3,3 0 0,1, 3,3 l0,25 Z");
+            break;
+    }
+    var scale = this.squareSize/80.0;
+    this.hathi_bubble.setAttribute("transform","translate(" + xpos + "," + ypos + ")");
+    this.hathi_bubble_path.setAttribute("transform","scale(" + scale + ")");
+    this.hathi_bubble_img.setAttribute("transform","scale(" + scale + ")");
+    this.hathi_bubble_img.setAttribute("x",ixpos);
+    this.hathi_bubble_img.setAttribute("y",iypos);
 }
 
+
 Hathi.prototype.hideBubble = function() {
-    this.hathi_bubble.style.display = "none";
+    this.bubble_shown = false;
+    this.hathi_bubble. style.display = "none";
 }
 
 
@@ -658,16 +701,13 @@ Hathi.prototype.put = function (type, x, y) {
     img = document.createElementNS(svgNS,"image");
     if ( type == Hathi.ROCK ) {
        img.setAttribute("href","img/rock.png");
-       // img.setAttribute("y","20");
        img.setAttribute("height","120");
-} else if ( type == Hathi.TREE ) {
-       img.setAttribute("href","img/tree.png");
+    } else if ( type == Hathi.TREE ) {
+       img.setAttribute("href","img/tree2.png");
        img.setAttribute("height","120");
     }
-    img.setAttribute("width","80");
+    img.setAttribute("width","78");
     this.putSvgAt(img,x,y);
-    
-    // this.drawSquare(x,y,true);
     
     return img;
 };
@@ -702,21 +742,22 @@ Hathi.prototype.putSvgAt = function(svg,x,y) {
         }
     }
 
-    var xpos = x * this.squareSize + 1;
-    var ypos = y * this.squareSize + 1;
+    var xpos = (x+1) * this.squareSize + 1;
+    var ypos = (y+1) * this.squareSize + 1;
     var siz = this.squareSize - 2;
 
     svg.setAttribute("width",siz+"px");
     if ( (this.field[x][y] == Hathi.TREE) || (this.field[x][y] == Hathi.ROCK) ) {
         svg.setAttribute("height",((3*siz)/2)+"px");
-        svg.setAttribute("transform","translate(" + xpos  + "," + ( ypos ) + ")");
+        svg.setAttribute("transform","translate(" + xpos  + "," + ( ypos - this.squareSize/2 ) + ")");
         svg.setAttribute("clip-path","url(#clipping)");
     } else {
         svg.setAttribute("height",siz+"px");        
-        svg.setAttribute("transform","translate(" + xpos + "," + (ypos + this.squareSize/2) + ")");
+        svg.setAttribute("transform","translate(" + xpos + "," + (ypos) + ")");
     }
     // svg.setAttribute("viewBox","0 0 " + siz + " " + siz);
 };
+
 
 // Puts the svg at the given position.
 Hathi.prototype.moveHathiTo = function(x,y) {
@@ -748,6 +789,7 @@ Hathi.prototype.moveHathiTo = function(x,y) {
     }
 };
 
+
 /**
  * Remove the svg
  * 
@@ -773,6 +815,7 @@ Hathi.prototype.get = function(x,y) {
 
 
 Hathi.prototype.turnRight = function () {
+    this.hideBubble();
     this.hathiDir = (this.hathiDir + 3) % 4;
     var dum = this.hathiDX;
     this.hathiDX = -this.hathiDY;
@@ -781,23 +824,28 @@ Hathi.prototype.turnRight = function () {
 };
 
 Hathi.prototype.turnLeft = function () {
+    this.hideBubble();
     this.hathiDir = (this.hathiDir + 1) % 4;
     var dum = this.hathiDX;
     this.hathiDX = this.hathiDY;
     this.hathiDY = -dum;
     this.drawSquare(this.hathiX, this.hathiY);
+    this.showBubble();
 };
 
 
 Hathi.prototype.forward = function () {
+    this.hideBubble();
+
     var oldX = this.hathiX;
     var oldY = this.hathiY;
-    var newX = ( this.hathiX + this.hathiDX + this.width );
-    var newY = ( this.hathiY + this.hathiDY + this.height );
+    var newX = ( this.hathiX + this.hathiDX );
+    var newY = ( this.hathiY + this.hathiDY );
     
     // Don't move, if the new position would be outside of the world.
     if (( newX < 0 ) || (newX >= this.width) || (newY < 0) || (newY >= this.height)) {
         this.moved=false;
+        this.onCollisionWithBorder();
         return Hathi.OK;
     }
 
@@ -847,14 +895,14 @@ Hathi.prototype.forward = function () {
 
 
 Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY) {
-    var nx = newX * this.squareSize;
-    var ny = newY * this.squareSize;
-    var ox = oldX * this.squareSize;
-    var oy = oldY * this.squareSize;
+    var nx = (newX+1) * this.squareSize;
+    var ny = (newY+1) * this.squareSize;
+    var ox = (oldX+1) * this.squareSize;
+    var oy = (oldY+1) * this.squareSize;
         var anim = this.hathi_svg_img.animate(
             [
-                { transform: "translate(" + (ox+2) + "px," + (oy + 2 + this.squareSize/4) + "px)" },
-                { transform: "translate(" + (nx+2) + "px," + (ny + 2 + this.squareSize/4) + "px)" }
+                { transform: "translate(" + (ox+2) + "px," + (oy + 3 - this.squareSize/4) + "px)" },
+                { transform: "translate(" + (nx+2) + "px," + (ny + 3 - this.squareSize/4) + "px)" }
             ],
             {
                 duration: 250,
@@ -872,12 +920,12 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
     newY = ( newY + this.height ) % this.height;
     oldX = ( oldX + this.width ) % this.width;
     oldY = ( oldY + this.height ) % this.height;
-    var hx = hathiX * this.squareSize;
-    var hy = hathiY * this.squareSize;
-    var nx = newX * this.squareSize;
-    var ny = newY * this.squareSize;
-    var ox = oldX * this.squareSize;
-    var oy = oldY * this.squareSize;
+    var hx = (hathiX+1) * this.squareSize;
+    var hy = (hathiY+1) * this.squareSize;
+    var nx = (newX+1) * this.squareSize;
+    var ny = (newY+1) * this.squareSize;
+    var ox = (oldX+1) * this.squareSize;
+    var oy = (oldY+1) * this.squareSize;
     var svg = this.svgs[oldX][oldY];
     
     var keyframes;
@@ -885,9 +933,9 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
     var duration;
     if ( vanish ) {
         keyframes = {
-            transform : [ "translate(" + ox + "px," + (oy - this.squareSize/2 + 2 + this.squareSize/2) + "px)" ,
-                          "translate(" + nx + "px," + (ny + 2) + "px )",
-                          "translate(" + nx + "px," + (ny + 2) + "px )"
+            transform : [ "translate(" + ox + "px," + (oy + 2 - this.squareSize/2) + "px)" ,
+                          "translate(" + nx + "px," + (ny + 2 - this.squareSize/2) + "px )",
+                          "translate(" + nx + "px," + (ny + 2 - this.squareSize/2) + "px )"
                         ],
                         y : [ "0","0", (this.squareSize/2) ]
         };
@@ -901,19 +949,19 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
             ];
             */
         hframes = [
-               { transform: "translate(" + hx + "px," + (hy+2 + this.squareSize/4) + "px)" },
-               { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/4) + "px)" },
-               { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/4) + "px)" }
+               { transform: "translate(" + hx + "px," + (hy+2 - this.squareSize/4) + "px)" },
+               { transform: "translate(" + ox + "px," + (oy+2 - this.squareSize/4) + "px)" },
+               { transform: "translate(" + ox + "px," + (oy+2 - this.squareSize/4) + "px)" }
             ];  
         duration = 500;
     } else {
         keyframes = [
-                { transform: "translate(" + ox + "px," + (oy - this.squareSize/2 + 2 + this.squareSize/2) + "px)" },
-                { transform: "translate(" + nx + "px," + (ny + 2) + "px)" }
+                { transform: "translate(" + ox + "px," + (oy + 2 - this.squareSize/2 ) + "px)" },
+                { transform: "translate(" + nx + "px," + (ny + 2 - this.squareSize/2 ) + "px)" }
             ]; 
             hframes =             [
-               { transform: "translate(" + hx + "px," + (hy+2 + this.squareSize/4) + "px)" },
-               { transform: "translate(" + ox + "px," + (oy+2 + this.squareSize/4) + "px)" }
+               { transform: "translate(" + hx + "px," + (hy+2 - this.squareSize/4) + "px)" },
+               { transform: "translate(" + ox + "px," + (oy+2 - this.squareSize/4) + "px)" }
             ];
         duration = 250;
     }
@@ -934,7 +982,6 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
                 accumulate: "sum"
             });
         Abbozza.waitForAnimation(anim, function() { 
-            // World.hathi.rock_svg_img.style.visibility = "hidden";
             if ( vanish ) {
                 World.hathi.field[oldX][oldY] = Hathi.EMPTY;
                 World.hathi.field[newX][newY] = Hathi.FILLED;
@@ -963,19 +1010,29 @@ Hathi.prototype.isEmpty = function(x,y) {
     return ( this.field[x][y] == 0 );
 };
 
+Hathi.prototype.onCollisionWithBorder = function () {
+    this.showBubble("img/stopsign.png");
+    this.showBubble();
+    return Hathi.OK;
+};
+
 Hathi.prototype.onCollisionWithRock = function () {
+    this.showBubble("img/stopsign.png");
     return Hathi.OK;
 };
 
 Hathi.prototype.onCollisionWithTree = function () {
+    this.showBubble("img/stopsign.png");
     return Hathi.OK;
 };
 
 Hathi.prototype.onFall = function () {
+    this.showBubble();
     return Hathi.FELL_INTO_HOLE;
 };
 
 Hathi.prototype.noBanana = function() {
+    this.showBubble("img/nobanana.png");
     return Hathi.NO_BANANA;
 };
 
@@ -987,9 +1044,16 @@ Hathi.prototype.pickUpBanana = function() {
     if ( this.field[this.hathiX][this.hathiY] <= 0 ) {
         return this.noBanana();
     }
-    this.field[this.hathiX][this.hathiY]--;
-    this.bananas++;
-    this.drawSquare(this.hathiX,this.hathiY);
+    
+    if (this.bananas < 64 ) {
+        this.field[this.hathiX][this.hathiY]--;
+        this.bananas++;
+        this.drawSquare(this.hathiX,this.hathiY);
+        this.showBubble("img/banana.png");
+    } else {
+        this.showBubble("img/banana.png");        
+    }
+    return Hathi.OK;
 };
 
 
@@ -1001,6 +1065,9 @@ Hathi.prototype.dropBanana = function() {
     if ( this.bananas > 0 ) {
         this.field[this.hathiX][this.hathiY]++;
         this.bananas--;
+        this.showBubble();
+    } else {
+        this.showBubble();        
     }
     this.drawSquare(this.hathiX,this.hathiY);
 };
@@ -1025,8 +1092,8 @@ Hathi.prototype.clicked = function(event) {
     if ( !World.editable ) return;
     
     var hathi = World.hathi;
-    var x = Math.floor(event.offsetX/hathi.squareSize);
-    var y = Math.floor((event.offsetY-hathi.squareSize/2)/hathi.squareSize);
+    var x = Math.floor(event.offsetX/hathi.squareSize)-1;
+    var y = Math.floor(event.offsetY/hathi.squareSize)-1;
     if ( y<0 ) y = 0;
     
     hathi.hideCollision();
@@ -1052,9 +1119,9 @@ Hathi.prototype.rightclicked = function(event) {
     if ( !World.editable ) return;
     
     var hathi = World.hathi;
-    var x = Math.floor(event.offsetX/hathi.squareSize);
-    var y = Math.floor((event.offsetY-hathi.squareSize/2)/hathi.squareSize);
-    if ( y<0) y = 0;
+    var x = Math.floor(event.offsetX/hathi.squareSize) - 1;
+    var y = Math.floor(event.offsetY/hathi.squareSize) - 1;
+    if ( y<0 ) y = 0;
     hathi.hideCollision();
     
     if (( x != hathi.hathiX ) || ( y != hathi.hathiY )) {

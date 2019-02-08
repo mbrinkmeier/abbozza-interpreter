@@ -85,8 +85,9 @@ Abbozza.HathiPickUp = {
         this.setTooltip('');
     },
     execute : function(entry) {
-        if ( World.hathi.pickUpPeanut() == Hathi.NO_PEANUT ) {
-            return false;
+        if ( World.hathi.pickUpBanana() == Hathi.NO_BANANA ) {
+            entry.state = 2;
+            entry.stateMsg = "hathi.no_banana";            
         };
         entry.finished();
         return true;    
@@ -173,7 +174,7 @@ Abbozza.HathiMoved = {
 
 
 
-Abbozza.HathiIsOnPeanut = {
+Abbozza.HathiIsOnBanana = {
     init : function() {
         this.setHelpUrl(Abbozza.HELP_URL);
         this.setColour(ColorMgr.getCatColor("cat.HATHI"));
@@ -186,7 +187,7 @@ Abbozza.HathiIsOnPeanut = {
         this.setTooltip('');
     },
     execute : function(entry) {
-        entry.returnValue = World.hathi.isOnPeanut();
+        entry.returnValue = World.hathi.isOnBanana();
         entry.finished();
         return true;    
     }    
@@ -232,16 +233,16 @@ Blockly.Blocks['hathi_drop'] = Abbozza.HathiDrop;
 Blockly.Blocks['hathi_get_bananas'] = Abbozza.HathiGetBananas;
 Blockly.Blocks['hathi_is_empty'] = Abbozza.HathiIsEmpty;
 Blockly.Blocks['hathi_moved'] = Abbozza.HathiMoved;
-Blockly.Blocks['hathi_is_on_peanut'] = Abbozza.HathiIsOnPeanut;
+Blockly.Blocks['hathi_is_on_banana'] = Abbozza.HathiIsOnBanana;
 Blockly.Blocks['hathi_is_forward'] = Abbozza.HathiIsForward;
 
 
 AbbozzaCode['hathi_forward'] = [ 'forward();',[]];
 AbbozzaCode['hathi_turn'] = [ 'turn#();',["F_DIRECTION"]];
-AbbozzaCode['hathi_pick_up'] = [ 'pickUpPeanut();',[]];
-AbbozzaCode['hathi_drop'] = [ 'dropPeanut();',[]];
+AbbozzaCode['hathi_pick_up'] = [ 'pickUpBanana();',[]];
+AbbozzaCode['hathi_drop'] = [ 'dropBanana();',[]];
 AbbozzaCode['hathi_get_bananas'] = [ 'getBananas();',[]];
 AbbozzaCode['hathi_is_empty'] = [ 'isForwardEmpty()',[]];
 AbbozzaCode['hathi_moved'] = [ 'steppedForward()',[]];
-AbbozzaCode['hathi_is_on_peanut'] = [ 'isOnBanana()',[]];
+AbbozzaCode['hathi_is_on_banana'] = [ 'isOnBanana()',[]];
 AbbozzaCode['hathi_is_forward'] = [ 'isForward(#)',["F_TYPE"]];

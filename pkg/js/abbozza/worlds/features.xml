@@ -6,11 +6,6 @@
         
         <!-- Basic control structures -->
         <category id="cat.CTRL">
-            <block type="loop_delay">
-                <value name="TIME">
-                    <block type="math_number"><mutation confirmed="false"/>100</block>
-                </value>
-            </block>  
             <block type="cond_if"></block>
             <block type="cond_if_else"></block>            
             <block type="loop_endless"></block>
@@ -150,13 +145,15 @@
             </block>
         </category>     
         
-        <category id="cat.DATASTRUCTURES" color="#C000C0"/>
-        
         <category id="cat.KEYBOARD" color="#00A0A0">
             <block type="key_get_pressed"/>
             <block type="key_get_last"/>
             <block type="key_const"/>
         </category>
+
+        <category id="cat.DATASTRUCTURES" color="#C000C0"/>
+        <category id="cat.WEB" color="#808000"/>
+        
     </feature>
 
 
@@ -339,7 +336,7 @@
             
     <!-- serial communication -->
     <feature id="feat.WEB" option="websocket">
-        <category id="cat.SERIAL">
+        <category id="cat.WEB" color="#ff0000">
             <block type="websocket_open"></block>
             <block type="websocket_close"></block>
             <block type="websocket_available"></block>
