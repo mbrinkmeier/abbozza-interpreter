@@ -10,7 +10,7 @@
             <block type="hathi_pick_up"/>
             <block type="hathi_drop"/>
             <block type="hathi_is_empty"/>
-            <block type="hathi_is_on_banana"/>
+            <block type="hathi_is_on_peanut"/>
             <block type="hathi_is_forward"/>
         </category>             
     </feature>

@@ -4,7 +4,6 @@
         <msg id="block.MAIN">Main program</msg> 
     </blocks>
     <categories>
-        <msg id="cat.web">Internet</msg>
     </categories>
     <gui>
         <msg id="gui.words">Worlds</msg>
@@ -24,8 +23,6 @@
         <msg id="gui.startBrowser">Starte Browser</msg>
         <msg id="gui.settings">Einstellungen</msg>
         <msg id="gui.font_size">Font size</msg>        
-        <msg id="gui.websocket">WebSocket</msg>        
-        <msg id="gui.internet">Internet</msg>        
     </gui>
     <blocks>
         <msg id="msg.save_source">Sourcecode is saved</msg> 
