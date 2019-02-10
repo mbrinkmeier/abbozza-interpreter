@@ -268,7 +268,7 @@ Hathi.prototype.reset = function(newBackground = true) {
     this.hathiDX = 1;
     this.hathiDY = 0;
     this.moved = false;
-    this.hideCollision();
+    // this.hideCollision();
     this.collX = 0;
     this.collY = 0;
     this.collX2 = 0;
@@ -363,8 +363,8 @@ Hathi.prototype.resize = function() {
     this.hathi_svg_i.setAttribute("height",this.squareSize);
     this.rock_svg_img.setAttribute("width",this.squareSize);
     this.rock_svg_img.setAttribute("height",this.squareSize);
-    this.collision_img.setAttribute("width",this.squareSize);
-    this.collision_img.setAttribute("height",this.squareSize);
+    // this.collision_img.setAttribute("width",this.squareSize);
+    // this.collision_img.setAttribute("height",this.squareSize);
     
     var w = (this.width+2) * this.squareSize;
     var h = (this.height+2) * this.squareSize;
@@ -395,7 +395,7 @@ Hathi.prototype.resize = function() {
 
 
 Hathi.prototype.onStart = function() {
-    this.hideCollision();
+    // this.hideCollision();
     this.hideBubble();
 }
 
@@ -1096,7 +1096,8 @@ Hathi.prototype.clicked = function(event) {
     var y = Math.floor(event.offsetY/hathi.squareSize)-1;
     if ( y<0 ) y = 0;
     
-    hathi.hideCollision();
+    // hathi.hideCollision();
+    hathi.hideBubble();
     
     if ( event.ctrlKey && (hathi.field[x][y] > 0)) {
         hathi.field[x][y] = (hathi.field[x][y] + 1) % 33;
@@ -1122,7 +1123,7 @@ Hathi.prototype.rightclicked = function(event) {
     var x = Math.floor(event.offsetX/hathi.squareSize) - 1;
     var y = Math.floor(event.offsetY/hathi.squareSize) - 1;
     if ( y<0 ) y = 0;
-    hathi.hideCollision();
+    // hathi.hideCollision();
     
     if (( x != hathi.hathiX ) || ( y != hathi.hathiY )) {
         var oldX = hathi.hathiX;

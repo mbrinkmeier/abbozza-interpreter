@@ -55,11 +55,6 @@ Abbozza.initWorlds = function () {
     }
     Abbozza.worldId = worldId;
 
-
-
-    // Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
-    // World.init(document.getElementById(".topleft"));
-
     Abbozza.worldFrame = new Frame("World", null);
     Abbozza.worldFrame.setPosition(0, 0);
     Abbozza.worldFrame.setSize("50%", "50%");
@@ -71,14 +66,10 @@ Abbozza.initWorlds = function () {
     );
     Abbozza.worldView = document.createElement("DIV");
     Abbozza.worldView.className = "abzWorldView";    
-    // Abbozza.worldSpeed = document.createElement("DIV");
-    // Abbozza.worldSpeed.className = "abzWorldSpeed";
     Abbozza.worldControl = document.createElement("DIV");
     Abbozza.worldControl.className = "abzWorldControl";
     Abbozza.worldFrame.content.appendChild(Abbozza.worldView);
-    // Abbozza.worldFrame.content.appendChild(Abbozza.worldSpeed);
     Abbozza.worldFrame.content.appendChild(Abbozza.worldControl);
-    // Desktop.header.appendChild(document.getElementById("speedslider"));
     Abbozza.worldControl.appendChild(document.getElementById("speedslider"));
     
     var controls = document.getElementById("infoFrame").contentDocument.getElementById("controls");
@@ -110,13 +101,6 @@ Abbozza.initWorlds = function () {
     document.addEventListener("abz_setSketch", Abbozza.resetWorld);
 
     AbbozzaInterpreter.reset();
-
-
-    /*
-     var tabs = new TabPane(document.getElementById('tabs'));
-     var infoPane = tabs.addPane(_("gui.information"), document.getElementById("worldinfo"));
-     var debugPane;
-     */
 
     var debugPane = document.getElementById("debug");
     if (Configuration.getParameter("option.debug") == "true") {
@@ -165,20 +149,22 @@ Abbozza.initWorlds = function () {
             Abbozza.overlayEditorFontSize = this.value;
         }
     }
-    // tabs.openTab(infoPane);
 
-    Abbozza.parseQuery();
-    
-    /*
-    LevelMgr.delete("test");
-    LevelMgr.init("test",10,5,false);
-    LevelMgr.setStars(0,2);
-    LevelMgr.openLevelOverlay(0,48,"Hallo");
-    */
-   
+    Abbozza.parseQuery();    
 };
 
-
+/**
+ * Create a new frame on the desktop
+ * 
+ * @param {type} title The title of the frame
+ * @param {type} icon An icon for the frame
+ * @param {type} content An Element contining the contents
+ * @param {type} x x-coordinate of the upper left corner
+ * @param {type} y y-coordinate of the upper left corner
+ * @param {type} w width of the frame
+ * @param {type} h height of the frame
+ * @returns {Frame|Abbozza.createFrame.frame}
+ */
 Abbozza.createFrame = function (title, icon, content, x, y, w, h) {
     var frame = new Frame(title, icon);
     frame.setContent(content);
