@@ -7,6 +7,7 @@
     </group>
     <group name="gui.blocks">
         <item name="gui.advanced" option="advanced" default="false">
+            <item name="gui.websocket" option="websocket" default="false"/>
         </item>
         <item name="gui.operations" option="operations" default="false">
             <item name="gui.local_variables" option="localVars" default="false"/>

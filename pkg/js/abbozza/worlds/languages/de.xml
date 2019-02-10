@@ -4,6 +4,7 @@
         <msg id="block.MAIN">Hauptprogramm</msg> 
     </blocks>
     <categories>
+        <msg id="cat.web">Internet</msg>
     </categories>
     <gui>
         <msg id="gui.worlds">Welten</msg> 
@@ -23,6 +24,8 @@
         <msg id="gui.startBrowser">Starte Browser</msg>
         <msg id="gui.settings">Einstellungen</msg>
         <msg id="gui.font_size">Schriftgröße</msg>
+        <msg id="gui.websocket">WebSockets</msg>
+        <msg id="gui.datastructures">Datenstrukturen</msg>        
     </gui>
     <blocks>
         <msg id="msg.save_source">Quelltext wird gespeichert</msg> 
@@ -43,6 +46,18 @@
         <msg id="key.TAB">Tabulator</msg>
         <msg id="key.INSERT">Einfügen</msg>
         <msg id="key.ESCAPE">Escape (Esc)</msg>
+        
+        <msg id ="websocket.PRINT">Sende</msg>
+        <msg id ="websocket.PRINTLN">Sende Zeile</msg>
+        <msg id ="websocket.AVAILABLE">Zeichen empfangen</msg>
+        <msg id ="websocket.READLN">Lies Zeiles</msg>
+        <msg id ="websocket.READ_ALL">Lies Alles</msg>
+        <msg id ="websocket.WRITE_BYTE">Sende Byte</msg>
+        <msg id ="websocket.READ_BYTE">Lies Byte</msg>
+        <msg id ="websocket.WRITE_INT">Sende Zahl</msg>
+        <msg id ="websocket.READ_INT">Lies Zahl</msg>
+        <msg id="websocket.OPEN">Öffne WebSocket</msg>
+        <msg id="websocket.CLOSE">Schließe WebSocket</msg>        
     </blocks>
     <errors>
         <msg id="err.unknown_stack">Unbekannter Stack!</msg>

@@ -10,16 +10,17 @@
         <msg id="hathi.pick_up">Hebe Banane auf</msg>
         <msg id="hathi.drop">Lege Banane ab</msg>
         <msg id="hathi.is_empty">Ist vorne leer?</msg>
+        <msg id="hathi.get_bananas">Gesammelte Bananen</msg>
         <msg id="hathi.is_on_shamrock">Ist auf Banane?</msg>
         <msg id="hathi.is_forward">Ist vorne</msg>
         <msg id="hathi.moved">Hat sich bewegt?</msg>
-        <msg id="hathi.PEANUT">eine Banane</msg>
+        <msg id="hathi.BANANA">eine Banane</msg>
         <msg id="hathi.TREE">ein Baumstumpf</msg>
         <msg id="hathi.ROCK">ein Stein</msg>
         <msg id="hathi.HOLE">ein Loch</msg>
         <msg id="hathi.OASIS">ein Wasserloch</msg>
         <msg id="hathi.collision">Kollision mit</msg>
-        <msg id="hathi.no_shamrock">Keine Banane!</msg>
+        <msg id="hathi.no_banana">Hier liegt keine Banane!</msg>
         <msg id="hathi.bumped_tree">Hathi ist vor einen Baum gelaufen!</msg>
         <msg id="hathi.fell_into_hole">Hathi ist in ein Loch gefallen!</msg>
     </blocks>

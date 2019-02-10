@@ -29,6 +29,13 @@
                     <block type="var_block"></block>
                 </value>
             </block>
+            <block type="var_int_step_up"></block>
+            <block type="var_int_step_down"></block>
+            <block type="var_int_change_by">
+                <value name="VALUE">
+                    <block type="math_number"><mutation confirmed="false"/>100</block>
+                </value>
+            </block>            
         </category>
 
         <!-- Operations -->
@@ -138,13 +145,15 @@
             </block>
         </category>     
         
-        <category id="cat.DATASTRUCTURES" color="#C000C0"/>
-        
         <category id="cat.KEYBOARD" color="#00A0A0">
             <block type="key_get_pressed"/>
             <block type="key_get_last"/>
             <block type="key_const"/>
         </category>
+
+        <category id="cat.DATASTRUCTURES" color="#C000C0"/>
+        <category id="cat.WEB" color="#808000"/>
+        
     </feature>
 
 
@@ -324,6 +333,35 @@
             <block type="bintree_del"></block>
         </category>
     </feature>
+            
+    <!-- serial communication -->
+    <feature id="feat.WEB" option="websocket">
+        <category id="cat.WEB" color="#ff0000">
+            <block type="websocket_open"></block>
+            <block type="websocket_close"></block>
+            <block type="websocket_available"></block>
+            <block type="websocket_println">
+                <value name ="VALUE">
+                    <block type="text_const"><mutation confirmed="false"/></block>
+                </value>
+            </block>
+            <block type="websocket_readln"></block>
+            <block type="websocket_read_all"></block>
+            <block type="websocket_write_byte">
+                <value name ="VALUE">
+                    <block type="math_number"><mutation confirmed="false"/></block>
+                </value>                
+            </block>
+            <block type="websocket_read_byte"></block>
+            <!-- block type="websocket_write_int">
+                <value name ="VALUE">
+                    <block type="math_number"><mutation confirmed="false"/></block>
+                </value>                
+            </block>
+            <block type="websocket_read_int"></block -->
+        </category>
+    </feature>
+           
             
 </features>
     

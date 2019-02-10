@@ -60,6 +60,7 @@ function Console(view) {
     // Create console_	
     this.console_ = document.createElement("textarea");
     this.console_.Console = this;
+    this.console_.disabled = true;
     this.parent_.appendChild(this.console_);
 
     // Set size of console
@@ -75,8 +76,6 @@ function Console(view) {
     this.fontSizeDiv.oninput = function(event) {
         World.mycon.console_.style.fontSize = this.value + "pt";
     }
-
-    
 };
 
 
@@ -110,6 +109,8 @@ Console.prototype.readkey = function (callback = null) {
     this.console_.selectionStart = this.console_.value.length;
     this.console_.selectionEnd = this.console_.selectionStart;
     this.callback_ = callback;
+    this.console_.disabled = false;
+    this.console_.focus();
 };
 
 Console.prototype.readline = function (callback = null) {
@@ -119,6 +120,8 @@ Console.prototype.readline = function (callback = null) {
     this.console_.selectionEnd = this.console_.selectionStart;
     this.callback_ = callback;
     this.console_.scrollTop = this.console_.scrollHeight;
+    this.console_.disabled = false;
+    this.console_.focus();
 };
 
 
@@ -169,6 +172,7 @@ Console.prototype.keydown = function (event) {
 
         if (con.callback_ != null) {
             con.callback_.call(this, event.key);
+            con.console_.disabled = true;
         }
 
         var myEvent = document.createEvent('Event');
@@ -238,13 +242,29 @@ Console.prototype.keydown = function (event) {
  * @returns {undefined}
  */
 World.initSourceInterpreter = function(interpreter,scope) {
-    interpreter.setProperty(scope,"println",interpreter.createNativeFunction(World.printlnWrapper));
-    interpreter.setProperty(scope,"print",interpreter.createNativeFunction(World.printWrapper));
-    interpreter.setProperty(scope,"readkey",interpreter.createAsyncFunction(World.readkeyWrapper));
-    interpreter.setProperty(scope,"readline",interpreter.createAsyncFunction(World.readlineWrapper));    
-    interpreter.setProperty(scope,"clear",interpreter.createNativeFunction(World.clearWrapper));    
+    AbbozzaInterpreter.createWrappers( interpreter, scope, 
+        [
+            [ "println" ,false,World.mycon,World.mycon.println ],
+            [ "print"   ,false,World.mycon,World.mycon.print ],
+            [ "readline",true,World.mycon,World.mycon.readline ],
+            [ "readkey",true,World.mycon,World.mycon.readkey ],
+            [ "clear",false,World.mycon,World.mycon.clear ]
+        ]
+    );
+    // interpreter.setProperty(scope,"println",AbbozzaInterpreter.createWrapper(interpreter,false,World.mycon,World.mycon.println));
+    // interpreter.setProperty(scope,"readline",AbbozzaInterpreter.createWrapper(interpreter,true,World.mycon,World.mycon.readline));
+    // interpreter.setProperty(scope,"print",AbbozzaInterpreter.createWrapper(interpreter,false,World.mycon,World.mycon.print));
+    // interpreter.setProperty(scope,"readkey",AbbozzaInterpreter.createWrapper(interpreter,true,World.mycon,World.mycon.readkey));
+    // interpreter.setProperty(scope,"clear",AbbozzaInterpreter.createWrapper(interpreter,false,World.mycon,World.mycon.clear));
+
+    // interpreter.setProperty(scope,"println",interpreter.createNativeFunction(World.printlnWrapper));
+    // interpreter.setProperty(scope,"readline",interpreter.createAsyncFunction(World.readlineWrapper));
+    // interpreter.setProperty(scope,"print",interpreter.createNativeFunction(World.printWrapper));
+    // interpreter.setProperty(scope,"readkey",interpreter.createAsyncFunction(World.readkeyWrapper));
+    // interpreter.setProperty(scope,"clear",interpreter.createNativeFunction(World.clearWrapper));    
 }
 
+/*
 World.printWrapper = function(text) {
     World.mycon.print(text);
 }
@@ -268,3 +288,4 @@ World.readlineWrapper = function(callback) {
         callback(text);
     });
 }
+*/

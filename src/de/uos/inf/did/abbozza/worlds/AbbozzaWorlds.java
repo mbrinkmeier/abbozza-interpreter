@@ -26,6 +26,7 @@ import de.uos.inf.did.abbozza.core.AbbozzaServerException;
 import de.uos.inf.did.abbozza.core.AbbozzaSplashScreen;
 import de.uos.inf.did.abbozza.core.AbbozzaVersion;
 import de.uos.inf.did.abbozza.handler.JarDirHandler;
+import de.uos.inf.did.abbozza.handler.MonitorHandler;
 import de.uos.inf.did.abbozza.plugin.Plugin;
 import de.uos.inf.did.abbozza.tools.XMLTool;
 import de.uos.inf.did.abbozza.worlds.handler.LoadSourceHandler;
@@ -227,7 +228,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         httpServer.createContext("/abbozza/features", new WorldFeatureHandler(this));
         httpServer.createContext("/abbozza/world", new WorldHandler(this, "/abbozza/world/"));
         // httpServer.removeContext("/abbozza/monitor");
-        // httpServer.createContext("/abbozza/monitor", new WorldsMonitorHandler(this));
+        httpServer.createContext("/abbozza/monitor", new MonitorHandler(this));
     }
 
     @Override
