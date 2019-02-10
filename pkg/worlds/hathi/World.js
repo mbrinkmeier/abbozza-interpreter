@@ -482,6 +482,9 @@ Hathi.prototype.redraw = function () {
 
 Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
     
+    if ( (x<0) || (x >= this.width)) return;
+    if ( (y<0) || (y >= this.height)) return;
+    
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
 
