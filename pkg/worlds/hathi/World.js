@@ -147,13 +147,8 @@ function Hathi(view) {
     this.height = 20;
     this.squareSize = 40;
 
-    this.loadImages();
-    
-    this.reset();
-    
-    this.put(Hathi.ROCK,2,0);
-    this.put(Hathi.HOLE,6,0);
-    this.redraw();
+    this.loadImages();    
+    this.reset();    
 };
 
 
@@ -230,7 +225,7 @@ Hathi.prototype.loadImage = function(path, redraw = true) {
 }
 
 
-Hathi.prototype.reset = function(newBackground = true) {
+Hathi.prototype.reset = function(newBackground = true, restore = true) {
     this.offsetY = 0;
     this.hathiX = 0;
     this.hathiY = 0;
@@ -271,22 +266,24 @@ Hathi.prototype.reset = function(newBackground = true) {
     this.hathi_svg.appendChild(this.hathi_svg_g);
     // this.hathi_svg.appendChild(this.rock_svg_img);
     
-    for (var x = 0; x < this.width; x++) {
-        var svgline = [];
-        var line = []
-        var bkgline = []
-        for (var y = 0; y < this.height; y++) {
-            if ( oldField && oldField[x] && oldField[x][y] ) {
-                this.field[x][y] = oldField[x][y];
-            } else {
-                this.field[x][y] = 0;
-            }
+    if ( restore ) {
+        for (var x = 0; x < this.width; x++) {
+            var svgline = [];
+            var line = []
+            var bkgline = []
+            for (var y = 0; y < this.height; y++) {
+                if ( oldField && oldField[x] && oldField[x][y] ) {
+                    this.field[x][y] = oldField[x][y];
+                } else {
+                    this.field[x][y] = 0;
+                }
             
-            var type = this.field[x][y];
-            var img = null;
-            if ( type != 0 ) { 
-                this.put(type,x,y);
-            }            
+                var type = this.field[x][y];
+                var img = null;
+                if ( type != 0 ) { 
+                    this.put(type,x,y);
+                }            
+            }
         }
     }
     
@@ -298,6 +295,9 @@ Hathi.prototype.resize = function() {
     var parHeight = this.parent_.offsetHeight;
     var parWidth = this.parent_.ossfetWidth;
     
+    document.getElementById("width").value = this.width;
+    document.getElementById("height").value = this.height;
+
     var oldField = this.field;
     
     this.field = [];
@@ -396,14 +396,12 @@ Hathi.prototype.setHeight = function(w) {
 Hathi.prototype.setSize = function(w,h) {
     this.width = Number(w);
     this.height = Number(h);
-    document.getElementById("width").value = this.width;
-    document.getElementById("height").value = this.height;
     this.resize();
 }
 
 Hathi.prototype.setSquareSize = function(w) {
     this.squareSize = Number(w);
-    this.reset(false);
+    this.reset(false,true);
     this.redraw();
 }
 
@@ -1035,7 +1033,7 @@ Hathi.prototype.fromDom = function(xml) {
     this.width = Number(xml.getAttribute("width"));
     this.height = Number(xml.getAttribute("height"));
     
-    this.reset();
+    this.reset(true,false);
     
     for ( var idx = 0; idx < xml.children.length; idx++) {
         var child = xml.children[idx];
