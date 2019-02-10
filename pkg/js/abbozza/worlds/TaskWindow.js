@@ -135,6 +135,7 @@ TaskWindow.hide = function() { TaskWindow.frame.hide(); };
 TaskWindow.isVisible = function() { TaskWindow.frame.isVisible(); };
 
 TaskWindow.setSize = function(width,height) { TaskWindow.frame.setSize(width,height); };
+TaskWindow.setPosition = function(x,y) { TaskWindow.frame.setPosition(x,y); };
 
 TaskWindow.getWidth = function() {
     return TaskWindow.frame.div.offsetWidth;

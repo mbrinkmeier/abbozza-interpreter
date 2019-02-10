@@ -55,8 +55,9 @@ LevelMgr.init = function (id, number, maxStars = 3, unlocked = false) {
             Levels.stars[0] = 0;
         }
         this.store();
-}
-
+    }
+    LevelMgr.nextURL = "";
+    LevelMgr.backURL = "";
 }
 
 /**
@@ -257,7 +258,7 @@ LevelMgr.getStarsView = function (level, size, msg = "", failed = true, animated
         return null;
 
     var div = document.createElement("DIV");
-    LevelMgr.injectStars(div, size, failed, animated);
+    LevelMgr.injectStars(div, level, size, failed, animated);
 
     if (typeof msg == "string") {
         var element = document.createElement("DIV");
@@ -279,34 +280,57 @@ LevelMgr.getStarsView = function (level, size, msg = "", failed = true, animated
  * @param {type} msg
  * @returns {undefined}
  */
-LevelMgr.openLevelOverlay = function (level, size, msg) {
-    Abbozza.createOverlayDialog(
-            LevelMgr.getStarsView(level, size, msg, true, true),
+LevelMgr.openLevelOverlay = function (level, size, msg, failed = true) {
+    if ( !failed ) {
+        Abbozza.createOverlayDialog(
+            LevelMgr.getStarsView(level, size, msg, failed, true),
             [
                 {
-                    msg: "Weiter",
+                    msg: "Nächster Level",
                     cmd: "next",
-                    callback: null,
+                    callback: LevelMgr.next,
                     obj: null,
                     class: "levelButton"
                 },
                 {
                     msg: "Nochmal",
                     cmd: "retry",
-                    callback: null,
+                    callback: LevelMgr.retry,
                     obj: null,
                     class: "levelButton"
                 },
                 {
                     msg: "Zurück",
                     cmd: "back",
-                    callback: null,
+                    callback: LevelMgr.back,
                     obj: null,
                     class: "levelButton"
                 }
             ],
             null
-            );
+        );
+    } else {
+        Abbozza.createOverlayDialog(
+            LevelMgr.getStarsView(level, size, msg, failed, true),
+            [
+                {
+                    msg: "Nochmal",
+                    cmd: "retry",
+                    callback: LevelMgr.retry,
+                    obj: null,
+                    class: "levelButton"
+                },
+                {
+                    msg: "Zurück",
+                    cmd: "back",
+                    callback: LevelMgr.back,
+                    obj: null,
+                    class: "levelButton"
+                }
+            ],
+            null
+        );        
+    }
 }
 
 
@@ -331,4 +355,22 @@ LevelMgr.inject = function(size) {
         }
         levelElement.appendChild(anchor);
     }
+}
+
+
+LevelMgr.setNavURLs = function(backURL,nextURL) {
+    LevelMgr.backURL = backURL;
+    LevelMgr.nextURL = nextURL;
+}
+
+LevelMgr.next = function() {
+    // Go to next level
+    document.location.reload();
+}
+
+LevelMgr.retry = function() {}
+
+LevelMgr.back = function() {
+    // Go back to menu
+    Abbozza.setSketchFromPath(LevelMgr.backURL);
 }

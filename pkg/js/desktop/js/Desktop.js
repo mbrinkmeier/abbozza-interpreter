@@ -73,12 +73,8 @@ Desktop.init = function (rootPath) {
     this.sceneList.className = "abzSceneList";
     this.desktop.appendChild(this.sceneList);
     this.sceneList.onchange = Desktop.setScene;
-    this.addScene("Hide all",  null, Desktop.hideAllFrames );
+    this.addScene("Hide all",  this.rootPath + "img/hide.png", Desktop.hideAllFrames );
     this.addScene("Cascade", this.rootPath + "img/cascade.png", Desktop.cascadeFrames );
-    // this.sceneButton.onmouseenter = function(event) {
-    //     Desktop.sceneList.style.visibility = "visible";
-    //     Desktop.desktop.appendChild(Desktop.sceneList);
-    // };
     this.sceneButton.onclick = function(event) {
         if ( Desktop.sceneList.style.visibility == "hidden" ) {
             Desktop.sceneList.style.visibility = "visible";            
@@ -263,7 +259,6 @@ Desktop.addScene = function(text,icon,sceneFunc) {
 
 
 Desktop.hideAllFrames = function() {
-    console.log(Desktop.desktop.children);
     for ( var i = 0; i < Desktop.desktop.children.length; i++ ) {
         var child = Desktop.desktop.children[i];
         if ( child.frame && child.frame.hide ) child.frame.hide();
@@ -271,7 +266,6 @@ Desktop.hideAllFrames = function() {
 }
 
 Desktop.cascadeFrames = function() {
-    console.log(Desktop.desktop.children);
     var ypos = 0;
     var xpos = 0;
     var height = Desktop.desktop.offsetHeight-2;

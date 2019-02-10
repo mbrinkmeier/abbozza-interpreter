@@ -1037,6 +1037,11 @@ Hathi.prototype.isOnBanana = function() {
     return ( this.field[this.hathiX][this.hathiY] > 0 );
 };
 
+Hathi.prototype.isOn = function(type) {
+    return ( this.field[this.hathiX][this.hathiY] == type );
+};
+
+
 Hathi.prototype.pickUpBanana = function() {
     if ( this.field[this.hathiX][this.hathiY] <= 0 ) {
         return this.noBanana();
@@ -1198,14 +1203,17 @@ Hathi.prototype.fromDom = function(xml) {
                 this.hathiDir = Number(child.getAttribute("dir"));
             } else {
                 var type;
-                if ( child.nodeName == "rock" ) type = Hathi.ROCK;
-                else if ( child.nodeName == "tree" ) type = Hathi.TREE;
-                else if ( child.nodeName == "rock" ) type = Hathi.ROCK;
-                else if ( child.nodeName == "oasis" ) type = Hathi.OASIS;
-                else if ( child.nodeName == "banana" ) type = child.getAttribute("count");
                 var x = Number(child.getAttribute("x"));
                 var y = Number(child.getAttribute("y"));
+                if ( child.nodeName == "rock" ) type = Hathi.ROCK;
+                else if ( child.nodeName == "tree" ) {
+                    type = Hathi.TREE;
+                } else if ( child.nodeName == "rock" ) {
+                    type = Hathi.ROCK;
+                } else if ( child.nodeName == "oasis" ) type = Hathi.OASIS;
+                else if ( child.nodeName == "banana" ) type = child.getAttribute("count");
                 this.field[x][y] = Number(type);
+                this.put(type,x,y);
             }
         }
     }

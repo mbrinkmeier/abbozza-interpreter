@@ -146,7 +146,7 @@ AbbozzaWorld.prototype.terminate = function () {
     if (World.onTerminate)
         show = show & World.onTerminate();
     if (Task && Task.onTerminate)
-        show = show & Task.onFinished();
+        show = show & Task.onTerminate();
     if (Page && Page.onTerminate)
         show = show & Page.onTerminate();
     document.dispatchEvent(new CustomEvent("abz_fnished"));

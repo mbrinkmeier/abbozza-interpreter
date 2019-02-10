@@ -98,7 +98,7 @@ Abbozza.initWorlds = function () {
      * Register abbozza event handlers
      */
     document.addEventListener("abz_clearSketch", Abbozza.resetWorld);
-    document.addEventListener("abz_setSketch", Abbozza.resetWorld);
+    document.addEventListener("abz_setSketch", Abbozza.setWorld);
 
     AbbozzaInterpreter.reset();
 
@@ -149,6 +149,8 @@ Abbozza.initWorlds = function () {
             Abbozza.overlayEditorFontSize = this.value;
         }
     }
+
+    Desktop.addScene("Task", "img/taskscene.png", this.setTaskScene );
 
     Abbozza.parseQuery();    
 };
@@ -261,18 +263,34 @@ Abbozza.cleanupTask = function () {
 Abbozza.resetWorld = function (event) {
     var worlds = null;
     var sketch = null;
-    if (event.detail) {
-        sketch = event.detail;
-        if (Abbozza.worldFromDom) {
-            worlds = sketch.getElementsByTagName("world");
-        }
-    }
-    World.setWorldDom(worlds)
+    
+    World.setWorldDom(null);
     AbbozzaInterpreter.reset();
     if (Abbozza.sourceEditor)
         Abbozza.sourceEditor.value = "";
 }
 
+/**
+ * Reset the world and the interpreter
+ * 
+ * @param {type} event
+ * @returns {undefined}
+ */
+Abbozza.setWorld = function (event) {
+    var worlds = null;
+    var sketch = null;
+    
+    if (event.detail) {
+        sketch = event.detail;
+        if (Abbozza.worldFromDom) {
+            worlds = sketch.getElementsByTagName("world");
+            World.setWorldDom(worlds)
+        }
+    }
+    AbbozzaInterpreter.reset();
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";
+}
 
 /**
  * Laod a new sketch.
@@ -602,4 +620,21 @@ function DebugView() {
         // TODO
     }
     this.view.appendChild(this.button);
+}
+
+
+Abbozza.setTaskScene = function() {
+    Desktop.hideAllFrames();
+    
+    Abbozza.workspaceFrame.setPosition("50%", "0");
+    Abbozza.workspaceFrame.setSize("50%", "100%");
+    Abbozza.workspaceFrame.show();
+     
+    Abbozza.worldFrame.setPosition(0, 0);
+    Abbozza.worldFrame.setSize("50%", "50%");
+    Abbozza.worldFrame.show();
+    
+    TaskWindow.setPosition("0","50%");
+    TaskWindow.setSize("50%","50%");
+    TaskWindow.show();
 }
