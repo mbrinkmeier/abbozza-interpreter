@@ -1007,7 +1007,6 @@ Hathi.prototype.isEmpty = function(x,y) {
 
 Hathi.prototype.onCollisionWithBorder = function () {
     this.showBubble("img/stopsign.png");
-    this.showBubble();
     return Hathi.OK;
 };
 
@@ -1022,8 +1021,9 @@ Hathi.prototype.onCollisionWithTree = function () {
 };
 
 Hathi.prototype.onFall = function () {
-    this.showBubble();
-    return Hathi.FELL_INTO_HOLE;
+    this.showBubble("img/stopsign.png");
+    return Hathi.OK;
+    // return Hathi.FELL_INTO_HOLE;
 };
 
 Hathi.prototype.noBanana = function() {
