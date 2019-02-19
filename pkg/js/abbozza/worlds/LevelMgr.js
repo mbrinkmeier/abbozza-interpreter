@@ -36,7 +36,9 @@ var Levels = {
  * @returns {undefined}
  */
 LevelMgr.init = function (id, number, maxStars = 3, unlocked = false) {
-    // LevelMgr.load(id);
+    LevelMgr.load(id);
+    if ( Levels.id != null ) return;
+    
     LevelMgr.delete(id);
     if (!Levels || Levels.id == null) {
         Levels.maxStars = maxStars;

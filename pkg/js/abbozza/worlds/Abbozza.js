@@ -97,8 +97,8 @@ Abbozza.initWorlds = function () {
     /**
      * Register abbozza event handlers
      */
-    document.addEventListener("abz_clearSketch", Abbozza.resetWorld);
-    document.addEventListener("abz_setSketch", Abbozza.setWorld);
+    // document.addEventListener("abz_clearSketch", Abbozza.resetWorld);
+    // document.addEventListener("abz_setSketch", Abbozza.setWorld);
 
     AbbozzaInterpreter.reset();
 
@@ -244,6 +244,37 @@ Abbozza.loadSketch = function () {
             }
     );
 };
+
+/**
+ * set Sketch
+ * @type Abbozza.setSketch
+ */
+Abbozza.originalSetSketch = Abbozza.setSketch;
+
+Abbozza.setSketch = function (sketch, page = - 1) {
+    Abbozza.originalSetSketch(sketch,page);
+    var worlds = null;
+    
+    if (Abbozza.worldFromDom) {
+        worlds = sketch.getElementsByTagName("world");
+        World.setWorldDom(worlds)
+    }
+    AbbozzaInterpreter.reset();
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";
+}
+
+
+Abbozza.originalClearSketch = Abbozza.clearSketch;
+
+Abbozza.clearSketch = function() {
+    Abbozza.originalClearSketch();
+
+    var worlds = null;
+    AbbozzaInterpreter.reset();
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";    
+}
 
 /**
  * To cleanup the Task, remove all hooks privided by the World.
@@ -638,3 +669,38 @@ Abbozza.setTaskScene = function() {
     TaskWindow.setSize("50%","50%");
     TaskWindow.show();
 }
+
+
+/**
+ * Stores the current sketch in the session storage.
+ * 
+ * @param {String} key The key under which the sketch should be stored.
+ * @returns {undefined}
+ */
+Abbozza.storeSketch = function (key) {
+    // Remove sequences of /
+    while (key.indexOf("//") >= 0) {
+        key = key.replace("//", "/");
+    }
+
+    // Get the current sketch
+    var xml = Abbozza.workspaceToDom(Blockly.mainWorkspace);
+
+    var desc = document.createElement("description");
+    desc.textContent = Abbozza.sketchDescription;
+    xml.appendChild(desc);
+
+    var task = TaskWindow.getHTML();
+    xml.appendChild(task);
+
+    var world = Abbozza.worldToDom();
+    if ( world ) xml.appendChild(world);
+    
+    var tasks = xml.getElementsByTagName("task");
+    if (tasks[0]) {
+        tasks[0].setAttribute("curpage", TaskWindow.currentPage_);
+    }
+
+    sessionStorage.setItem(key, Blockly.Xml.domToText(xml));
+    // console.log("stored sketch : " + key);
+};

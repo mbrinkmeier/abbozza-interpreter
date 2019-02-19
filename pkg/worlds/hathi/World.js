@@ -220,7 +220,8 @@ Hathi.prototype.loadImages = function() {
     this.wallImages[6] = this.loadImage("img/holeR0.png");
     this.wallImages[7] = this.loadImage("img/holeR1.png");
     this.wallImages[8] = this.loadImage("img/filled.png");
-   
+    this.wallImages[9] = this.loadImage("img/rockwall.png");   
+
     this.images=[];
     this.images[-Hathi.ROCK] = this.loadImage("img/rock.png");
     this.images[-Hathi.TREE] = this.loadImage("img/tree2.png");
@@ -521,10 +522,12 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
                 // The hole is drawn to the canvas
                 if ( ( y > 0 ) && ( this.field[x][y-1] == Hathi.HOLE ) ) {
                     this.context_.drawImage(this.wallImages[0], xpos, ypos, siz, siz);
+                } else if ( ( y > 0 ) && ( this.field[x][y-1] == Hathi.FILLED ) ) {
+                    this.context_.drawImage(this.wallImages[9], xpos, ypos, siz, siz);
                 } else {
                     this.context_.drawImage(this.wallImages[1], xpos, ypos, siz, siz);                    
                 }
-                
+                                
                 if ( ( y < this.height-1 ) && ( this.field[x][y+1] == Hathi.HOLE ) ) {
                     this.context_.drawImage(this.wallImages[2], xpos, ypos, siz, siz);
                 } else {
@@ -854,11 +857,13 @@ Hathi.prototype.forward = function () {
                 this.hathiY = newY;
                 this.moved = true;
                 this.moveRock(oldX,oldY,newX,newY,newX+this.hathiDX,newY+this.hathiDY);
+                this.moveHathi(oldX,oldY,newX,newY);
             } else if ( this.field[newX+this.hathiDX][newY+this.hathiDY] == Hathi.HOLE ) {
                 // Fill hole with rock
                 this.hathiX = newX;
                 this.hathiY = newY;
                 this.moved = true;
+                this.moveHathi(oldX,oldY,newX,newY);
                 this.moveRock(oldX,oldY,newX,newY,newX+this.hathiDX,newY+this.hathiDY,true);
             } else {
                 // Collide but don't abort!
@@ -936,21 +941,15 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
                         ],
                         y : [ "0","0", (this.squareSize/2) ]
         };
-        /*
-         }[
-                { transform: "translate(" + ox + "px," + (oy - this.squareSize/2 + 2 + this.squareSize/2) + "px)" },
-                { transform: "translate(" + nx + "px," + (ny + 2) + "px )" },
-                // { transform: "translate(" + (nx + this.squareSize/2) + "px," + (ny+this.squareSize) + "px) scale(0.1)" }
-                { transform: "translate(" + nx + "px," + (ny + this.squareSize + 2) + "px )", opacity: "1.0"  
-                }
-            ];
-            */
         hframes = [
                { transform: "translate(" + hx + "px," + (hy+2 - this.squareSize/4) + "px)" },
                { transform: "translate(" + ox + "px," + (oy+2 - this.squareSize/4) + "px)" },
                { transform: "translate(" + ox + "px," + (oy+2 - this.squareSize/4) + "px)" }
             ];  
         duration = 500;
+        if ( ( newY < this.height-1) && (this.field[newX][newY+1] == Hathi.HOLE) ) {
+            svg.setAttribute("clip-path","unset");
+        }
     } else {
         keyframes = [
                 { transform: "translate(" + ox + "px," + (oy + 2 - this.squareSize/2 ) + "px)" },
