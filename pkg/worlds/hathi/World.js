@@ -830,7 +830,6 @@ Hathi.prototype.turnLeft = function () {
     this.hathiDX = this.hathiDY;
     this.hathiDY = -dum;
     this.drawSquare(this.hathiX, this.hathiY);
-    this.showBubble();
 };
 
 
