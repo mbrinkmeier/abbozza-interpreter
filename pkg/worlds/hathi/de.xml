@@ -22,6 +22,6 @@
         <msg id="hathi.collision">Kollision mit</msg>
         <msg id="hathi.no_banana">Hier liegt keine Banane!</msg>
         <msg id="hathi.bumped_tree">Hathi ist vor einen Baum gelaufen!</msg>
-        <msg id="hathi.fell_into_hole">Hathi ist in ein Loch gefallen!</msg>
+        <msg id="hathi.fell_into_hole">Hathi wäre beinahe in ein Loch gefallen!</msg>
     </blocks>
 </language>

@@ -171,6 +171,9 @@ function Hathi(view) {
     this.height = 20;
     this.squareSize = 40;
 
+    this.terminateOnFall = true;
+    this.terminateOnCollision = false;
+    
     this.loadImages();    
     this.reset();    
 };
@@ -877,6 +880,7 @@ Hathi.prototype.forward = function () {
             // Collide and abort!
             this.moved = false;
             return this.onFall();
+            // return Hathi.FELL_INTO_HOLE;
         } else {
             // Do not collide!
             this.hathiX = newX;
@@ -895,11 +899,12 @@ Hathi.prototype.forward = function () {
 
 
 
-Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY) {
+Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY,falling = false) {
     var nx = (newX+1) * this.squareSize;
     var ny = (newY+1) * this.squareSize;
     var ox = (oldX+1) * this.squareSize;
     var oy = (oldY+1) * this.squareSize;
+    if ( !falling ) {
         var anim = this.hathi_svg_img.animate(
             [
                 { transform: "translate(" + (ox+2) + "px," + (oy + 3 - this.squareSize/4) + "px)" },
@@ -913,6 +918,9 @@ Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY) {
         Abbozza.waitForAnimation(anim, function() { 
             World.hathi.drawSquare(World.hathi.hathiX,World.hathi.hathiY);
         });    
+    } else {
+      World.hathi.onFall();
+    }
 };
 
 
@@ -938,7 +946,7 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
                           "translate(" + nx + "px," + (ny + 2 - this.squareSize/2) + "px )",
                           "translate(" + nx + "px," + (ny + 2 - this.squareSize/2) + "px )"
                         ],
-                        y : [ "0","0", (this.squareSize/2) ]
+            y : [ "0","0", (this.squareSize/2) ]
         };
         hframes = [
                { transform: "translate(" + hx + "px," + (hy+2 - this.squareSize/4) + "px)" },
@@ -1017,13 +1025,20 @@ Hathi.prototype.onCollisionWithRock = function () {
 
 Hathi.prototype.onCollisionWithTree = function () {
     this.showBubble("img/stopsign.png");
-    return Hathi.OK;
+    if ( this.terminateOnCollision ) {
+        return Hathi.BUMPED_TREE;
+    } else {
+        return Hathi.OK;
+    }
 };
 
 Hathi.prototype.onFall = function () {
     this.showBubble("img/stopsign.png");
-    return Hathi.OK;
-    // return Hathi.FELL_INTO_HOLE;
+    if ( this.terminateOnFall ) {
+        return Hathi.FELL_INTO_HOLE;
+    } else {
+        return Hathi.OK;
+    }
 };
 
 Hathi.prototype.noBanana = function() {
