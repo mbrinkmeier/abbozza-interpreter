@@ -448,7 +448,8 @@ Hathi.prototype.setSize = function(w,h) {
 
 Hathi.prototype.setSquareSize = function(w) {
     this.squareSize = Number(w);
-    this.reset(false,true);
+    // this.reset(false,true);
+    this.resize();
     this.redraw();
 }
 
@@ -1214,6 +1215,7 @@ Hathi.prototype.fromDom = function(xml) {
                 this.hathiX = Number(child.getAttribute("x"));
                 this.hathiY = Number(child.getAttribute("y"));
                 this.hathiDir = Number(child.getAttribute("dir"));
+                this.setHathi(this.hathiX,this.hathiY,this.hathiDir);
             } else {
                 var type;
                 var x = Number(child.getAttribute("x"));
@@ -1223,8 +1225,13 @@ Hathi.prototype.fromDom = function(xml) {
                     type = Hathi.TREE;
                 } else if ( child.nodeName == "rock" ) {
                     type = Hathi.ROCK;
-                } else if ( child.nodeName == "oasis" ) type = Hathi.OASIS;
-                else if ( child.nodeName == "banana" ) type = child.getAttribute("count");
+                } else if ( child.nodeName == "oasis" ) {
+                    type = Hathi.OASIS;
+                } else if ( child.nodeName == "banana" ) {
+                    type = child.getAttribute("count");
+                } else if ( child.nodeName == "hole" ) {
+                    type = Hathi.HOLE;
+                }
                 this.field[x][y] = Number(type);
                 this.put(type,x,y);
             }

@@ -702,5 +702,4 @@ Abbozza.storeSketch = function (key) {
     }
 
     sessionStorage.setItem(key, Blockly.Xml.domToText(xml));
-    // console.log("stored sketch : " + key);
 };

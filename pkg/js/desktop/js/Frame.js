@@ -138,7 +138,7 @@ Frame.prototype.show = function () {
     this.onShow();
     this.div.style.visibility = "visible";
     this.content.style.visibility = "visible";
-    this.div.style.zIndex = 30  ;
+    this.bringToFront();
 }
 
 Frame.prototype.hide = function () {
@@ -248,6 +248,7 @@ Frame.prototype.maximize = function (event) {
         frame.setPosition(0, 0);
         frame.setSize(w, h);
         frame.maximized = true;
+        frame.bringToFront();
     } else {
         frame.maximized = false;
         frame.setPosition(frame.oldX, frame.oldY);

@@ -31,8 +31,8 @@ Desktop.init = function (rootPath) {
     this.dragStartX = 0;
     this.dragStartY = 0;
     this.frameAtFront = null;
-    this.frontLayer = 10;
-    this.backLayer = 9;
+    this.frontLayer = 30;
+    this.backLayer = 10;
 
     this.body = document.getElementsByTagName("BODY")[0];
 

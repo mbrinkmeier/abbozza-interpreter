@@ -36,8 +36,11 @@ var Levels = {
  * @returns {undefined}
  */
 LevelMgr.init = function (id, number, maxStars = 3, unlocked = false) {
+    Levels.id = null;
     LevelMgr.load(id);
-    if ( Levels.id != null ) return;
+    if ( Levels.id != null ) {
+        return;
+    }
     
     LevelMgr.delete(id);
     if (!Levels || Levels.id == null) {
@@ -111,6 +114,22 @@ LevelMgr.reset = function () {
     if (Levels.stars[0]) {
         Levels.stars[0] = 0;
     }
+}
+
+
+LevelMgr.resetLevels = function(from,to) {
+    var s = -1;
+    if (Levels.unlock) {
+        s = 0;
+    }
+    for (var l = from; l <= to; l++) {
+        Levels.stars[l] = s;
+        Levels.data[l] = null;
+    }    
+    Levels.stars[from] = 0;
+    LevelMgr.store();
+    
+    document.location.reload();
 }
 
 /**
@@ -367,10 +386,13 @@ LevelMgr.setNavURLs = function(backURL,nextURL) {
 
 LevelMgr.next = function() {
     // Go to next level
-    document.location.reload();
+    Abbozza.setSketchFromPath(Abbozza.constructLocation(LevelMgr.nextURL));
+    // document.location.reload();
 }
 
-LevelMgr.retry = function() {}
+LevelMgr.retry = function() {
+    World.reset();
+}
 
 LevelMgr.back = function() {
     // Go back to menu
