@@ -116,7 +116,6 @@ TaskWindow.init = function() {
     };
 
     TaskWindow.frame.setPosition(0,"50%");
-    TaskWindow.frame.setSize("50%","50%");
     
 };
 

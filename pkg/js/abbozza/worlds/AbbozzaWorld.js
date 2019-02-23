@@ -17,6 +17,29 @@
  * limitations under the License.
  */
 
+/**
+ * This prototype provides various functionalities required by an abbozza! world.
+ * 
+ * The following handlers for various events can be defined.
+ * 
+ * World.onReset() is triggered if the World is reset, eg. if a new program 
+ *                 execution starts or if the world is initialized
+ *                  
+ * World.onStart() is triggered if a new program execution is started.
+ * 
+ * World.onStep() is triggered after each execution step of the program
+ * 
+ * World.onTerminate() is triggered if the program terminates regularly
+ * 
+ * World.onError() us triggered if the program aborts with an error
+ */
+
+
+/**
+ * 
+ * @param {type} id
+ * @returns {AbbozzaWorld}
+ */
 function AbbozzaWorld(id) {
     this.id = id;
     this.worldDoms = null;

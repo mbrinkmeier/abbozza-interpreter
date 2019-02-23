@@ -30,6 +30,9 @@ Abbozza.exceptions = [];
  * @returns {undefined}
  */
 Abbozza.initWorlds = function () {
+    this.defaultTaskWidth="50%";
+    this.defaultTaskHeight="50%";
+    
     Desktop.init("/js/desktop/");
 
     Abbozza.workspaceFrame = new Frame("Workspace", null);
@@ -151,7 +154,7 @@ Abbozza.initWorlds = function () {
     }
 
     Desktop.addScene("Task", "img/taskscene.png", this.setTaskScene );
-
+    
     Abbozza.parseQuery();    
 };
 
@@ -253,6 +256,30 @@ Abbozza.originalSetSketch = Abbozza.setSketch;
 
 Abbozza.setSketch = function (sketch, page = - 1) {
     Abbozza.originalSetSketch(sketch,page);
+
+    // Restore the layout
+    var layouts = sketch.getElementsByTagName("layout");
+    for ( var i = 0; i < layouts.length; i++ ) {
+        var layout = layouts[i];
+        var frames = layout.getElementsByTagName("frame");
+        for ( var j = 0; j < frames.length; j++ ) {
+            var id = frames[j].id;
+            var frame = null;
+            switch (id) {
+                case "world" : frame = Abbozza.worldFrame; break;
+                case "workspace" : frame = Abbozza.workspaceFrame; break;
+                case "task" : frame = TaskWindow.frame; break;
+                case "debug" : frame = Abbozza.debugFrame; break;
+                case "source" : frame = Abbozza.callsFrame; break;
+                case "calls" : frame = Abbozza.sourceFrame; break;                    
+            }
+            if ( frame ) {
+                frame.restoreLayoutXML(frames[j]);
+            }
+        }
+    }
+
+
     var worlds = null;
     
     if (Abbozza.worldFromDom) {
@@ -700,6 +727,18 @@ Abbozza.storeSketch = function (key) {
     if (tasks[0]) {
         tasks[0].setAttribute("curpage", TaskWindow.currentPage_);
     }
+    
+     // Store the layout
+    var layout = document.createElement("layout");
+    layout.appendChild(Abbozza.worldFrame.getLayoutXML("world"));
+    layout.appendChild(Abbozza.workspaceFrame.getLayoutXML("workspace"));
+    layout.appendChild(TaskWindow.frame.getLayoutXML("task"));
+    if (Abbozza.debugFrame) layout.appendChild(Abbozza.debugFrame.getLayoutXML("debug"));
+    if (Abbozza.debugFrame) layout.appendChild(Abbozza.debugFrame.getLayoutXML("calls"));
+    if (Abbozza.sourceFrame) layout.appendChild(Abbozza.sourceFrame.getLayoutXML("source"));
+    xml.appendChild(layout);   
 
     sessionStorage.setItem(key, Blockly.Xml.domToText(xml));
+    
+    return xml;
 };

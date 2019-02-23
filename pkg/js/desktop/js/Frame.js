@@ -74,14 +74,14 @@ Frame = function (title, icon = null, closeable = false) {
     this.minButton.className = "titleButton";
     this.titleRight.appendChild(this.minButton);
     this.minButton.innerHTML = "<svg viewBox='0 0 20 20'><path stroke='black' stroke-width='1px' d='M3,17 L17,17'></svg>";
-    this.minButton.onmouseup = this.minimize;
+    this.minButton.onclick = this.minimize;
     this.minButton.frame = this;
 
     this.maxButton = document.createElement("SPAN");
     this.maxButton.className = "titleButton";
     this.titleRight.appendChild(this.maxButton);
     this.maxButton.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
-    this.maxButton.onmouseup = this.maximize;
+    this.maxButton.onclick = this.maximize;
     this.maxButton.frame = this;
 
     this.icon = document.createElement("SPAN");
@@ -175,10 +175,15 @@ Frame.prototype.isVisible = function() {
  * @returns {undefined}
  */
 Frame.prototype.setSize = function (w, h) {
+    if ( w == null ) w = this.div.style.width;
+    if ( h == null ) w = this.div.style.height;
+    
     if (w < this.minWidth)
         w = this.minWidth;
     if (h < this.minHeight)
         h = this.minHeight;
+    
+
 
     if (typeof w == "number") {
         this.div.style.width = w + "px";
@@ -206,6 +211,9 @@ Frame.prototype.setSize = function (w, h) {
  * @returns {undefined}
  */
 Frame.prototype.setPosition = function (x, y) {
+    if ( x == null ) x = this.div.style.left;
+    if ( y == null ) y = this.div.style.height;
+    
     if (typeof x == "number") {
         this.div.style.left = x + "px";
     } else {
@@ -296,7 +304,38 @@ Frame.prototype.addTitleButton = function(html,clickHandler) {
     var button = document.createElement("SPAN");
     button.className = "titleButton";
     button.innerHTML = html;
-    button.onmouseup = clickHandler;
+    button.onclick = clickHandler;
     this.titleRight.insertBefore(button,this.minButton);
     return button;
+}
+
+
+Frame.prototype.getLayoutXML = function(id) {
+    var layout = document.createElement("frame");
+    layout.id = id;
+    var px = Math.round(100 * this.div.offsetLeft / Desktop.desktop.offsetWidth);
+    var py = Math.round(100 * this.div.offsetTop / Desktop.desktop.offsetHeight);
+    var pw = Math.round(100 * this.div.offsetWidth / Desktop.desktop.offsetWidth);
+    var ph = Math.round(100 * this.div.offsetHeight / Desktop.desktop.offsetHeight);
+    layout.setAttribute( "x" , px + "%" );
+    layout.setAttribute( "y" , py + "%" );
+    layout.setAttribute( "width" , pw + "%" );
+    layout.setAttribute( "height" , ph + "%" );
+    layout.setAttribute( "visibility" , this.div.style.visibility )
+    return layout;
+}
+
+
+Frame.prototype.restoreLayoutXML = function(element) {
+    var x = element.getAttribute("x");
+    var y = element.getAttribute("y");
+    var width = element.getAttribute("width");
+    var height = element.getAttribute("height");
+    
+    this.setPosition(x,y);
+    this.setSize(width,height);
+    
+    if ( element.getAttribute("visibility") == "hidden" ) {
+        this.hide();
+    }
 }

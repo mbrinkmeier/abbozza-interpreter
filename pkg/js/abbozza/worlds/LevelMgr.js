@@ -307,7 +307,7 @@ LevelMgr.openLevelOverlay = function (level, size, msg, failed = true) {
             LevelMgr.getStarsView(level, size, msg, failed, true),
             [
                 {
-                    msg: "Nächster Level",
+                    msg: "Nächstes Level",
                     cmd: "next",
                     callback: LevelMgr.next,
                     obj: null,
@@ -387,14 +387,14 @@ LevelMgr.setNavURLs = function(backURL,nextURL) {
 LevelMgr.next = function() {
     // Go to next level
     Abbozza.setSketchFromPath(Abbozza.constructLocation(LevelMgr.nextURL));
-    // document.location.reload();
 }
 
 LevelMgr.retry = function() {
+    // Reset the task
     World.reset();
 }
 
 LevelMgr.back = function() {
     // Go back to menu
-    Abbozza.setSketchFromPath(LevelMgr.backURL);
+    Abbozza.setSketchFromPath(Abbozza.constructLocation(LevelMgr.backURL));
 }
