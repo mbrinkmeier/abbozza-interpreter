@@ -138,7 +138,8 @@ Abbozza.initWorlds = function () {
     Abbozza.sourceEditor = CodeMirror.fromTextArea(document.getElementById("sourceeditor"), {
         mode: "javascript",
         lineNumbers: true,
-        styleSelectedText: true
+        styleSelectedText: true,
+        showCursorWhenSelecting : true
     });
     Abbozza.sourceEditor.setSize(null, "100%");
     

@@ -138,6 +138,13 @@ function Hathi(view) {
     this.hathi_bubble_path = document.createElementNS(svgNS,"path");
     this.hathi_bubble_path.setAttribute("stroke","black");
     this.hathi_bubble_path.setAttribute("fill","white");
+    this.hathi_bubble_text = document.createElementNS(svgNS,"text");
+    this.hathi_bubble_text.setAttribute("x","0");
+    this.hathi_bubble_text.setAttribute("y","0");
+    this.hathi_bubble_text.setAttribute("stroke","black");
+    this.hathi_bubble_text.setAttribute("fill","black");
+    this.hathi_bubble_text.setAttribute("text-anchor","middle");
+    this.hathi_bubble_text.style.fontSize = "40px";
     this.hathi_bubble_img = document.createElementNS(svgNS,"image");
     this.hathi_bubble_img.setAttribute("href","img/collision.png");
     this.hathi_bubble_img.setAttribute("x","103");
@@ -146,6 +153,7 @@ function Hathi(view) {
     this.hathi_bubble_img.setAttribute("height","50");
     this.hathi_bubble.appendChild(this.hathi_bubble_path);
     this.hathi_bubble.appendChild(this.hathi_bubble_img);
+    this.hathi_bubble.appendChild(this.hathi_bubble_text);
     this.hideBubble();
    
     /*
@@ -170,9 +178,12 @@ function Hathi(view) {
     this.width = 20;
     this.height = 20;
     this.squareSize = 40;
+    this.bananas = 0;
 
     this.terminateOnFall = true;
     this.terminateOnCollision = false;
+    this.terminateOnNoBanana = true;
+    this.terminateOnNoBananaDrop = true;
     
     this.loadImages();    
     this.reset();    
@@ -268,6 +279,8 @@ Hathi.prototype.reset = function(newBackground = true, restore = true) {
     this.collY = 0;
     this.collX2 = 0;
     this.collY2 = 0;
+    this.bananas = 0;
+    this.hideBubble();
 
     var oldField = this.field;
 
@@ -631,10 +644,11 @@ Hathi.prototype.hideCollision = function() {
 }
 
 
-Hathi.prototype.showBubble = function(img = null) {
+Hathi.prototype.showBubble = function(img = null, text = "") {
     if ( img != null ) {
        this.hathi_bubble_img.setAttribute("href",img);
     }
+    
     this.bubble_shown = true;
     this.hathi_bubble.style.display = "block";
     var xpos = (this.hathiX+1)*this.squareSize;
@@ -665,6 +679,17 @@ Hathi.prototype.showBubble = function(img = null) {
     this.hathi_bubble_img.setAttribute("transform","scale(" + scale + ")");
     this.hathi_bubble_img.setAttribute("x",ixpos);
     this.hathi_bubble_img.setAttribute("y",iypos);
+    this.hathi_bubble_text.setAttribute("transform","scale(" + scale + ")");
+    
+    if ( text != "" ) {
+        this.hathi_bubble_text.setAttribute("x",ixpos+25);
+        this.hathi_bubble_text.setAttribute("y",iypos+40);
+        this.hathi_bubble_text.textContent = text;
+        this.hathi_bubble_img.style.opacity = 0.25;
+    } else {
+        this.hathi_bubble_text.textContent = "";
+        this.hathi_bubble_img.style.opacity = 1;
+    }
 }
 
 
@@ -1044,7 +1069,11 @@ Hathi.prototype.onFall = function () {
 
 Hathi.prototype.noBanana = function() {
     this.showBubble("img/nobanana.png");
-    return Hathi.NO_BANANA;
+    if ( this.terminateOnNoBanana) {
+        return Hathi.NO_BANANA;
+    } else {
+        return Hathi.OK;
+    }
 };
 
 Hathi.prototype.isOnBanana = function() {
@@ -1065,7 +1094,7 @@ Hathi.prototype.pickUpBanana = function() {
         this.field[this.hathiX][this.hathiY]--;
         this.bananas++;
         this.drawSquare(this.hathiX,this.hathiY);
-        this.showBubble("img/banana.png");
+        this.showBubble("img/banana.png", this.bananas );
     } else {
         this.showBubble("img/banana.png");        
     }
@@ -1074,21 +1103,33 @@ Hathi.prototype.pickUpBanana = function() {
 
 
 Hathi.prototype.dropBanana = function() {
+    var result;
+    
     if ( this.field[this.hathiX][this.hathiY] < 0 ) {
         // this.onCollision();
         return;
     }
+    
     if ( this.bananas > 0 ) {
         this.field[this.hathiX][this.hathiY]++;
         this.bananas--;
-        this.showBubble();
+        this.showBubble("img/nobanana.png");
+        result = Hathi.OK;
     } else {
-        this.showBubble();        
+        this.showBubble("img/nobanana.png");
+        if ( this.terminateOnNoBananaDrop ) {
+            result = Hathi.NO_BANANA;
+        } else {
+            result = Hathi.OK;
+        }
     }
     this.drawSquare(this.hathiX,this.hathiY);
+    
+    return result;
 };
 
 Hathi.prototype.getBananas = function() {
+    this.showBubble("img/banana.png",this.bananas);
     return this.bananas;
 }
 
@@ -1138,7 +1179,7 @@ Hathi.prototype.rightclicked = function(event) {
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize) - 1;
     var y = Math.floor(event.offsetY/hathi.squareSize) - 1;
-    if ( y<0 ) y = 0;
+    if ( y < 0 ) y = 0;
     // hathi.hideCollision();
     
     if (( x != hathi.hathiX ) || ( y != hathi.hathiY )) {
@@ -1146,7 +1187,7 @@ Hathi.prototype.rightclicked = function(event) {
         var oldY = hathi.hathiY;
         hathi.hathiX = x;
         hathi.hathiY = y;
-        hathi.put(Hathi.EMPTY,x,y);
+        // hathi.put(Hathi.EMPTY,x,y);
         hathi.drawSquare(oldX,oldY);
         hathi.drawSquare(x,y);
     } else {

@@ -21,6 +21,7 @@
         <msg id="hathi.OASIS">ein Zielfeld</msg>
         <msg id="hathi.collision">Kollision mit</msg>
         <msg id="hathi.no_banana">Hier liegt keine Banane!</msg>
+        <msg id="hathi.no_banana_drop">Hathi hat keine Banane!</msg>
         <msg id="hathi.bumped_tree">Hathi ist vor einen Baum gelaufen!</msg>
         <msg id="hathi.fell_into_hole">Hathi wäre beinahe in ein Loch gefallen!</msg>
     </blocks>

@@ -156,7 +156,7 @@ LevelMgr.getStars = function (level) {
  * @returns {undefined}
  */
 LevelMgr.setStars = function (level, stars) {
-    if ((level >= 0) && (level < Levels.stars.length)) {
+    if ((level >= 0) && (level < Levels.stars.length) && (stars > Levels.stars[level])) {
         Levels.stars[level] = stars;
         this.store();
     }
@@ -202,7 +202,7 @@ LevelMgr.setData = function (level, data) {
  * @param {type} animated
  * @returns {unresolved}
  */
-LevelMgr.injectStars = function (node, level, size, failed, animated) {
+LevelMgr.injectStars = function (node, level, size, failed, animated, stars = -1) {
     if ((level < 0) || (level >= Levels.stars.length))
         return null;
 
@@ -210,13 +210,15 @@ LevelMgr.injectStars = function (node, level, size, failed, animated) {
     while (node.firstChild)
         node.removeChild(node.firstChild);
 
-    var stars = Levels.stars[level];
+    if ( stars == -1 ) {
+        stars = Levels.stars[level];
+    }
     var element = document.createElement("SPAN");
     node.appendChild(element);
     element.className = "levelStars";
     var m = size / 2;
 
-    for (var i = 0; (i < Levels.maxStars) || (i < stars); i++) {
+    for (var i = 0; i < Levels.maxStars ; i++) {
         var img = document.createElement("IMG");
         if (i < stars) {
             img.setAttribute("src", "/img/star.svg");
@@ -274,12 +276,12 @@ LevelMgr.injectStars = function (node, level, size, failed, animated) {
  * 
  * @returns {LevelMgr.getStarsView.element}
  */
-LevelMgr.getStarsView = function (level, size, msg = "", failed = true, animated = false) {
+LevelMgr.getStarsView = function (level, stars, size, msg = "", failed = true, animated = false) {
     if ((level < 0) || (level >= Levels.stars.length))
         return null;
 
     var div = document.createElement("DIV");
-    LevelMgr.injectStars(div, level, size, failed, animated);
+    LevelMgr.injectStars(div, level, size, failed, animated, stars);
 
     if (typeof msg == "string") {
         var element = document.createElement("DIV");
@@ -301,10 +303,10 @@ LevelMgr.getStarsView = function (level, size, msg = "", failed = true, animated
  * @param {type} msg
  * @returns {undefined}
  */
-LevelMgr.openLevelOverlay = function (level, size, msg, failed = true) {
+LevelMgr.openLevelOverlay = function (level, stars, size, msg, failed = true) {
     if ( !failed ) {
         Abbozza.createOverlayDialog(
-            LevelMgr.getStarsView(level, size, msg, failed, true),
+            LevelMgr.getStarsView(level, stars, size, msg, failed, true),
             [
                 {
                     msg: "Nächstes Level",
@@ -332,7 +334,7 @@ LevelMgr.openLevelOverlay = function (level, size, msg, failed = true) {
         );
     } else {
         Abbozza.createOverlayDialog(
-            LevelMgr.getStarsView(level, size, msg, failed, true),
+            LevelMgr.getStarsView(level, stars, size, msg, failed, true),
             [
                 {
                     msg: "Nochmal",

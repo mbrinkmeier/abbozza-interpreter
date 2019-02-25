@@ -107,7 +107,10 @@ Abbozza.HathiDrop = {
         this.setTooltip('');
     },
     execute : function(entry) {
-        World.hathi.dropPeanut();
+        if ( World.hathi.dropBanana() != 0 ) {
+            entry.state = 2;
+            entry.stateMsg = "hathi.no_banana_drop";            
+        }
         entry.finished();
         return true;    
     }    

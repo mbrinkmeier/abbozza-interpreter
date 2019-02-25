@@ -370,4 +370,29 @@
     text-align: center;
 }
 
+.CodeMirror-cursor {
+  border-left: 2px solid black;
+  border-right: none;
+  width: 1em;
+}
 
+.cke {
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+    overflow: auto;
+    top: 0px;
+    bottom: 0px;
+    height : 100%;
+    left: 0px;
+    right: 0px;
+    border-radius: 5px;
+    background-color: #ffe0e0;
+    text-align: left;
+    font-size: 75%;
+    border-top: 2px #a0a0a0 solid;
+    border-left: 2px #a0a0a0 solid;
+    border-bottom: 2px #f0f0f0 solid;
+    border-right: 2px #f0f0f0 solid;    
+    cursor: text;    
+}
