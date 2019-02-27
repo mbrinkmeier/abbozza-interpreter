@@ -35,7 +35,7 @@ Abbozza.initWorlds = function () {
     
     Desktop.init("js/abbozza/desktop/");
 
-    Abbozza.workspaceFrame = new Frame("Workspace", null);
+    Abbozza.workspaceFrame = new Frame("Workspace", null, false, "workspace");
     Abbozza.workspaceFrame.div.addEventListener("frame_resize",
             function (event) {
                 Abbozza.workspaceFrame.content.width = "100%";
@@ -58,7 +58,7 @@ Abbozza.initWorlds = function () {
     }
     Abbozza.worldId = worldId;
 
-    Abbozza.worldFrame = new Frame("World", null);
+    Abbozza.worldFrame = new Frame("World", null, false, "world");
     Abbozza.worldFrame.setPosition(0, 0);
     Abbozza.worldFrame.setSize("50%", "50%");
     Abbozza.worldFrame.show();
@@ -107,7 +107,7 @@ Abbozza.initWorlds = function () {
 
     var debugPane = document.getElementById("debug");
     if (Configuration.getParameter("option.debug") == "true") {
-        Abbozza.debugFrame = Abbozza.createFrame(_("gui.debug"), null, debugPane, 0, "50%", "50%", "50%");
+        Abbozza.debugFrame = Abbozza.createFrame(_("gui.debug"), "debug" , null, debugPane, 0, "50%", "50%", "50%");
         Abbozza.initDebugger(debugPane);
     } else {
         Abbozza.debugFrame = null;
@@ -117,7 +117,7 @@ Abbozza.initWorlds = function () {
     var sourcePane = document.getElementById("source");
     var sourcefont;
     if (Configuration.getParameter("option.source") == "true") {
-        Abbozza.sourceFrame = Abbozza.createFrame(_("gui.source"), null, sourcePane, 0, "50%", "50%", "50%");
+        Abbozza.sourceFrame = Abbozza.createFrame(_("gui.source"), "source", null, sourcePane, 0, "50%", "50%", "50%");
         sourcefont = document.getElementById("sourcefont");
         sourcefont.value = Abbozza.overlayEditorFontSize;
         document.getElementById("sourcefontlabel").textContent = _("gui.font_size");
@@ -128,7 +128,7 @@ Abbozza.initWorlds = function () {
 
     var callsPane = document.getElementById("calls");
     if (Configuration.getParameter("option.calls") == "true") {
-        Abbozza.callsFrame = Abbozza.createFrame(_("gui.calls"), null, callsPane, 0, "50%", "50%", "50%");
+        Abbozza.callsFrame = Abbozza.createFrame(_("gui.calls"), "calls", null, callsPane, 0, "50%", "50%", "50%");
         Abbozza.initCallView(callsPane);
     } else {
         Abbozza.callsFrame = null;
@@ -171,8 +171,8 @@ Abbozza.initWorlds = function () {
  * @param {type} h height of the frame
  * @returns {Frame|Abbozza.createFrame.frame}
  */
-Abbozza.createFrame = function (title, icon, content, x, y, w, h) {
-    var frame = new Frame(title, icon);
+Abbozza.createFrame = function (title, id, icon, content, x, y, w, h) {
+    var frame = new Frame(title, icon, false, id);
     frame.setContent(content);
     frame.setPosition(x, y);
     frame.setSize(w, h);
@@ -258,6 +258,7 @@ Abbozza.originalSetSketch = Abbozza.setSketch;
 Abbozza.setSketch = function (sketch, page = - 1) {
     Abbozza.originalSetSketch(sketch,page);
 
+    /*
     // Restore the layout
     var layouts = sketch.getElementsByTagName("layout");
     for ( var i = 0; i < layouts.length; i++ ) {
@@ -279,7 +280,7 @@ Abbozza.setSketch = function (sketch, page = - 1) {
             }
         }
     }
-
+    */
 
     var worlds = null;
     
@@ -729,7 +730,16 @@ Abbozza.storeSketch = function (key) {
         tasks[0].setAttribute("curpage", TaskWindow.currentPage_);
     }
     
-     // Store the layout
+    // Store the layout
+    var layout = document.createElement("layout");
+    var id;
+    for ( id in Desktop.frames ) {
+        layout.appendChild(TaskWindow.frame.getLayoutXML(id));        
+    }
+    xml.appendChild(layout);   
+
+/*
+    // Store the layout
     var layout = document.createElement("layout");
     layout.appendChild(Abbozza.worldFrame.getLayoutXML("world"));
     layout.appendChild(Abbozza.workspaceFrame.getLayoutXML("workspace"));
@@ -738,7 +748,8 @@ Abbozza.storeSketch = function (key) {
     if (Abbozza.debugFrame) layout.appendChild(Abbozza.debugFrame.getLayoutXML("calls"));
     if (Abbozza.sourceFrame) layout.appendChild(Abbozza.sourceFrame.getLayoutXML("source"));
     xml.appendChild(layout);   
-
+*/
+ 
     sessionStorage.setItem(key, Blockly.Xml.domToText(xml));
     
     return xml;
