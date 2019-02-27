@@ -33,7 +33,7 @@ Abbozza.initWorlds = function () {
     this.defaultTaskWidth="50%";
     this.defaultTaskHeight="50%";
     
-    Desktop.init("/js/desktop/");
+    Desktop.init("js/abbozza/desktop/");
 
     Abbozza.workspaceFrame = new Frame("Workspace", null);
     Abbozza.workspaceFrame.div.addEventListener("frame_resize",
