@@ -47,9 +47,9 @@ public class World {
     private String infoPane;
     
     /**
-     * Insert a world without id at a given path
+     * Create a world without id at a given path
      * 
-     * @param path 
+     * @param path The path of the files.
      */
     public World(String path) {
         basePath = path;
@@ -57,7 +57,14 @@ public class World {
         readXML();
     }
     
-    
+
+    /**
+     * Create a world without id at a given path
+     * 
+     * @param id The id of the world.
+     * @param displayName The display name
+     * @param path The path containing the files.
+     */
     public World(String id, String displayName, String path) {
         basePath = path;
         baseURL = null;
@@ -65,6 +72,12 @@ public class World {
         this.displayName = displayName;
     }
     
+    /**
+     * Create a new world.
+     * 
+     * @param id The id of the world.
+     * @param url The base URL where the files can be found.
+     */
     public World(String id, URL url) {
         basePath = null;
         baseURL = url;
@@ -103,7 +116,7 @@ public class World {
     /**
      * Get the id of then world.
      * 
-     * @return 
+     * @return  The id.
      */
     public String getId() {
         return id;
@@ -112,7 +125,7 @@ public class World {
     /**
      * Get the display name of the world.
      * 
-     * @return 
+     * @return The display name.
      */
     public String toString() {
         return displayName;

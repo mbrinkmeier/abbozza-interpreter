@@ -291,9 +291,9 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     /**
-     * Wherw the options.xml lies
+     * Where the options.xml lies
      *
-     * @return
+     * @return The options path.
      */
     public String getOptionsPath() {
         return "/js/abbozza/worlds/options.xml";
@@ -434,8 +434,9 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
     
     /**
+     * Register a plugin.
      * 
-     * @param plugin 
+     * @param plugin The plugin to be registered.
      */
     public void registerPlugin(Plugin plugin) {
        String id; 
