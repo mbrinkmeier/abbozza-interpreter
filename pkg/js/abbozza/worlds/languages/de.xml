@@ -25,7 +25,8 @@
         <msg id="gui.settings">Einstellungen</msg>
         <msg id="gui.font_size">Schriftgröße</msg>
         <msg id="gui.websocket">WebSockets</msg>
-        <msg id="gui.datastructures">Datenstrukturen</msg>        
+        <msg id="gui.datastructures">Datenstrukturen</msg>       
+        <msg id="gui.world_not_found">Welt nicht gefunden!</msg> 
     </gui>
     <blocks>
         <msg id="msg.save_source">Quelltext wird gespeichert</msg> 

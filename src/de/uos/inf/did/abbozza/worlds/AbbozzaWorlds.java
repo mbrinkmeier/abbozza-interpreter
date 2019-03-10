@@ -24,7 +24,6 @@ import de.uos.inf.did.abbozza.core.AbbozzaLogger;
 import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.core.AbbozzaServerException;
 import de.uos.inf.did.abbozza.core.AbbozzaSplashScreen;
-import de.uos.inf.did.abbozza.core.AbbozzaVersion;
 import de.uos.inf.did.abbozza.handler.JarDirHandler;
 import de.uos.inf.did.abbozza.handler.MonitorHandler;
 import de.uos.inf.did.abbozza.plugin.Plugin;
@@ -66,11 +65,6 @@ import org.xml.sax.SAXException;
  */
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
-    static {
-        AbbozzaVersion.setSystemVersion(0, 2, 0);
-        AbbozzaVersion.setSystemName("worlds");
-    }
-
     protected TrayIcon trayIcon;
     protected String localWorldPath;
     protected String globalWorldPath;
@@ -105,7 +99,10 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         worldManager.registerWorld(new World("worlds/turtle"));
         worldManager.registerWorld(new World("worlds/hanoi"));
         worldManager.registerWorld(new World("worlds/array"));
-        this.setWorld(worldManager.getWorld("hathi"));
+
+        registerPluginWorlds();
+
+        this.setWorld(worldManager.getWorld("console_plugin"));
 
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
@@ -196,14 +193,17 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     /**
-     * Set additional paths.
+     * Set the system specific paths paths.
      */
-    public void setAdditionalPaths() {
+    public void setPaths() {
+        super.setPaths();
         localPluginPath = userPath + "/plugins";
         globalPluginPath = abbozzaPath + "/plugins";
         localWorldPath = userPath + "/worlds";
         globalWorldPath = abbozzaPath + "/worlds";
+    }
 
+    public void setAdditionalPaths() {
         AbbozzaLogger.info("jarPath = " + jarPath);
         AbbozzaLogger.info("runtimePath = " + abbozzaPath);
         AbbozzaLogger.info("userPath = " + userPath);
@@ -290,9 +290,9 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     /**
-     * Wherw the options.xml lies
+     * Where the options.xml lies
      *
-     * @return
+     * @return The options path.
      */
     public String getOptionsPath() {
         return "/js/abbozza/worlds/options.xml";
@@ -368,6 +368,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             System.exit(1);
         }
         currentWorld = world;
+        currentWorld.activatePlugin();
         AbbozzaLocale.setLocale(this.config.getLocale());
         if (browser) {
             this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html");
@@ -382,6 +383,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             System.exit(1);
         }
         currentWorld = world;
+        currentWorld.activatePlugin();
         AbbozzaLocale.setLocale(this.config.getLocale());
     }
 
@@ -452,23 +454,28 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     /**
-     * Register the worlds provided by the plugin.
+     * Register a plugin.
      *
-     * @param plugin The plugin to be registered
+     * @param plugin The plugin to be registered.
      */
-    public void registerPlugin(Plugin plugin) {
-        String id;
-        URL url;
-        Document xml = plugin.getXml();
-        NodeList worlds = xml.getElementsByTagName("world");
-        if (worlds.getLength() > 0) {
-            Node world = worlds.item(0);
-            id = world.getAttributes().getNamedItem("id").getNodeValue();
-            try {
-                url = new URL(this.getRootURL() + "plugin/" + plugin.getId() + "/world/" + id);
-                this.worldManager.registerWorld(new World(id, url));
-            } catch (MalformedURLException ex) {
-                AbbozzaLogger.err("[Worlds] Could not register world " + id + " from plugin " + plugin.getId());
+    public void registerPluginWorlds() {
+        for (Plugin plugin : pluginManager.plugins()) {
+            URL url;
+            Document xml = plugin.getXml();
+            NodeList worlds = xml.getElementsByTagName("world");
+            if (worlds.getLength() > 0) {
+                Element world = (Element) worlds.item(0);
+                String id = world.getAttribute("id");
+                try {
+                    String rootUrl = this.getRootURL();
+                    url = new URL(this.getRootURL() + "abbozza/plugins/" + plugin.getId() + "/world/");
+                    AbbozzaLogger.info("[Worlds] Registering world " + id + " at " + url);
+                    World worldObject = new World(plugin,world, url);
+                    this.worldManager.registerWorld(worldObject);
+                } catch (MalformedURLException ex) {
+                    AbbozzaLogger.err("[Worlds] Could not register world " + id + " from plugin " + plugin.getId());
+                }
+
             }
         }
     }

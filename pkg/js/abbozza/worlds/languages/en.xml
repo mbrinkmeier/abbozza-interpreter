@@ -23,6 +23,7 @@
         <msg id="gui.startBrowser">Starte Browser</msg>
         <msg id="gui.settings">Einstellungen</msg>
         <msg id="gui.font_size">Font size</msg>        
+        <msg id="gui.world_not_found">World not found!</msg> 
     </gui>
     <blocks>
         <msg id="msg.save_source">Sourcecode is saved</msg> 

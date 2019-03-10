@@ -736,6 +736,8 @@ Abbozza.storeSketch = function (key) {
     for ( id in Desktop.frames ) {
         layout.appendChild(TaskWindow.frame.getLayoutXML(id));        
     }
+    
+    
     xml.appendChild(layout);   
 
 /*

@@ -19,6 +19,7 @@ package de.uos.inf.did.abbozza.worlds;
 
 import de.uos.inf.did.abbozza.core.AbbozzaLogger;
 import de.uos.inf.did.abbozza.core.AbbozzaServer;
+import de.uos.inf.did.abbozza.plugin.Plugin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -27,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -35,7 +37,6 @@ import org.xml.sax.SAXException;
  *
  * @author michael
  */
-
 public class World {
 
     private String basePath;
@@ -45,45 +46,76 @@ public class World {
     private String description;
     private Node options;
     private String infoPane;
-    
+    private Plugin plugin;
+
     /**
-     * Insert a world without id at a given path
-     * 
-     * @param path 
+     * Create a world without id at a given path
+     *
+     * @param path The path of the files.
      */
     public World(String path) {
+        plugin = null;
         basePath = path;
         baseURL = null;
         readXML();
     }
-    
-    
+
+    /**
+     * Create a world without id at a given path
+     *
+     * @param id The id of the world.
+     * @param displayName The display name
+     * @param path The path containing the files.
+     */
     public World(String id, String displayName, String path) {
+        plugin = null;
         basePath = path;
         baseURL = null;
         this.id = id;
         this.displayName = displayName;
     }
-    
-    public World(String id, URL url) {
+
+    /**
+     * Create a new world.
+     *
+     * @param id The id of the world.
+     * @param url The base URL where the files can be found.
+     */
+    public World(String id, String displayName, URL url) {
+        plugin = null;
         basePath = null;
         baseURL = url;
+        this.displayName = displayName;
         this.id = id;
     }
-    
+
+    /**
+     * Create a new world.
+     *
+     * @param plugin The plugin providing the world.
+     * @param world The elemtn in plugin.xml describing the world
+     * @param url The base URL where the files can be found.
+     */
+    public World(Plugin plugin, Element world, URL url) {
+        this.plugin = plugin;
+        basePath = null;
+        baseURL = url;
+        readElement(world);
+    }
+
     /**
      * Get a file from the world directory as InputStream
-     * 
+     *
      * @param path The path of the file, relative to the world directory.
-     * 
+     *
      * @return The Input Stream of the file
      */
-    public InputStream getStream(String path) {   
+    public InputStream getStream(String path) {
         InputStream is;
-        if ( basePath == null ) {
+        if (basePath == null) {
             URL url;
             try {
-                url = new URL(baseURL,path);
+                url = new URL(baseURL, path);
                 is = url.openStream();
                 path = url.toString();
             } catch (MalformedURLException ex) {
@@ -94,12 +126,11 @@ public class World {
                 path = path + " (unknown resource)";
             }
         } else {
-            if ( path == null ) {
-                path = basePath + "/world.xml";
+            if (path == null) {
+                is = AbbozzaServer.getInstance().getJarHandler().getInputStream(basePath + "/world.xml");
             } else {
-                path = basePath + "/" + path;
-            }            
-            is = AbbozzaServer.getInstance().getJarHandler().getInputStream(path);
+                is = AbbozzaServer.getInstance().getJarHandler().getInputStream(basePath + "/" + path);
+            }
         }
         
         if ( is == null ) {
@@ -108,97 +139,182 @@ public class World {
 
         return is;
     }
-    
+
     /**
      * Get the id of then world.
-     * 
-     * @return 
+     *
+     * @return The id.
      */
     public String getId() {
         return id;
     }
-    
+
     /**
      * Get the display name of the world.
-     * 
-     * @return 
+     *
+     * @return The display name.
      */
     public String toString() {
         return displayName;
     }
-    
+
+    /**
+     *
+     */
+    private void readElement(Element world) {
+        // Only get the first context
+        this.id = world.getAttribute("id");
+        NodeList children = world.getChildNodes();
+        Node child;
+        for (int idx = 0; idx < children.getLength(); idx++) {
+            child = children.item(idx);
+            String name = child.getNodeName();
+
+            if (name.equals("name")) {
+                displayName = child.getTextContent().trim();
+            } else if (name.equals("description")) {
+                description = child.getTextContent().trim();
+            } else if (name.equals("options")) {
+                options = child;
+            }
+        }
+        AbbozzaLogger.info("World: Found world " + this.id + " at path " + this.basePath);
+    }
+
     /**
      * Read the world from the file world.xml in the world directory.
      */
     private void readXML() {
-        InputStream is = this.getStream(null);
-        Document contextXml = null;
+        InputStream is
+                = this.getStream(null);
+        Document contextXml
+                = null;
 
         if ( is == null ) return;
         
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            contextXml = builder.parse(is);
-        } catch (ParserConfigurationException | SAXException ex) {
-            contextXml = null;
-            AbbozzaLogger.err("World: Could not parse " + basePath + "/world.xml");
-            return;
+            DocumentBuilderFactory factory
+                    = DocumentBuilderFactory
+                            .newInstance();
+            DocumentBuilder builder
+                    = factory
+                            .newDocumentBuilder();
+            contextXml
+                    = builder
+                            .parse(is
+                            );
+
+        } catch (ParserConfigurationException
+                | SAXException ex) {
+            contextXml
+                    = null;
+            AbbozzaLogger
+                    .err("World: Could not parse " + basePath
+                            + "/world.xml");
+
         } catch (IOException ex) {
-            contextXml = null;
-            AbbozzaLogger.err("World: Could not find " + basePath + "/world.xml");
-            return;
+            contextXml
+                    = null;
+            AbbozzaLogger
+                    .err("World: Could not find " + basePath
+                            + "/world.xml");
+
         }
-        
-        NodeList contexts = contextXml.getElementsByTagName("world");
-        if ( contexts.getLength() > 0) {
+
+        NodeList contexts
+                = contextXml
+                        .getElementsByTagName("world");
+
+        if (contexts
+                .getLength() > 0) {
             // Only get the first context
-            Node contextNode = contexts.item(0);
-            this.id = contextNode.getAttributes().getNamedItem("id").getNodeValue();
-            NodeList children = contextNode.getChildNodes();
+            Node contextNode
+                    = contexts
+                            .item(0);
+
+            this.id
+                    = contextNode
+                            .getAttributes().getNamedItem("id").getNodeValue();
+            NodeList children
+                    = contextNode
+                            .getChildNodes();
             Node child;
-            for (int idx = 0; idx < children.getLength(); idx++ ) {
-                child = children.item(idx);
-                String name = child.getNodeName();
-                
-                if ( name.equals("name") ) {
-                    displayName = child.getTextContent().trim();
-                } else if ( name.equals("description") ) {
-                    description = child.getTextContent().trim();
-                } else if ( name.equals("options") ) {
-                   options = child; 
+
+            for (int idx
+                    = 0; idx
+                    < children
+                            .getLength(); idx++) {
+                child
+                        = children
+                                .item(idx
+                                );
+                String name
+                        = child
+                                .getNodeName();
+
+                if (name
+                        .equals("name")) {
+                    displayName
+                            = child
+                                    .getTextContent().trim();
+
+                } else if (name
+                        .equals("description")) {
+                    description
+                            = child
+                                    .getTextContent().trim();
+
+                } else if (name
+                        .equals("options")) {
+                    options
+                            = child;
+
                 }
-            }            
+            }
         }
-        
-        AbbozzaLogger.info("Context: Found world " + this.id + " at path " + this.basePath);
-        
+
+        AbbozzaLogger
+                .info("World: Found world " + this.id
+                        + " at path " + this.basePath
+                );
+
     }
 
     public String getDescription() {
         return description;
     }
-    
-    
+
     public Node getOptions() {
         return options;
     }
+
     
-     
     public Document getFeatures() {
         Document featureXml = null;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        
+
         try {
             InputStream stream = this.getStream("features.xml");
             builder = factory.newDocumentBuilder();
             StringBuilder xmlStringBuilder = new StringBuilder();
-            featureXml = builder.parse(stream);
+
+            if (stream != null) {
+                featureXml = builder.parse(stream);
+            }
+
         } catch (Exception ex) {
             AbbozzaLogger.stackTrace(ex);
         }
 
         return featureXml;
     }
+    
+    /**
+     * Activate the plugin.
+     */
+    public void activatePlugin() {
+        if ( plugin != null ) plugin.activate();
+    }
+    
 }

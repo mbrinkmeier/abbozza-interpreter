@@ -1,6 +1,7 @@
 
 package de.uos.inf.did.abbozza.worlds;
 
+import de.uos.inf.did.abbozza.core.AbbozzaLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ public class WorldManager implements ComboBoxModel<World> {
     private ArrayList<World> worlds;
     private World selectedWorld;
     private ArrayList<ListDataListener> listeners;
+    
     
     public WorldManager(AbbozzaWorlds abbozza) {
         this.abbozza = abbozza;
@@ -64,10 +66,11 @@ public class WorldManager implements ComboBoxModel<World> {
     public World getWorld(String id) {
         if ( id == null ) return this.selectedWorld;
         for ( World context : worlds ) {
-            if ( context.getId().equals(id) ) {
+            if ( (context != null) && (context.getId() != null) && (context.getId().equals(id)) ) {
                 return context;
             }
         }
+        AbbozzaLogger.err("WorldManager: World " + id + " not registered");
         return this.selectedWorld;
     }
     

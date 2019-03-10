@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Michael Brinkmeier (mbrinkmeier@uni-osnabrueck.de).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 
 /**
  * The Context object. It wraps the Viewer and provides basic functionality.
- * 
+ *
  * @type type
  */
 var World = new AbbozzaWorld("console");
 
 /**
  * Initialize the view
- * 
+ *
  * @param {type} view
  * @returns {undefined}
  */
@@ -56,8 +56,8 @@ function Console(view) {
     this.parent_ = document.createElement("div");
     this.parent_.className = "consoleParent";
     view.appendChild(this.parent_);
-    
-    // Create console_	
+
+    // Create console_
     this.console_ = document.createElement("textarea");
     this.console_.Console = this;
     this.console_.disabled = true;
@@ -67,12 +67,12 @@ function Console(view) {
     this.console_.className = "console";
 
     // Add event handlers
-    this.console_.addEventListener("keydown", this.keydown);  
-    
+    this.console_.addEventListener("keydown", this.keydown);
+
     this.fontSizeDiv = document.getElementById("fontsize");
     this.fontSizeDiv.value = 14;
     this.console_.style.fontSize="14pt";
-    
+
     this.fontSizeDiv.oninput = function(event) {
         World.mycon.console_.style.fontSize = this.value + "pt";
     }
@@ -236,13 +236,13 @@ Console.prototype.keydown = function (event) {
 
 /**
  * The initialization for the source interpreter
- * 
+ *
  * @param {type} interpreter
  * @param {type} scope
  * @returns {undefined}
  */
 World.initSourceInterpreter = function(interpreter,scope) {
-    AbbozzaInterpreter.createWrappers( interpreter, scope, 
+    AbbozzaInterpreter.createWrappers( interpreter, scope,
         [
             [ "println" ,false,World.mycon,World.mycon.println ],
             [ "print"   ,false,World.mycon,World.mycon.print ],
@@ -261,7 +261,7 @@ World.initSourceInterpreter = function(interpreter,scope) {
     // interpreter.setProperty(scope,"readline",interpreter.createAsyncFunction(World.readlineWrapper));
     // interpreter.setProperty(scope,"print",interpreter.createNativeFunction(World.printWrapper));
     // interpreter.setProperty(scope,"readkey",interpreter.createAsyncFunction(World.readkeyWrapper));
-    // interpreter.setProperty(scope,"clear",interpreter.createNativeFunction(World.clearWrapper));    
+    // interpreter.setProperty(scope,"clear",interpreter.createNativeFunction(World.clearWrapper));
 }
 
 /*
