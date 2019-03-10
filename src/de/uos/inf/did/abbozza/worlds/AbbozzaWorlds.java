@@ -67,7 +67,7 @@ import org.xml.sax.SAXException;
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     static {
-        AbbozzaVersion.setSystemVersion(0,2,0);
+        AbbozzaVersion.setSystemVersion(0, 2, 0);
         AbbozzaVersion.setSystemName("worlds");
     }
 
@@ -106,7 +106,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         worldManager.registerWorld(new World("worlds/hanoi"));
         worldManager.registerWorld(new World("worlds/array"));
         this.setWorld(worldManager.getWorld("hathi"));
-        
+
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
         frame.open();
@@ -227,7 +227,6 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         httpServer.createContext("/abbozza/loadsource", new LoadSourceHandler(this));
         httpServer.createContext("/abbozza/features", new WorldFeatureHandler(this));
         httpServer.createContext("/abbozza/world", new WorldHandler(this, "/abbozza/world/"));
-        // httpServer.removeContext("/abbozza/monitor");
         httpServer.createContext("/abbozza/monitor", new MonitorHandler(this));
     }
 
@@ -235,11 +234,11 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     public void findJarsAndDirs(JarDirHandler jarHandler) {
         jarHandler.addDir(jarPath + "/", "Dir");
         try {
-            jarHandler.addJar(AbbozzaWorlds.class.getProtectionDomain().getCodeSource().getLocation().toURI(),"Jar");
+            jarHandler.addJar(AbbozzaWorlds.class.getProtectionDomain().getCodeSource().getLocation().toURI(), "Jar");
         } catch (URISyntaxException ex) {
             AbbozzaLogger.err("Could not find jar file by class");
             jarHandler.addJar(jarPath + "/abbozza-worlds.jar", "Jar");
-        } 
+        }
     }
 
     @Override
@@ -302,16 +301,15 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     public String getSystemPath() {
         return "abbozza/world/" + currentWorld.getId() + "/";
     }
-    
+
     /**
      * Construct the original option tree. Then add options for all worlds.
-     *
      */
     @Override
     public Document getOptionTree() {
         Document optionXml = super.getOptionTree();
         Node worldOptions;
-        
+
         Node worldNode = null;
         NodeList groupNodes = optionXml.getElementsByTagName("group");
         int idx = 0;
@@ -322,8 +320,10 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             idx++;
         }
 
-        if ( worldManager == null ) return optionXml;
-        
+        if (worldManager == null) {
+            return optionXml;
+        }
+
         if (worldNode != null) {
             for (World world : worldManager.getWorlds()) {
                 worldOptions = world.getOptions();
@@ -349,22 +349,40 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     public void setWorld(World world, File file) {
+        if ( world == null ) {
+            AbbozzaLogger.err("AbbozzaWorld: World not found");
+            AbbozzaSplashScreen.hideSplashScreen();            
+            JOptionPane.showMessageDialog(null, AbbozzaLocale.entry("gui.world_not_found"), AbbozzaLocale.entry("gui.critical_error"), JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
         currentWorld = world;
         AbbozzaLocale.setLocale(this.config.getLocale());
         this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html?" + file.toURI());
     }
 
     public void setWorld(World world, boolean browser) {
+        if ( world == null ) {
+            AbbozzaLogger.err("AbbozzaWorld: World not found");
+            AbbozzaSplashScreen.hideSplashScreen();            
+            JOptionPane.showMessageDialog(null, AbbozzaLocale.entry("gui.world_not_found"), AbbozzaLocale.entry("gui.critical_error"), JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
         currentWorld = world;
         AbbozzaLocale.setLocale(this.config.getLocale());
-        if (browser) this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html");
-        // @TODO
+        if (browser) {
+            this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html");
+        }
     }
 
     public void setWorld(World world) {
+        if ( world == null ) {
+            AbbozzaLogger.err("AbbozzaWorld: World not found");
+            AbbozzaSplashScreen.hideSplashScreen();
+            JOptionPane.showMessageDialog(null, AbbozzaLocale.entry("gui.world_not_found"), AbbozzaLocale.entry("gui.critical_error"), JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
         currentWorld = world;
         AbbozzaLocale.setLocale(this.config.getLocale());
-        // @TODO
     }
 
     public String getWorldId() {
@@ -419,7 +437,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
                     if (foundElement != null) {
                         root.getOwnerDocument().adoptNode(foundElement);
-                        root.appendChild(foundElement);     
+                        root.appendChild(foundElement);
                     }
                 } catch (ParserConfigurationException ex) {
                     Logger.getLogger(AbbozzaWorlds.class.getName()).log(Level.SEVERE, null, ex);
@@ -432,27 +450,27 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
             }
         }
     }
-    
+
     /**
-     * 
-     * @param plugin 
+     * Register the worlds provided by the plugin.
+     *
+     * @param plugin The plugin to be registered
      */
     public void registerPlugin(Plugin plugin) {
-       String id; 
-       URL url;
-       Document xml = plugin.getXml();
-       NodeList worlds = xml.getElementsByTagName("world");
-       if ( worlds.getLength() > 0 ) {
-           Node world = worlds.item(0);
-           id = world.getAttributes().getNamedItem("id").getNodeValue();
-           try {
-               url = new URL(this.getRootURL() + "plugin/" + plugin.getId() + "/world/" + id );
-               this.worldManager.registerWorld(new World(id,url));
-           } catch (MalformedURLException ex) {
-               AbbozzaLogger.err("[Worlds] Could not register world " + id + " from plugin " + plugin.getId() );
-           }
-           
-       }
+        String id;
+        URL url;
+        Document xml = plugin.getXml();
+        NodeList worlds = xml.getElementsByTagName("world");
+        if (worlds.getLength() > 0) {
+            Node world = worlds.item(0);
+            id = world.getAttributes().getNamedItem("id").getNodeValue();
+            try {
+                url = new URL(this.getRootURL() + "plugin/" + plugin.getId() + "/world/" + id);
+                this.worldManager.registerWorld(new World(id, url));
+            } catch (MalformedURLException ex) {
+                AbbozzaLogger.err("[Worlds] Could not register world " + id + " from plugin " + plugin.getId());
+            }
+        }
     }
 
 }
