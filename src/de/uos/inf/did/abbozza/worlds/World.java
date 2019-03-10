@@ -85,18 +85,27 @@ public class World {
             try {
                 url = new URL(baseURL,path);
                 is = url.openStream();
+                path = url.toString();
             } catch (MalformedURLException ex) {
                 is = null;
+                path =  path + "(malformed url)";
             } catch (IOException ex2) {
                 is = null;
+                path = path + " (unknown resource)";
             }
         } else {
             if ( path == null ) {
-                is = AbbozzaServer.getInstance().getJarHandler().getInputStream(basePath + "/world.xml");
+                path = basePath + "/world.xml";
             } else {
-                is = AbbozzaServer.getInstance().getJarHandler().getInputStream(basePath + "/" + path);
+                path = basePath + "/" + path;
             }            
+            is = AbbozzaServer.getInstance().getJarHandler().getInputStream(path);
         }
+        
+        if ( is == null ) {
+            AbbozzaLogger.err("World: Could not read " + path );
+        }
+
         return is;
     }
     
@@ -125,6 +134,8 @@ public class World {
         InputStream is = this.getStream(null);
         Document contextXml = null;
 
+        if ( is == null ) return;
+        
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -132,9 +143,11 @@ public class World {
         } catch (ParserConfigurationException | SAXException ex) {
             contextXml = null;
             AbbozzaLogger.err("World: Could not parse " + basePath + "/world.xml");
+            return;
         } catch (IOException ex) {
             contextXml = null;
             AbbozzaLogger.err("World: Could not find " + basePath + "/world.xml");
+            return;
         }
         
         NodeList contexts = contextXml.getElementsByTagName("world");
