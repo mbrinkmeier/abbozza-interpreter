@@ -65,11 +65,23 @@ import org.xml.sax.SAXException;
  */
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
+    
+    static {
+        try {
+            Class<?> cl = Class.forName("org.java_websocket.server.WebSocketServer");
+            System.out.println(cl);
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.exit(1);
+        }
+    }
+    
     protected TrayIcon trayIcon;
     protected String localWorldPath;
     protected String globalWorldPath;
     protected WorldManager worldManager;
     protected World currentWorld;
+    
 
     /**
      * @param args the command line arguments
@@ -186,7 +198,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
      */
     public void init(String system) {
         // initialize the server
-        init(system, null);
+        init(system, null);        
     }
 
     public WorldManager getWorldManager() {
