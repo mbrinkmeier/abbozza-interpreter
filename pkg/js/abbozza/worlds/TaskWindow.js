@@ -28,7 +28,7 @@
  * 
  * @author michael.brinkmeier@uni-osnabrueck.de (Michael Brinkmeier)
  * 
- * NOT SYSTEM SPECIFIC
+ * SYSTEM SPECIFIC
  */
 
 TaskWindow.init = function() {
@@ -53,7 +53,6 @@ TaskWindow.init = function() {
     TaskWindow.nav_.value = '';
 
     TaskWindow.nav_prevSketch = document.createElement("SPAN");
-    // TaskWindow.nav_prevSketch.innerHTML = "<img src='img/nav/prevsketch.png'/>";
     TaskWindow.nav_prevSketch.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M18,2 l-8,8 l8,8 l0,-16 M10,2 l-8,8 l8,8 l0,-16'></svg>";
     TaskWindow.nav_prevSketch.onclick = TaskWindow.prevSketch_;
     TaskWindow.nav_prevSketch.className = "taskFrameNavButton";
@@ -61,9 +60,7 @@ TaskWindow.init = function() {
     TaskWindow.nav_.appendChild(TaskWindow.nav_prevSketch);        
     
     TaskWindow.nav_prev = document.createElementNS(Blockly.HTML_NS,'span');
-    // TaskWindow.nav_prev.innerHTML = "<img src='img/nav/prev.png'/>";
     TaskWindow.nav_prev.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M18,2 l-16,8 l16,8 l0,-16'></svg>";
-    // TaskWindow.nav_prev.innerHTML = "<svg viewBox='0 0 20 20'><rect stroke='black' stroke-width='1px' fill='none' x='3' y='3' width='14' height='14'></svg>";
     TaskWindow.nav_prev.className = "taskFrameNavButton";
     TaskWindow.nav_prev.onclick = TaskWindow.prevPage_;
     TaskWindow.nav_prev.title = _("gui.task_tooltip_prev");
@@ -73,10 +70,8 @@ TaskWindow.init = function() {
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
     TaskWindow.nav_.pageno_.className = "taskFrameNavPage";
     TaskWindow.nav_.appendChild(TaskWindow.nav_.pageno_);
-    // TaskWindow.nav_.style.display = "none";
 
     TaskWindow.nav_next = document.createElementNS(Blockly.HTML_NS,'span');
-    // TaskWindow.nav_next.innerHTML = "<img src='img/nav/next.png'/>";
     TaskWindow.nav_next.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M2,2 l16,8 l-16,8 l0,-16'></svg>";
     TaskWindow.nav_next.className = "taskFrameNavButton";
     TaskWindow.nav_next.onclick = TaskWindow.nextPage_;
@@ -84,7 +79,6 @@ TaskWindow.init = function() {
     TaskWindow.nav_.appendChild(TaskWindow.nav_next);
  
     TaskWindow.nav_nextSketch = document.createElement("SPAN");
-    // TaskWindow.nav_nextSketch.innerHTML = "<img src='img/nav/nextsketch.png'/>";
     TaskWindow.nav_nextSketch.innerHTML = "<svg viewBox='0 0 20 20'><path stroke-width='1' stroke='black' fill='black' d='M2,2 l8,8 l-8,8 l0,-16 M11,2 l8,8 l-8,8 l0,-16'></svg>";
     TaskWindow.nav_nextSketch.onclick = TaskWindow.nextSketch_;
     TaskWindow.nav_nextSketch.className = "taskFrameNavButton";
@@ -105,7 +99,6 @@ TaskWindow.init = function() {
     
     TaskWindow.frame.div.addEventListener("frame_resize", TaskWindow.resize );
 
-    
     content.appendChild(TaskWindow.nav_);
 
     TaskWindow.setContent('',true);
@@ -113,7 +106,6 @@ TaskWindow.init = function() {
     TaskWindow.editing_ = false;    
     
     TaskWindow.updateNav_();
-    // TaskWindow.show();
 
     TaskWindow.frame.onShow = function() {
         TaskWindow.onShow(TaskWindow.page_);        
@@ -124,7 +116,6 @@ TaskWindow.init = function() {
     };
 
     TaskWindow.frame.setPosition(0,"50%");
-    TaskWindow.frame.setSize("50%","50%");
     
 };
 
@@ -135,6 +126,7 @@ TaskWindow.hide = function() { TaskWindow.frame.hide(); };
 TaskWindow.isVisible = function() { TaskWindow.frame.isVisible(); };
 
 TaskWindow.setSize = function(width,height) { TaskWindow.frame.setSize(width,height); };
+TaskWindow.setPosition = function(x,y) { TaskWindow.frame.setPosition(x,y); };
 
 TaskWindow.getWidth = function() {
     return TaskWindow.frame.div.offsetWidth;

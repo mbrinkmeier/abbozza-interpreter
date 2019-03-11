@@ -30,9 +30,12 @@ Abbozza.exceptions = [];
  * @returns {undefined}
  */
 Abbozza.initWorlds = function () {
-    Desktop.init("/js/desktop/");
+    this.defaultTaskWidth="50%";
+    this.defaultTaskHeight="50%";
+    
+    Desktop.init("js/abbozza/desktop/");
 
-    Abbozza.workspaceFrame = new Frame("Workspace", null);
+    Abbozza.workspaceFrame = new Frame("Workspace", null, false, "workspace");
     Abbozza.workspaceFrame.div.addEventListener("frame_resize",
             function (event) {
                 Abbozza.workspaceFrame.content.width = "100%";
@@ -55,12 +58,7 @@ Abbozza.initWorlds = function () {
     }
     Abbozza.worldId = worldId;
 
-
-
-    // Abbozza.splitter = new Splitter(document.getElementById('splitter'), "");
-    // World.init(document.getElementById(".topleft"));
-
-    Abbozza.worldFrame = new Frame("World", null);
+    Abbozza.worldFrame = new Frame("World", null, false, "world");
     Abbozza.worldFrame.setPosition(0, 0);
     Abbozza.worldFrame.setSize("50%", "50%");
     Abbozza.worldFrame.show();
@@ -71,14 +69,10 @@ Abbozza.initWorlds = function () {
     );
     Abbozza.worldView = document.createElement("DIV");
     Abbozza.worldView.className = "abzWorldView";    
-    // Abbozza.worldSpeed = document.createElement("DIV");
-    // Abbozza.worldSpeed.className = "abzWorldSpeed";
     Abbozza.worldControl = document.createElement("DIV");
     Abbozza.worldControl.className = "abzWorldControl";
     Abbozza.worldFrame.content.appendChild(Abbozza.worldView);
-    // Abbozza.worldFrame.content.appendChild(Abbozza.worldSpeed);
     Abbozza.worldFrame.content.appendChild(Abbozza.worldControl);
-    // Desktop.header.appendChild(document.getElementById("speedslider"));
     Abbozza.worldControl.appendChild(document.getElementById("speedslider"));
     
     var controls = document.getElementById("infoFrame").contentDocument.getElementById("controls");
@@ -106,21 +100,14 @@ Abbozza.initWorlds = function () {
     /**
      * Register abbozza event handlers
      */
-    document.addEventListener("abz_clearSketch", Abbozza.resetWorld);
-    document.addEventListener("abz_setSketch", Abbozza.resetWorld);
+    // document.addEventListener("abz_clearSketch", Abbozza.resetWorld);
+    // document.addEventListener("abz_setSketch", Abbozza.setWorld);
 
     AbbozzaInterpreter.reset();
 
-
-    /*
-     var tabs = new TabPane(document.getElementById('tabs'));
-     var infoPane = tabs.addPane(_("gui.information"), document.getElementById("worldinfo"));
-     var debugPane;
-     */
-
     var debugPane = document.getElementById("debug");
     if (Configuration.getParameter("option.debug") == "true") {
-        Abbozza.debugFrame = Abbozza.createFrame(_("gui.debug"), null, debugPane, 0, "50%", "50%", "50%");
+        Abbozza.debugFrame = Abbozza.createFrame(_("gui.debug"), "debug" , null, debugPane, 0, "50%", "50%", "50%");
         Abbozza.initDebugger(debugPane);
     } else {
         Abbozza.debugFrame = null;
@@ -130,7 +117,7 @@ Abbozza.initWorlds = function () {
     var sourcePane = document.getElementById("source");
     var sourcefont;
     if (Configuration.getParameter("option.source") == "true") {
-        Abbozza.sourceFrame = Abbozza.createFrame(_("gui.source"), null, sourcePane, 0, "50%", "50%", "50%");
+        Abbozza.sourceFrame = Abbozza.createFrame(_("gui.source"), "source", null, sourcePane, 0, "50%", "50%", "50%");
         sourcefont = document.getElementById("sourcefont");
         sourcefont.value = Abbozza.overlayEditorFontSize;
         document.getElementById("sourcefontlabel").textContent = _("gui.font_size");
@@ -141,7 +128,7 @@ Abbozza.initWorlds = function () {
 
     var callsPane = document.getElementById("calls");
     if (Configuration.getParameter("option.calls") == "true") {
-        Abbozza.callsFrame = Abbozza.createFrame(_("gui.calls"), null, callsPane, 0, "50%", "50%", "50%");
+        Abbozza.callsFrame = Abbozza.createFrame(_("gui.calls"), "calls", null, callsPane, 0, "50%", "50%", "50%");
         Abbozza.initCallView(callsPane);
     } else {
         Abbozza.callsFrame = null;
@@ -151,7 +138,8 @@ Abbozza.initWorlds = function () {
     Abbozza.sourceEditor = CodeMirror.fromTextArea(document.getElementById("sourceeditor"), {
         mode: "javascript",
         lineNumbers: true,
-        styleSelectedText: true
+        styleSelectedText: true,
+        showCursorWhenSelecting : true
     });
     Abbozza.sourceEditor.setSize(null, "100%");
     
@@ -165,29 +153,33 @@ Abbozza.initWorlds = function () {
             Abbozza.overlayEditorFontSize = this.value;
         }
     }
-    // tabs.openTab(infoPane);
 
-    Abbozza.parseQuery();
+    Desktop.addScene("Task", "img/taskscene.png", this.setTaskScene );
     
-    /*
-    LevelMgr.delete("test");
-    LevelMgr.init("test",10,5,false);
-    LevelMgr.setStars(0,2);
-    LevelMgr.openLevelOverlay(0,48,"Hallo");
-    */
-   
+    Abbozza.parseQuery();    
 };
 
-
-Abbozza.createFrame = function (title, icon, content, x, y, w, h) {
-    var frame = new Frame(title, icon);
+/**
+ * Create a new frame on the desktop
+ * 
+ * @param {type} title The title of the frame
+ * @param {type} icon An icon for the frame
+ * @param {type} content An Element contining the contents
+ * @param {type} x x-coordinate of the upper left corner
+ * @param {type} y y-coordinate of the upper left corner
+ * @param {type} w width of the frame
+ * @param {type} h height of the frame
+ * @returns {Frame|Abbozza.createFrame.frame}
+ */
+Abbozza.createFrame = function (title, id, icon, content, x, y, w, h) {
+    var frame = new Frame(title, icon, false, id);
     frame.setContent(content);
     frame.setPosition(x, y);
     frame.setSize(w, h);
     frame.hide();
     frame.div.addEventListener("frame_resize",
             function (event) {
-                frame.content.resize();
+                if (frame.content.resize) frame.content.resize();
             }
     );
     return frame;
@@ -258,6 +250,62 @@ Abbozza.loadSketch = function () {
 };
 
 /**
+ * set Sketch
+ * @type Abbozza.setSketch
+ */
+Abbozza.originalSetSketch = Abbozza.setSketch;
+
+Abbozza.setSketch = function (sketch, page = - 1) {
+    Abbozza.originalSetSketch(sketch,page);
+
+    /*
+    // Restore the layout
+    var layouts = sketch.getElementsByTagName("layout");
+    for ( var i = 0; i < layouts.length; i++ ) {
+        var layout = layouts[i];
+        var frames = layout.getElementsByTagName("frame");
+        for ( var j = 0; j < frames.length; j++ ) {
+            var id = frames[j].id;
+            var frame = null;
+            switch (id) {
+                case "world" : frame = Abbozza.worldFrame; break;
+                case "workspace" : frame = Abbozza.workspaceFrame; break;
+                case "task" : frame = TaskWindow.frame; break;
+                case "debug" : frame = Abbozza.debugFrame; break;
+                case "source" : frame = Abbozza.callsFrame; break;
+                case "calls" : frame = Abbozza.sourceFrame; break;                    
+            }
+            if ( frame ) {
+                frame.restoreLayoutXML(frames[j]);
+            }
+        }
+    }
+    */
+
+    var worlds = null;
+    
+    if (Abbozza.worldFromDom) {
+        worlds = sketch.getElementsByTagName("world");
+        World.setWorldDom(worlds)
+    }
+    AbbozzaInterpreter.reset();
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";
+}
+
+
+Abbozza.originalClearSketch = Abbozza.clearSketch;
+
+Abbozza.clearSketch = function() {
+    Abbozza.originalClearSketch();
+
+    var worlds = null;
+    AbbozzaInterpreter.reset();
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";    
+}
+
+/**
  * To cleanup the Task, remove all hooks privided by the World.
  * 
  * @returns {undefined}
@@ -275,18 +323,34 @@ Abbozza.cleanupTask = function () {
 Abbozza.resetWorld = function (event) {
     var worlds = null;
     var sketch = null;
-    if (event.detail) {
-        sketch = event.detail;
-        if (Abbozza.worldFromDom) {
-            worlds = sketch.getElementsByTagName("world");
-        }
-    }
-    World.setWorldDom(worlds)
+    
+    World.setWorldDom(null);
     AbbozzaInterpreter.reset();
     if (Abbozza.sourceEditor)
         Abbozza.sourceEditor.value = "";
 }
 
+/**
+ * Reset the world and the interpreter
+ * 
+ * @param {type} event
+ * @returns {undefined}
+ */
+Abbozza.setWorld = function (event) {
+    var worlds = null;
+    var sketch = null;
+    
+    if (event.detail) {
+        sketch = event.detail;
+        if (Abbozza.worldFromDom) {
+            worlds = sketch.getElementsByTagName("world");
+            World.setWorldDom(worlds)
+        }
+    }
+    AbbozzaInterpreter.reset();
+    if (Abbozza.sourceEditor)
+        Abbozza.sourceEditor.value = "";
+}
 
 /**
  * Laod a new sketch.
@@ -617,3 +681,76 @@ function DebugView() {
     }
     this.view.appendChild(this.button);
 }
+
+
+Abbozza.setTaskScene = function() {
+    Desktop.hideAllFrames();
+    
+    Abbozza.workspaceFrame.setPosition("50%", "0");
+    Abbozza.workspaceFrame.setSize("50%", "100%");
+    Abbozza.workspaceFrame.show();
+     
+    Abbozza.worldFrame.setPosition(0, 0);
+    Abbozza.worldFrame.setSize("50%", "50%");
+    Abbozza.worldFrame.show();
+    
+    TaskWindow.setPosition("0","50%");
+    TaskWindow.setSize("50%","50%");
+    TaskWindow.show();
+}
+
+
+/**
+ * Stores the current sketch in the session storage.
+ * 
+ * @param {String} key The key under which the sketch should be stored.
+ * @returns {undefined}
+ */
+Abbozza.storeSketch = function (key) {
+    // Remove sequences of /
+    while (key.indexOf("//") >= 0) {
+        key = key.replace("//", "/");
+    }
+
+    // Get the current sketch
+    var xml = Abbozza.workspaceToDom(Blockly.mainWorkspace);
+
+    var desc = document.createElement("description");
+    desc.textContent = Abbozza.sketchDescription;
+    xml.appendChild(desc);
+
+    var task = TaskWindow.getHTML();
+    xml.appendChild(task);
+
+    var world = Abbozza.worldToDom();
+    if ( world ) xml.appendChild(world);
+    
+    var tasks = xml.getElementsByTagName("task");
+    if (tasks[0]) {
+        tasks[0].setAttribute("curpage", TaskWindow.currentPage_);
+    }
+    
+    // Store the layout
+    var layout = document.createElement("layout");
+    var id;
+    for ( id in Desktop.frames ) {
+        layout.appendChild(TaskWindow.frame.getLayoutXML(id));        
+    }
+    xml.appendChild(layout);   
+
+/*
+    // Store the layout
+    var layout = document.createElement("layout");
+    layout.appendChild(Abbozza.worldFrame.getLayoutXML("world"));
+    layout.appendChild(Abbozza.workspaceFrame.getLayoutXML("workspace"));
+    layout.appendChild(TaskWindow.frame.getLayoutXML("task"));
+    if (Abbozza.debugFrame) layout.appendChild(Abbozza.debugFrame.getLayoutXML("debug"));
+    if (Abbozza.debugFrame) layout.appendChild(Abbozza.debugFrame.getLayoutXML("calls"));
+    if (Abbozza.sourceFrame) layout.appendChild(Abbozza.sourceFrame.getLayoutXML("source"));
+    xml.appendChild(layout);   
+*/
+ 
+    sessionStorage.setItem(key, Blockly.Xml.domToText(xml));
+    
+    return xml;
+};

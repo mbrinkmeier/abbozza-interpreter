@@ -17,6 +17,29 @@
  * limitations under the License.
  */
 
+/**
+ * This prototype provides various functionalities required by an abbozza! world.
+ * 
+ * The following handlers for various events can be defined.
+ * 
+ * World.onReset() is triggered if the World is reset, eg. if a new program 
+ *                 execution starts or if the world is initialized
+ *                  
+ * World.onStart() is triggered if a new program execution is started.
+ * 
+ * World.onStep() is triggered after each execution step of the program
+ * 
+ * World.onTerminate() is triggered if the program terminates regularly
+ * 
+ * World.onError() us triggered if the program aborts with an error
+ */
+
+
+/**
+ * 
+ * @param {type} id
+ * @returns {AbbozzaWorld}
+ */
 function AbbozzaWorld(id) {
     this.id = id;
     this.worldDoms = null;
@@ -146,7 +169,7 @@ AbbozzaWorld.prototype.terminate = function () {
     if (World.onTerminate)
         show = show & World.onTerminate();
     if (Task && Task.onTerminate)
-        show = show & Task.onFinished();
+        show = show & Task.onTerminate();
     if (Page && Page.onTerminate)
         show = show & Page.onTerminate();
     document.dispatchEvent(new CustomEvent("abz_fnished"));
@@ -213,6 +236,20 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     interpreter.setProperty(scope, "getPressedKey", interpreter.createNativeFunction(World.getPressedKey));
     interpreter.setProperty(scope, "getLastKey", interpreter.createNativeFunction(World.getLastKey));
 
+    // Add the functions for WS communication
+    console.log(WebSocket);
+    AbbozzaInterpreter.createWrappers(interpreter,scope,
+        [
+            ["WSopen",false,WebSocket,WebSocket.open],
+            ["WSclose",false,WebSocket,WebSocket.close],
+            ["WSisAvailable",false,WebSocket,WebSocket.isAvailable],
+            ["WSsend",false,WebSocket,WebSocket.sendln],
+            ["WSreadln",false,WebSocket,WebSocket.getLine],
+            ["WSreadAll",false,WebSocket,WebSocket.getAll],
+            ["WSsendByte",false,WebSocket,WebSocket.sendByte],
+            ["WSreadByte",false,WebSocket,WebSocket.getByte]
+        ]);
+    
     // Stack constructor.
     var stackWrapper = function () {
         if (interpreter.calledWithNew()) {

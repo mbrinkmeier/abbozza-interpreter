@@ -28,6 +28,8 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
     
     /**
      * Creates new form AbbozzaInterpreterFrame
+     * 
+     * @param abbozza The abbozza! Worlds Server
      */
     public AbbozzaWorldsFrame(AbbozzaWorlds abbozza) {
         this.abbozza = abbozza;

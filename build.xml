@@ -72,16 +72,11 @@
     -->
     
     <target name="-pre-compile">
+        <mkdir dir="downloads"/>
+        <echo message="Fetching files from abbozza-common"/>
         <copy todir="build/classes/" overwrite="true">
-            <fileset dir="../abbozza-common/build/classes" includes="**/*" />
+            <fileset dir="../abbozza-common/build/classes" includes="**/*" excludes="de/uos/inf/did/abbozza/VERSION_SYSTEM" />
         </copy>
     </target>
-        
-    <target name="-pre-jar">
-        <!-- fetch common stuff -->
-        <copy todir="build/classes/" overwrite="true">
-            <fileset dir="../abbozza-common/build/classes" includes="**/*" />
-        </copy>        
-    </target>
-    
+            
 </project>

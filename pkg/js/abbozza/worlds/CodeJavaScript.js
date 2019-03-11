@@ -342,3 +342,12 @@ AbbozzaCode['bintree_del'] = ["#.delete#();",["F_NAME","F_FUNC"]];
 AbbozzaCode['bintree_set_data'] = ["#.setData(#);",["F_NAME","V_VALUE"]];
 AbbozzaCode['bintree_get_data'] = ["#.getData()",["F_NAME"]];
 AbbozzaCode['bintree_is_leaf'] = ["#.isLeaf()",["F_NAME"]];
+
+AbbozzaCode['websocket_open'] = ["WSopen('#');",["F_URL"]];
+AbbozzaCode['websocket_close'] = ["WSclose();",[]];
+AbbozzaCode['websocket_available'] = ["WSisAvailable()",[]];
+AbbozzaCode['websocket_println'] = ["WSsend(#);",["V_VALUE"]];
+AbbozzaCode['websocket_readln'] = ["WSreadln()",[]];
+AbbozzaCode['websocket_read_all'] = ["WSreadAll()",[]];
+AbbozzaCode['websocket_write_byte'] = ["WSsendByte(#);",["V_VALUE"]];
+AbbozzaCode['websocket_read_byte'] = ["WSreadByte()",[]];

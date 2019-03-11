@@ -23,19 +23,15 @@
 
 package de.uos.inf.did.abbozza.worlds.handler;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import de.uos.inf.did.abbozza.core.AbbozzaLogger;
 import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.handler.AbstractHandler;
-import de.uos.inf.did.abbozza.plugin.Plugin;
 import de.uos.inf.did.abbozza.worlds.AbbozzaWorlds;
 import de.uos.inf.did.abbozza.worlds.World;
 import de.uos.inf.did.abbozza.tools.XMLTool;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -77,7 +73,7 @@ public class WorldFeatureHandler extends AbstractHandler {
         } catch (Exception ex) {
             AbbozzaLogger.stackTrace(ex);
         }
-        System.out.println(XMLTool.documentToString(globalFeaturesXml));        
+        // System.out.println(XMLTool.documentToString(globalFeaturesXml));        
         // Get th worlds specific features
         Document featureXml = null;
         
@@ -100,15 +96,17 @@ public class WorldFeatureHandler extends AbstractHandler {
             path = null;
         }       
         featureXml = world.getFeatures();
-        System.out.println(XMLTool.documentToString(featureXml));        
-        
+        // System.out.println(XMLTool.documentToString(featureXml));        
+        XMLTool.documentToString(featureXml);
+                
         // Merge featureXml into globalFeaturesXml
-        this.mergeFeatures(globalFeaturesXml, featureXml);
-        System.out.println(XMLTool.documentToString(globalFeaturesXml));        
-        
+        if ( featureXml != null ) {
+            this.mergeFeatures(globalFeaturesXml, featureXml);
+            // System.out.println(XMLTool.documentToString(globalFeaturesXml));        
+        }
         // Merge features from plugins
         AbbozzaServer.getPluginManager().mergeFeatures(globalFeaturesXml);
-
+        
         return globalFeaturesXml;
     }
     

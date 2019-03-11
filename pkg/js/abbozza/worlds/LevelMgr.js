@@ -36,7 +36,12 @@ var Levels = {
  * @returns {undefined}
  */
 LevelMgr.init = function (id, number, maxStars = 3, unlocked = false) {
-    // LevelMgr.load(id);
+    Levels.id = null;
+    LevelMgr.load(id);
+    if ( Levels.id != null ) {
+        return;
+    }
+    
     LevelMgr.delete(id);
     if (!Levels || Levels.id == null) {
         Levels.maxStars = maxStars;
@@ -55,8 +60,9 @@ LevelMgr.init = function (id, number, maxStars = 3, unlocked = false) {
             Levels.stars[0] = 0;
         }
         this.store();
-}
-
+    }
+    LevelMgr.nextURL = "";
+    LevelMgr.backURL = "";
 }
 
 /**
@@ -110,6 +116,22 @@ LevelMgr.reset = function () {
     }
 }
 
+
+LevelMgr.resetLevels = function(from,to) {
+    var s = -1;
+    if (Levels.unlock) {
+        s = 0;
+    }
+    for (var l = from; l <= to; l++) {
+        Levels.stars[l] = s;
+        Levels.data[l] = null;
+    }    
+    Levels.stars[from] = 0;
+    LevelMgr.store();
+    
+    document.location.reload();
+}
+
 /**
  * Get the number of achieved stars.
  * -1 indicates an legal level which isn unlocked yet.
@@ -134,7 +156,7 @@ LevelMgr.getStars = function (level) {
  * @returns {undefined}
  */
 LevelMgr.setStars = function (level, stars) {
-    if ((level >= 0) && (level < Levels.stars.length)) {
+    if ((level >= 0) && (level < Levels.stars.length) && (stars > Levels.stars[level])) {
         Levels.stars[level] = stars;
         this.store();
     }
@@ -180,7 +202,7 @@ LevelMgr.setData = function (level, data) {
  * @param {type} animated
  * @returns {unresolved}
  */
-LevelMgr.injectStars = function (node, level, size, failed, animated) {
+LevelMgr.injectStars = function (node, level, size, failed, animated, stars = -1) {
     if ((level < 0) || (level >= Levels.stars.length))
         return null;
 
@@ -188,13 +210,15 @@ LevelMgr.injectStars = function (node, level, size, failed, animated) {
     while (node.firstChild)
         node.removeChild(node.firstChild);
 
-    var stars = Levels.stars[level];
+    if ( stars == -1 ) {
+        stars = Levels.stars[level];
+    }
     var element = document.createElement("SPAN");
     node.appendChild(element);
     element.className = "levelStars";
     var m = size / 2;
 
-    for (var i = 0; (i < Levels.maxStars) || (i < stars); i++) {
+    for (var i = 0; i < Levels.maxStars ; i++) {
         var img = document.createElement("IMG");
         if (i < stars) {
             img.setAttribute("src", "/img/star.svg");
@@ -252,12 +276,12 @@ LevelMgr.injectStars = function (node, level, size, failed, animated) {
  * 
  * @returns {LevelMgr.getStarsView.element}
  */
-LevelMgr.getStarsView = function (level, size, msg = "", failed = true, animated = false) {
+LevelMgr.getStarsView = function (level, stars, size, msg = "", failed = true, animated = false) {
     if ((level < 0) || (level >= Levels.stars.length))
         return null;
 
     var div = document.createElement("DIV");
-    LevelMgr.injectStars(div, size, failed, animated);
+    LevelMgr.injectStars(div, level, size, failed, animated, stars);
 
     if (typeof msg == "string") {
         var element = document.createElement("DIV");
@@ -279,34 +303,57 @@ LevelMgr.getStarsView = function (level, size, msg = "", failed = true, animated
  * @param {type} msg
  * @returns {undefined}
  */
-LevelMgr.openLevelOverlay = function (level, size, msg) {
-    Abbozza.createOverlayDialog(
-            LevelMgr.getStarsView(level, size, msg, true, true),
+LevelMgr.openLevelOverlay = function (level, stars, size, msg, failed = true) {
+    if ( !failed ) {
+        Abbozza.createOverlayDialog(
+            LevelMgr.getStarsView(level, stars, size, msg, failed, true),
             [
                 {
-                    msg: "Weiter",
+                    msg: "Nächstes Level",
                     cmd: "next",
-                    callback: null,
+                    callback: LevelMgr.next,
                     obj: null,
                     class: "levelButton"
                 },
                 {
                     msg: "Nochmal",
                     cmd: "retry",
-                    callback: null,
+                    callback: LevelMgr.retry,
                     obj: null,
                     class: "levelButton"
                 },
                 {
                     msg: "Zurück",
                     cmd: "back",
-                    callback: null,
+                    callback: LevelMgr.back,
                     obj: null,
                     class: "levelButton"
                 }
             ],
             null
-            );
+        );
+    } else {
+        Abbozza.createOverlayDialog(
+            LevelMgr.getStarsView(level, stars, size, msg, failed, true),
+            [
+                {
+                    msg: "Nochmal",
+                    cmd: "retry",
+                    callback: LevelMgr.retry,
+                    obj: null,
+                    class: "levelButton"
+                },
+                {
+                    msg: "Zurück",
+                    cmd: "back",
+                    callback: LevelMgr.back,
+                    obj: null,
+                    class: "levelButton"
+                }
+            ],
+            null
+        );        
+    }
 }
 
 
@@ -331,4 +378,25 @@ LevelMgr.inject = function(size) {
         }
         levelElement.appendChild(anchor);
     }
+}
+
+
+LevelMgr.setNavURLs = function(backURL,nextURL) {
+    LevelMgr.backURL = backURL;
+    LevelMgr.nextURL = nextURL;
+}
+
+LevelMgr.next = function() {
+    // Go to next level
+    Abbozza.setSketchFromPath(Abbozza.constructLocation(LevelMgr.nextURL));
+}
+
+LevelMgr.retry = function() {
+    // Reset the task
+    World.reset();
+}
+
+LevelMgr.back = function() {
+    // Go back to menu
+    Abbozza.setSketchFromPath(Abbozza.constructLocation(LevelMgr.backURL));
 }

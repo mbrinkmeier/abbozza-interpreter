@@ -31,8 +31,8 @@ Desktop.init = function (rootPath) {
     this.dragStartX = 0;
     this.dragStartY = 0;
     this.frameAtFront = null;
-    this.frontLayer = 10;
-    this.backLayer = 9;
+    this.frontLayer = 30;
+    this.backLayer = 10;
 
     this.body = document.getElementsByTagName("BODY")[0];
 
@@ -54,17 +54,6 @@ Desktop.init = function (rootPath) {
     this.iconList.className = "iconList";
     this.footer.appendChild(this.iconList);
 
-    /*
-     this.frameList = document.createElement("SELECT");
-     this.frameList.className = "frameList";
-     this.footer.appendChild(this.frameList);
-     this.frameList.onchange = this.openFrame;
-     var frameOption = document.createElement("OPTION");
-     frameOption.frame = null;
-     frameOption.textContent = "-- Fensterliste --";    
-     this.frameList.appendChild(frameOption);
-     */
-
     this.desktop = document.createElement("DIV");
     this.desktop.className = "abzDesktop";
     this.body.appendChild(this.desktop);
@@ -73,12 +62,8 @@ Desktop.init = function (rootPath) {
     this.sceneList.className = "abzSceneList";
     this.desktop.appendChild(this.sceneList);
     this.sceneList.onchange = Desktop.setScene;
-    this.addScene("Hide all",  null, Desktop.hideAllFrames );
+    this.addScene("Hide all",  this.rootPath + "img/hide.png", Desktop.hideAllFrames );
     this.addScene("Cascade", this.rootPath + "img/cascade.png", Desktop.cascadeFrames );
-    // this.sceneButton.onmouseenter = function(event) {
-    //     Desktop.sceneList.style.visibility = "visible";
-    //     Desktop.desktop.appendChild(Desktop.sceneList);
-    // };
     this.sceneButton.onclick = function(event) {
         if ( Desktop.sceneList.style.visibility == "hidden" ) {
             Desktop.sceneList.style.visibility = "visible";            
@@ -89,6 +74,15 @@ Desktop.init = function (rootPath) {
 
     this.desktop.ondrop = Desktop.onDrop;
     this.desktop.ondragover = Desktop.allowDrop;
+    
+    this.frameDragView = document.createElement("DIV");
+    this.frameDragView.className = "frameDragView";
+    this.frameDragView.style.left = "0px";
+    this.frameDragView.style.top = "0px";
+    this.frameDragView.style.width = "50%";
+    this.frameDragView.style.height = "100%";
+    this.frameDragView.style.zIndex = "20";
+    this.desktop.appendChild(this.frameDragView);
 }
 
 
@@ -98,12 +92,6 @@ Desktop.addFrame = function (frame) {
     frame.desktop = this;
     frame.show();
     frame.bringToFront();
-    /*
-     var frameOption = document.createElement("OPTION");
-     frameOption.frame=frame;
-     frameOption.textContent = frame.title;
-     this.frameList.appendChild(frameOption);
-     */
 }
 
 
@@ -161,6 +149,63 @@ Desktop.drag = function (event) {
         if ( frame.currentY > Desktop.desktop.offsetHeight - 20 ) {
             frame.currentY = Desktop.desktop.offsetHeight - 20;
         }
+
+        // Check position for automatic resize and position snap
+        var pointerPosX = event.clientX - Desktop.desktop.offsetLeft;
+        var pointerPosY = event.clientY - Desktop.desktop.offsetTop;
+        var xRatio = 1.0 * pointerPosX / Desktop.desktop.offsetWidth;
+        var yRatio = 1.0 * pointerPosY / Desktop.desktop.offsetHeight;
+        
+        var top = (pointerPosY < 12);
+        var bottom = (pointerPosY > Desktop.desktop.offsetHeight - 12);
+        var left = (pointerPosX < 12);
+        var right = (pointerPosX > Desktop.desktop.offsetWidth - 12);
+        
+        if ( top || bottom || left || right ) {
+            Desktop.frameDragView.style.visibility = "visible";
+            Desktop.frameDragView.style.visibility = Desktop.frontLayer+1;
+            
+            
+            if ( top || bottom ) {
+                Desktop.frameDragView.style.width = "100%";
+                Desktop.frameDragView.style.left = "0px";
+                Desktop.frameDragView.style.height = "100%";
+                Desktop.frameDragView.style.top = "0px";
+            }
+
+            if ( left ) {
+                Desktop.frameDragView.style.width = "50%";
+                Desktop.frameDragView.style.left = "0px";
+                if ( yRatio <= 0.25 ) {
+                    Desktop.frameDragView.style.height = "50%";
+                    Desktop.frameDragView.style.top = "0px";
+                } else if ( yRatio >= 0.75 ) {
+                    Desktop.frameDragView.style.height = "50%";
+                    Desktop.frameDragView.style.top = "50%";                    
+                } else {
+                    Desktop.frameDragView.style.height = "100%";
+                    Desktop.frameDragView.style.top = "0%";                                        
+                }
+            }
+            
+            if ( right ) {
+                Desktop.frameDragView.style.width = "50%";
+                Desktop.frameDragView.style.left = "50%";
+                if ( yRatio <= 0.25 ) {
+                    Desktop.frameDragView.style.height = "50%";
+                    Desktop.frameDragView.style.top = "0px";
+                } else if ( yRatio >= 0.75 ) {
+                    Desktop.frameDragView.style.height = "50%";
+                    Desktop.frameDragView.style.top = "50%";                    
+                } else {
+                    Desktop.frameDragView.style.height = "100%";
+                    Desktop.frameDragView.style.top = "0%";                                        
+                }                
+            }
+        } else {
+            Desktop.frameDragView.style.visibility = "hidden";            
+        }  
+        
         frame.setPosition(frame.currentX, frame.currentY);
         
         if  ( ending ) {
@@ -176,6 +221,16 @@ Desktop.dragEnd = function (event) {
     Desktop.draggedFrame = null;
     document.removeEventListener("mousemove", Desktop.drag, false);
     document.removeEventListener("mouseup", Desktop.dragEnd, false);
+    
+    if ( Desktop.frameDragView.style.visibility == "visible" ) {
+        Desktop.frameDragView.style.visibility = "hidden";
+        var x = Desktop.frameDragView.style.left;
+        var y = Desktop.frameDragView.style.top;
+        var w = Desktop.frameDragView.style.width;
+        var h = Desktop.frameDragView.style.height;
+        frame.setPosition(x,y);
+        frame.setSize(w,h);
+    }
 };
 
 
@@ -263,7 +318,6 @@ Desktop.addScene = function(text,icon,sceneFunc) {
 
 
 Desktop.hideAllFrames = function() {
-    console.log(Desktop.desktop.children);
     for ( var i = 0; i < Desktop.desktop.children.length; i++ ) {
         var child = Desktop.desktop.children[i];
         if ( child.frame && child.frame.hide ) child.frame.hide();
@@ -271,7 +325,6 @@ Desktop.hideAllFrames = function() {
 }
 
 Desktop.cascadeFrames = function() {
-    console.log(Desktop.desktop.children);
     var ypos = 0;
     var xpos = 0;
     var height = Desktop.desktop.offsetHeight-2;
