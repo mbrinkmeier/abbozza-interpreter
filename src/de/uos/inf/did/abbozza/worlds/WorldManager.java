@@ -62,7 +62,13 @@ public class WorldManager implements ComboBoxModel<World> {
     }
 
     public World getWorld(String id) {
-        if ( id == null ) return this.selectedWorld;
+        if ( id == null ) {
+            if ( this.selectedWorld != null ) {
+                return this.selectedWorld;
+            } else {
+                return this.getElementAt(0);
+            }
+        }
         for ( World context : worlds ) {
             if ( context.getId().equals(id) ) {
                 return context;

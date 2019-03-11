@@ -102,7 +102,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
         registerPluginWorlds();
 
-        this.setWorld(worldManager.getWorld("console_plugin"));
+        String lastWorld = config.getOptionStr("lastWorld");
+        this.setWorld(worldManager.getWorld(lastWorld));
 
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
@@ -351,13 +352,25 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     public void setWorld(World world, File file) {
-        currentWorld = world;
+        if ( world == null ) {
+           currentWorld = worldManager.getElementAt(0);
+        } else {
+           currentWorld = world;
+        }
+        config.setOptionStr("lastWorld", currentWorld.getId());
+        config.write();
         AbbozzaLocale.setLocale(this.config.getLocale());
         this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html?" + file.toURI());
     }
 
     public void setWorld(World world, boolean browser) {
-        currentWorld = world;
+        if ( world == null ) {
+           currentWorld = worldManager.getElementAt(0);
+        } else {
+           currentWorld = world;
+        }
+        config.setOptionStr("lastWorld", currentWorld.getId());
+        config.write();
         currentWorld.activatePlugin();
         AbbozzaLocale.setLocale(this.config.getLocale());
         if (browser) {
@@ -366,7 +379,14 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     }
 
     public void setWorld(World world) {
+        if ( world == null ) {
+           currentWorld = worldManager.getElementAt(0);
+        } else {
+           currentWorld = world;
+        }
         currentWorld = world;
+        config.setOptionStr("lastWorld", currentWorld.getId());
+        config.write();
         currentWorld.activatePlugin();
         AbbozzaLocale.setLocale(this.config.getLocale());
     }
@@ -442,7 +462,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
      *
      * @param plugin The plugin to be registered.
      */
-    public void registerPluginWorlds() {
+    public void registerPluginWorlds() {        
         for (Plugin plugin : pluginManager.plugins()) {
             URL url;
             Document xml = plugin.getXml();
