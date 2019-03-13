@@ -102,7 +102,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
         registerPluginWorlds();
 
-        this.setWorld(worldManager.getWorld("console_plugin"));
+        this.setWorld(worldManager.getWorld("hathi"));
 
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
