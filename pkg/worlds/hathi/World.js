@@ -967,6 +967,14 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
     var hframes;
     var duration;
     if ( vanish ) {
+        
+        /*
+        keyframes = [
+                { transform: "translate(" + ox + "px," + (oy - this.squareSize/2 + 2 + this.squareSize/2) + "px)" },
+                { transform: "translate(" + nx + "px," + (ny + 2) + "px )" },
+                { transform: "translate(" + (nx + this.squareSize/2) + "px," + (ny+this.squareSize) + "px) scale(0.1)", y: 20 }
+            ];  
+        */
         keyframes = {
             transform : [ "translate(" + ox + "px," + (oy + 2 - this.squareSize/2) + "px)" ,
                           "translate(" + nx + "px," + (ny + 2 - this.squareSize/2) + "px )",

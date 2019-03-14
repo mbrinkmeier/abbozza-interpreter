@@ -65,11 +65,23 @@ import org.xml.sax.SAXException;
  */
 public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
+    
+    static {
+        try {
+            Class<?> cl = Class.forName("org.java_websocket.server.WebSocketServer");
+            System.out.println(cl);
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.exit(1);
+        }
+    }
+    
     protected TrayIcon trayIcon;
     protected String localWorldPath;
     protected String globalWorldPath;
     protected WorldManager worldManager;
     protected World currentWorld;
+    
 
     /**
      * @param args the command line arguments
@@ -102,7 +114,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
         registerPluginWorlds();
 
-        this.setWorld(worldManager.getWorld("hathi"));
+        String lastWorld = config.getOptionStr("lastWorld");
+        this.setWorld(worldManager.getWorld(lastWorld));
 
         // Open Frame
         AbbozzaWorldsFrame frame = new AbbozzaWorldsFrame(this);
@@ -185,7 +198,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
      */
     public void init(String system) {
         // initialize the server
-        init(system, null);
+        init(system, null);        
     }
 
     public WorldManager getWorldManager() {
@@ -350,24 +363,24 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     public void setWorld(World world, File file) {
         if ( world == null ) {
-            AbbozzaLogger.err("AbbozzaWorld: World not found");
-            AbbozzaSplashScreen.hideSplashScreen();            
-            JOptionPane.showMessageDialog(null, AbbozzaLocale.entry("gui.world_not_found"), AbbozzaLocale.entry("gui.critical_error"), JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+           currentWorld = worldManager.getElementAt(0);
+        } else {
+           currentWorld = world;
         }
-        currentWorld = world;
+        config.setOptionStr("lastWorld", currentWorld.getId());
+        config.write();
         AbbozzaLocale.setLocale(this.config.getLocale());
         this.startBrowser("abbozza/world/" + world.getId() + "/worlds.html?" + file.toURI());
     }
 
     public void setWorld(World world, boolean browser) {
         if ( world == null ) {
-            AbbozzaLogger.err("AbbozzaWorld: World not found");
-            AbbozzaSplashScreen.hideSplashScreen();            
-            JOptionPane.showMessageDialog(null, AbbozzaLocale.entry("gui.world_not_found"), AbbozzaLocale.entry("gui.critical_error"), JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+           currentWorld = worldManager.getElementAt(0);
+        } else {
+           currentWorld = world;
         }
-        currentWorld = world;
+        config.setOptionStr("lastWorld", currentWorld.getId());
+        config.write();
         currentWorld.activatePlugin();
         AbbozzaLocale.setLocale(this.config.getLocale());
         if (browser) {
@@ -377,12 +390,13 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     public void setWorld(World world) {
         if ( world == null ) {
-            AbbozzaLogger.err("AbbozzaWorld: World not found");
-            AbbozzaSplashScreen.hideSplashScreen();
-            JOptionPane.showMessageDialog(null, AbbozzaLocale.entry("gui.world_not_found"), AbbozzaLocale.entry("gui.critical_error"), JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+           currentWorld = worldManager.getElementAt(0);
+        } else {
+           currentWorld = world;
         }
         currentWorld = world;
+        config.setOptionStr("lastWorld", currentWorld.getId());
+        config.write();
         currentWorld.activatePlugin();
         AbbozzaLocale.setLocale(this.config.getLocale());
     }
@@ -458,7 +472,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
      *
      * @param plugin The plugin to be registered.
      */
-    public void registerPluginWorlds() {
+    public void registerPluginWorlds() {        
         for (Plugin plugin : pluginManager.plugins()) {
             URL url;
             Document xml = plugin.getXml();
