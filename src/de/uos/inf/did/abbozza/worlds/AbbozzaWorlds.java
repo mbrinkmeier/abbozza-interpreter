@@ -214,9 +214,15 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         globalPluginPath = abbozzaPath + "/plugins";
         localWorldPath = userPath + "/worlds";
         globalWorldPath = abbozzaPath + "/worlds";
+        sketchbookPath = "";
     }
 
     public void setAdditionalPaths() {
+        sketchbookPath = expandPath(config.getProperty("sketchbookPath"));
+        if (sketchbookPath == null) {
+            sketchbookPath = userPath;
+        }        
+        
         AbbozzaLogger.info("jarPath = " + jarPath);
         AbbozzaLogger.info("runtimePath = " + abbozzaPath);
         AbbozzaLogger.info("userPath = " + userPath);
@@ -492,6 +498,11 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
             }
         }
+    }
+
+    @Override
+    public boolean canChangeSketchbookPath() {
+        return false;
     }
 
 }
