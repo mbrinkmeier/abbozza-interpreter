@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-X-COMMENT: abbozza! worlds Main-Class will be added automatically by build
-Class-Path: lib/test.jar lib/abbozza-common.jar lib/slf4j-api-1.7.25.jar lib/jSerialComm-2.4.2.jar lib/websockets.jar lib/commons-io-2.5.jar
+X-COMMENT: abbozza! worlds
+Class-Path: lib/abbozza-common.jar lib/slf4j-api-1.7.25.jar lib/jSerialComm-2.4.2.jar lib/websockets.jar lib/commons-io-2.5.jar
 Main-Class: de.uos.inf.did.abbozza.worlds.AbbozzaWorlds
