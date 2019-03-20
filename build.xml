@@ -82,10 +82,10 @@
     <target name="-post-jar">
         <jar jarfile="dist/abbozza-worlds-complete.jar">
             <zipfileset src="${dist.jar}" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/commons-io-2.5.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/jSerialComm-2.4.2.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/slf4j-api-1.7.25.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/websockets.jar" excludes="META-INF/*" />
+            <zipfileset src="../abbozza-common/lib/lib/commons-io-2.5.jar" excludes="META-INF/*" />
+            <zipfileset src="../abbozza-common/lib/lib/jSerialComm-2.4.2.jar" excludes="META-INF/*" />
+            <zipfileset src="../abbozza-common/lib/lib/slf4j-api-1.7.25.jar" excludes="META-INF/*" />
+            <zipfileset src="../abbozza-common/lib/lib/websockets.jar" excludes="META-INF/*" />
             <manifest>
                 <attribute name="Main-Class" value="de.uos.inf.did.abbozza.worlds.AbbozzaWorlds"/>
             </manifest>
