@@ -15,7 +15,7 @@
  */
 
 
-Frame = function (title, icon = null, closeable = false) {
+Frame = function (title, icon = null, closeable = false, id = "") {
     var frame = this;
     this.iconSrc = icon;
     this.title = title;
@@ -92,7 +92,7 @@ Frame = function (title, icon = null, closeable = false) {
         this.icon.textContent = title;
     }
     this.icon.frame = this;
-    this.icon.style.visibility = "hdden";
+    this.icon.style.visibility = "hidden";
     this.icon.onclick = function (event) {
         frame.toggleShow();
         frame.bringToFront();

@@ -33,30 +33,14 @@ Abbozza.initWorlds = function () {
     this.defaultTaskWidth="50%";
     this.defaultTaskHeight="50%";
     
-    Desktop.init("js/abbozza/desktop/");
-
-    Abbozza.workspaceFrame = new Frame("Workspace", null, false, "workspace");
-    Abbozza.workspaceFrame.div.addEventListener("frame_resize",
-            function (event) {
-                Abbozza.workspaceFrame.content.width = "100%";
-                if ( Blockly.mainWorkspace )
-                  Blockly.svgResize(Blockly.mainWorkspace);
-            }
-    );
-
-    Abbozza.workspaceDiv = document.createElement("DIV");
-    Abbozza.workspaceDiv.id = "workspace";
-    Abbozza.workspaceFrame.content.appendChild(Abbozza.workspaceDiv);
-    Abbozza.workspaceFrame.show();
-    Abbozza.workspaceFrame.setPosition("50%", 0);
-    Abbozza.workspaceFrame.setSize("50%", "100%");
-    Abbozza.workspaceFrame.bringToFront();
-
     try {
         Abbozza.initSystem('worlds', true, 'http://inf-didaktik.rz.uos.de/abbozza/calliope/help');
     } catch (ex) {
     }
+
+
     Abbozza.worldId = worldId;
+    // Desktop.init("js/abbozza/desktop/");
 
     Abbozza.worldFrame = new Frame("World", null, false, "world");
     Abbozza.worldFrame.setPosition(0, 0);
@@ -158,6 +142,128 @@ Abbozza.initWorlds = function () {
     
     Abbozza.parseQuery();    
 };
+
+
+
+/**
+ * Initialize the system specific features.
+ *  
+ * @param {type} systemPrefix The systems prefix
+ * @param {type} devAllow A flag indicating wether the device/object block is allowed
+ * @param {type} helpUrl a common help Url
+ * @returns {undefined}
+ */
+Abbozza.initSystem = function (systemPrefix, devAllow, helpUrl) {
+    window.name = "abbozzaWorkspace";
+
+    // Check APIs
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+    } else {
+        alert('The File APIs are not fully supported in this browser.');
+    }
+
+    // Adding String.prototype.startsWith for JavaFX WebEngine
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function (searchString, position) {
+            position = position || 0;
+            return this.indexOf(searchString, position) == position;
+        };
+    }
+
+    // Disable context menu of browser
+    document.oncontextmenu = function (event) {
+        return false;
+    };
+
+    // Set help URL
+    if (typeof helpUrl != "undefined")
+        this.HELP_URL = helpUrl;
+
+    // Set the systems prefix
+    this.systemPrefix = systemPrefix;
+    this.pathPrefix = this.systemPrefix + "/";
+
+    // Check if devices are allowed
+    if (devAllow)
+        this.devicesAllowed = devAllow;
+
+    /**
+     * React to back and forward button
+     */
+    window.addEventListener("popstate",
+            function (event) {
+                Abbozza.setSketchFromPath(document.location.search.substring(1));
+            }
+    );
+
+    Desktop.init("/js/abbozza/desktop/");
+
+    Abbozza.modeIcon = document.createElement("img");
+    Abbozza.modeIcon.className = "rightAligned";
+    Abbozza.modeIcon.src = "/img/regular.png";
+    Abbozza.modeIcon.width = 40;
+    Desktop.footer.appendChild(Abbozza.modeIcon);
+    
+    // Abbozza.workspaceDiv = document.createElement("DIV");
+    // Abbozza.workspaceDiv.id = "workspace";
+    // Desktop.desktop.appendChild(Abbozza.workspaceDiv);
+  
+    Abbozza.workspaceDiv = document.createElement("DIV");
+    Abbozza.workspaceDiv.id = "workspace";
+
+    Abbozza.workspaceFrame = Abbozza.createFrame("Workspace", "workspace", null, Abbozza.workspaceDiv, "50%", "50%", "50%", "100%");
+    // Abbozza.workspaceFrame = new Frame("Workspace", null, false, "workspace");
+
+    Abbozza.workspaceFrame.div.addEventListener("frame_resize",
+            function (event) {
+                Abbozza.workspaceFrame.content.width = "100%";
+                if ( Blockly.mainWorkspace )
+                  Blockly.svgResize(Blockly.mainWorkspace);
+            }
+    );
+
+    Abbozza.workspaceFrame.content.appendChild(Abbozza.workspaceDiv);
+    Abbozza.workspaceFrame.show();
+    Abbozza.workspaceFrame.setPosition("50%", 0);
+    Abbozza.workspaceFrame.setSize("50%", "100%");
+    Abbozza.workspaceFrame.bringToFront();
+
+    // Load Configuration
+    Configuration.load();
+
+    // Initialize board
+    Board.init(this.systemPrefix);
+
+    // Initialize the TaskWindow
+    TaskWindow.init();
+    TaskWindow.frame.setSize(this.defaultTaskWidth, this.defaultTaskHeight);
+    TaskWindow.frame.setPosition("67%", "0%")
+
+    // Register change listeners
+    Blockly.bindEvent_(document, 'blocklySelectChange', null, Abbozza.changeSelection);
+    Blockly.mainWorkspace.addChangeListener(Abbozza.onChange);
+
+    window.Blockly = Blockly;
+
+    Abbozza.initButtons();
+
+    // Build the Tools menu
+    Abbozza.buildToolsMenu();
+
+    // Initalize generator
+    // This operation reads the code template
+    this.Generator.init();
+
+    /**
+     * Before the page is unloaded, store the changes in the browser storage.
+     */
+    window.onbeforeunload = Abbozza.onUnload;
+
+    ToolboxMgr.rebuild();
+    Blockly.svgResize(Blockly.mainWorkspace);
+};
+
+
 
 /**
  * Create a new frame on the desktop
@@ -700,13 +806,19 @@ Abbozza.setTaskScene = function() {
 }
 
 
+
+Abbozza.storeSketchSystemSpecific = function(xml) {
+    var world = Abbozza.worldToDom();
+    if ( world ) xml.appendChild(world);
+}
+
 /**
  * Stores the current sketch in the session storage.
  * 
  * @param {String} key The key under which the sketch should be stored.
  * @returns {undefined}
  */
-Abbozza.storeSketch = function (key) {
+Abbozza._storeSketch = function (key) {
     // Remove sequences of /
     while (key.indexOf("//") >= 0) {
         key = key.replace("//", "/");
@@ -714,16 +826,20 @@ Abbozza.storeSketch = function (key) {
 
     // Get the current sketch
     var xml = Abbozza.workspaceToDom(Blockly.mainWorkspace);
+    ml.appendChild(Abbozza.getSystemTag());
 
     var desc = document.createElement("description");
     desc.textContent = Abbozza.sketchDescription;
     xml.appendChild(desc);
 
+    var opts = document.createElement("options");
+    xml.appendChild(opts);
+    opts.setAttribute("apply", Abbozza.sketchApplyOptions ? "yes" : "no");
+    opts.setAttribute("protected", Abbozza.sketchProtected ? "yes" : "no");
+    opts.textContent = Configuration.getOptionString();
+
     var task = TaskWindow.getHTML();
     xml.appendChild(task);
-
-    var world = Abbozza.worldToDom();
-    if ( world ) xml.appendChild(world);
     
     var tasks = xml.getElementsByTagName("task");
     if (tasks[0]) {
@@ -734,7 +850,7 @@ Abbozza.storeSketch = function (key) {
     var layout = document.createElement("layout");
     var id;
     for ( id in Desktop.frames ) {
-        layout.appendChild(TaskWindow.frame.getLayoutXML(id));        
+        layout.appendChild(DesTaskWindow.frame.getLayoutXML(id));        
     }
     
     
