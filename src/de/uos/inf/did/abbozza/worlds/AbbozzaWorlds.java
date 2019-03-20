@@ -500,7 +500,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     @Override
     public boolean canChangeSketchbookPath() {
-        return false;
+        return true;
     }
 
 }
