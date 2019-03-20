@@ -475,8 +475,6 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
 
     /**
      * Register a plugin.
-     *
-     * @param plugin The plugin to be registered.
      */
     public void registerPluginWorlds() {        
         for (Plugin plugin : pluginManager.plugins()) {
