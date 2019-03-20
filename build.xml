@@ -78,5 +78,6 @@
             <fileset dir="../abbozza-common/build/classes" includes="**/*" excludes="de/uos/inf/did/abbozza/VERSION_SYSTEM" />
         </copy>
     </target>
+           
             
 </project>
