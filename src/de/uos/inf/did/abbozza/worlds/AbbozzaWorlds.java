@@ -327,6 +327,8 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
     @Override
     public Document getOptionTree() {
         Document optionXml = super.getOptionTree();
+        if ( optionXml == null ) return null;
+        
         Node worldOptions;
 
         Node worldNode = null;
