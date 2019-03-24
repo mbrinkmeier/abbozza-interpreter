@@ -1044,7 +1044,7 @@ Hathi.prototype.steppedForward = function() {
 Hathi.prototype.isEmpty = function(x,y) {
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
-    return ( this.field[x][y] == 0 );
+    return ( (this.field[x][y] >= 0) || (this.field[x][y] == Hathi.OASIS) );
 };
 
 Hathi.prototype.onCollisionWithBorder = function () {

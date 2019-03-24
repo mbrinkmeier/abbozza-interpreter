@@ -9,7 +9,7 @@
         <msg id="hathi.turn_right">Drehe nach rechts</msg>
         <msg id="hathi.pick_up">Hebe Banane auf</msg>
         <msg id="hathi.drop">Lege Banane ab</msg>
-        <msg id="hathi.is_empty">Ist vorne leer?</msg>
+        <msg id="hathi.is_empty">Ist vorne frei?</msg>
         <msg id="hathi.get_bananas">Gesammelte Bananen</msg>
         <msg id="hathi.is_on_shamrock">Ist auf Banane?</msg>
         <msg id="hathi.is_forward">Ist vorne</msg>
