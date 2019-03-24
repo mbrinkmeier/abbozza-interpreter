@@ -11,6 +11,7 @@ import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -35,6 +36,9 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         this.abbozza = abbozza;
         
         initComponents();
+
+        ImageIcon icon = new ImageIcon(AbbozzaWorldsFrame.class.getResource("icons/abbozza_worlds_icon.png"));
+        this.setIconImage(icon.getImage());
        
         this.addWindowStateListener(new WindowStateListener() {
             @Override
