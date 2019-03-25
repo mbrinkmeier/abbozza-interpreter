@@ -186,11 +186,50 @@ Abbozza.HathiIsOnBanana = {
         this.setOutput(true, "BOOLEAN");
         this.appendDummyInput()
             .appendField(new Blockly.FieldImage("img/hathi_right.png",16,16))
-            .appendField(_("hathi.is_on_shamrock"));
+            .appendField(_("hathi.is_on_banana"));
         this.setTooltip('');
     },
     execute : function(entry) {
         entry.returnValue = World.hathi.isOnBanana();
+        entry.finished();
+        return true;    
+    }    
+}
+
+Abbozza.HathiIsOnBasket = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.HATHI"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(true, "BOOLEAN");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldImage("img/hathi_right.png",16,16))
+            .appendField(_("hathi.is_on_basket"));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        entry.returnValue = World.hathi.isOnBasket();
+        entry.finished();
+        return true;    
+    }    
+}
+
+
+Abbozza.HathiGetBananasOnField = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.HATHI"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(true, "NUMBER");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldImage("img/hathi_right.png",16,16))
+            .appendField(_("hathi.get_bananas_on_field"));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        entry.returnValue = World.hathi.getBananasOnField();
         entry.finished();
         return true;    
     }    
@@ -226,6 +265,32 @@ Abbozza.HathiIsForward = {
     }    
 }
 
+Abbozza.HathiSay = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.HATHI"));
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");            
+        this.appendValueInput("TEXT")
+            .setCheck("STRING")
+            .appendField(new Blockly.FieldImage("img/hathi_right.png",16,16))
+            .appendField(_("hathi.say"));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        switch ( entry.phase ) {
+            case 0 : 
+              AbbozzaInterpreter.callInput(this,"TEXT","STRING");
+              entry.phase = 1;                
+              break;
+          case 1 : 
+              World.hathi.say(entry.callResult);
+              entry.finished();
+              break;
+        }
+        return true;    
+    }    
+}
 
 
 Blockly.Blocks['hathi_forward'] = Abbozza.HathiForward;
@@ -234,18 +299,24 @@ Blockly.Blocks['hathi_turn_right'] = Abbozza.HathiTurnRight;
 Blockly.Blocks['hathi_pick_up'] = Abbozza.HathiPickUp;
 Blockly.Blocks['hathi_drop'] = Abbozza.HathiDrop;
 Blockly.Blocks['hathi_get_bananas'] = Abbozza.HathiGetBananas;
+Blockly.Blocks['hathi_get_bananas_on_field'] = Abbozza.HathiGetBananasOnField;
 Blockly.Blocks['hathi_is_empty'] = Abbozza.HathiIsEmpty;
 Blockly.Blocks['hathi_moved'] = Abbozza.HathiMoved;
 Blockly.Blocks['hathi_is_on_banana'] = Abbozza.HathiIsOnBanana;
+Blockly.Blocks['hathi_is_on_basket'] = Abbozza.HathiIsOnBasket;
 Blockly.Blocks['hathi_is_forward'] = Abbozza.HathiIsForward;
+Blockly.Blocks['hathi_say'] = Abbozza.HathiSay;
 
 
 AbbozzaCode['hathi_forward'] = [ 'forward();',[]];
 AbbozzaCode['hathi_turn'] = [ 'turn#();',["F_DIRECTION"]];
 AbbozzaCode['hathi_pick_up'] = [ 'pickUpBanana();',[]];
 AbbozzaCode['hathi_drop'] = [ 'dropBanana();',[]];
-AbbozzaCode['hathi_get_bananas'] = [ 'getBananas();',[]];
+AbbozzaCode['hathi_get_bananas'] = [ 'getBananas()',[]];
+AbbozzaCode['hathi_get_bananas_on_field'] = [ 'getBananasOnField()',[]];
 AbbozzaCode['hathi_is_empty'] = [ 'isForwardEmpty()',[]];
 AbbozzaCode['hathi_moved'] = [ 'steppedForward()',[]];
 AbbozzaCode['hathi_is_on_banana'] = [ 'isOnBanana()',[]];
+AbbozzaCode['hathi_is_on_basket'] = [ 'isOnBasket()',[]];
 AbbozzaCode['hathi_is_forward'] = [ 'isForward(#)',["F_TYPE"]];
+AbbozzaCode['hathi_say'] = [ 'say(#)',["V_TEXT"]];

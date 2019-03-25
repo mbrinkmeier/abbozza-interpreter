@@ -203,11 +203,13 @@ Hathi.OASIS = -4;
 Hathi.BANANA = 1;
 Hathi.COLLISION = -5;
 Hathi.FILLED = -6;
+Hathi.BASKET = -7;
 
 Hathi.OK = 0;
 Hathi.BUMPED_TREE = 1;
 Hathi.FELL_INTO_HOLE = 2;
 Hathi.NO_BANANA = 3;
+Hathi.NO_BANANA_DROP = 4;
 
 
 Hathi.prototype.loadImages = function() {
@@ -242,7 +244,8 @@ Hathi.prototype.loadImages = function() {
     this.images[-Hathi.OASIS] = this.loadImage("img/oasis.png");
     this.images[-Hathi.BANANA] = this.loadImage("img/banana.png");
     this.images[-Hathi.COLLISION] = this.loadImage("img/collision.png");
-       
+    this.images[-Hathi.BASKET] = this.loadImage("img/basket.png");       
+ 
     this.hathiImages = [];
     this.hathiImages[Hathi.UP] = this.loadImage("img/hathi_back.png");
     this.hathiImages[Hathi.LEFT] = this.loadImage("img/hathi_left.png");
@@ -524,7 +527,7 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
 
     this.context_.drawImage(this.backgroundImages[this.background[x][y]],xpos,ypos,siz,siz);
 
-    if (this.field[x][y] <= 0) {
+    if ((this.field[x][y] <= 0) && (this.field[x][y] > Hathi.BASKET )) {
         switch (this.field[x][y]) {
             case Hathi.EMPTY:
                 break;
@@ -576,15 +579,29 @@ Hathi.prototype.drawSquare = function (x, y, neighbors = false) {
                 // The oasis is drawn to the canvas
                 this.context_.drawImage(this.images[-Hathi.OASIS], xpos, ypos, siz, siz);
                 break;
+            case Hathi.BASKET:
+                // The oasis is drawn to the canvas
+                this.context_.drawImage(this.images[-Hathi.BASKET], xpos, ypos, siz, siz);
+                break;
         }
     } else {
-        this.context_.drawImage(this.images[-Hathi.BANANA], xpos, ypos, siz, siz);
-        if (this.field[x][y] > 1) {
+        if ( this.field[x][y] > 0 ) {
+            this.context_.drawImage(this.images[-Hathi.BANANA], xpos, ypos, siz, siz);
+            if (this.field[x][y] > 1) {
+                this.context_.strokeStyle = "black";
+                this.context_.fillStyle = "white";
+                this.context_.font = "bold " + this.squareSize / 2 + "px arial";
+                var w = this.context_.measureText(this.field[x][y]).width;
+                this.context_.fillText(this.field[x][y], xpos + siz / 2 - (w / 2) - siz/5 , ypos + 4 * siz / 6 - siz/4);
+            }
+        } else {
+            this.context_.drawImage(this.images[-Hathi.BASKET], xpos, ypos, siz, siz);            
             this.context_.strokeStyle = "black";
             this.context_.fillStyle = "white";
             this.context_.font = "bold " + this.squareSize / 2 + "px arial";
-            var w = this.context_.measureText(this.field[x][y]).width;
-            this.context_.fillText(this.field[x][y], xpos + siz / 2 - (w / 2) - siz/5 , ypos + 4 * siz / 6 - siz/4);
+            var v = -this.field[x][y] + Hathi.BASKET;
+            var w = this.context_.measureText(v).width;
+            this.context_.fillText(v, xpos + siz/2 - w/2, ypos + 5 * siz / 6);
         }
     }
 
@@ -647,6 +664,9 @@ Hathi.prototype.hideCollision = function() {
 Hathi.prototype.showBubble = function(img = null, text = "") {
     if ( img != null ) {
        this.hathi_bubble_img.setAttribute("href",img);
+       this.hathi_bubble_img.style.display="inline";
+   } else {
+       this.hathi_bubble_img.style.display="none";        
     }
     
     this.bubble_shown = true;
@@ -693,12 +713,71 @@ Hathi.prototype.showBubble = function(img = null, text = "") {
 }
 
 
+Hathi.prototype.showTextBubble = function(text) {
+    // Set text
+    img = null;
+    this.hathi_bubble_img.style.display="none";        
+
+    if ( text != "" ) {
+        this.hathi_bubble_text.textContent = text;
+        this.hathi_bubble_img.style.opacity = 0.25;
+    } else {
+        this.hathi_bubble_text.textContent = "";
+        this.hathi_bubble_img.style.opacity = 1;
+    }
+    var width = this.hathi_bubble_text.getComputedTextLength()+20;
+
+    this.bubble_shown = true;
+    this.hathi_bubble.style.display = "block";
+    var xpos = (this.hathiX+1)*this.squareSize;
+    var ypos = (this.hathiY+1)*this.squareSize;
+    var ixpos;
+    var iypos;
+    switch ( this.hathiDir ) {
+        case 0:  // RIGHT
+            // this.hathi_bubble_path.setAttribute("d","M80,30 l15,-5 l0,15 a3,3 0 0,1 3,3 l" + width + ",0 a3,3 0 0,1 3,-3 l0,-50 a3,3 0 0,1 -3,-3 l -" + width + ",0 ,a3,3 0 0,1, -3,3 l0,25 Z");
+            // ixpos = 98;
+            // iypos = -10;
+            // break;
+        case 2: // LEFT
+            // ixpos = -20-width;
+            // iypos = -10;
+            // this.hathi_bubble_path.setAttribute("d","M0,30 l-15,-5 l0,15 a3,3 0 0,1 -3,3 l-" + width + ",0 a-3,3 0 0,1 -3,-3 l0,-50 a3,3 0 0,1 3,-3 l" + width + ",0 a3,3 0 0,1, 3,3 l0,25 Z");
+            // break;
+        case 1: // UP
+        case 3: //DOWN
+            ixpos = 40;
+            iypos = -73;
+            this.hathi_bubble_path.setAttribute("d","M40,-5 l5,-15 l" + ((width-10)/2) + "20,0 a3,3 0 0,1 3,-3 l0,-50 a3,3 0 0,1 -3,-3 l-" + width + ",0 a3,3 0 0,1 -3,3 l0,50 a3,3 0 0,1 3,3 l" + ((width-10)/2) + ",0 Z");
+            break;
+    }
+    var scale = this.squareSize/80.0;
+    this.hathi_bubble.setAttribute("transform","translate(" + xpos + "," + ypos + ")");
+    this.hathi_bubble_path.setAttribute("transform","scale(" + scale + ")");
+    this.hathi_bubble_img.setAttribute("transform","scale(" + scale + ")");
+    this.hathi_bubble_img.setAttribute("x",ixpos);
+    this.hathi_bubble_img.setAttribute("y",iypos);
+    this.hathi_bubble_text.setAttribute("transform","scale(" + scale + ")");
+
+    if ( text != "" ) {
+        this.hathi_bubble_text.setAttribute("x",ixpos);
+        this.hathi_bubble_text.setAttribute("y",iypos+40);
+    }
+}
+
+/**
+ * 
+ * @returns {undefined}
+ */
 Hathi.prototype.hideBubble = function() {
     this.bubble_shown = false;
     this.hathi_bubble. style.display = "none";
 }
 
-
+/**
+ * 
+ * @returns {undefined}
+ */
 Hathi.prototype.clear = function() {
     for (var x = 0; x < this.width; x++) {
         for (var y = 0; y < this.height; y++) {
@@ -835,7 +914,13 @@ Hathi.prototype.removeSvgAt = function(x,y) {
 };
 
 
-
+/**
+ * Get the item at the given position.
+ * 
+ * @param {type} x
+ * @param {type} y
+ * @returns {Hathi.prototype@arr;@arr;field}
+ */
 Hathi.prototype.get = function(x,y) {
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
@@ -843,6 +928,9 @@ Hathi.prototype.get = function(x,y) {
 }
 
 
+/**
+ * Hathi turns right
+ */
 Hathi.prototype.turnRight = function () {
     this.hideBubble();
     this.hathiDir = (this.hathiDir + 3) % 4;
@@ -852,6 +940,9 @@ Hathi.prototype.turnRight = function () {
     this.drawSquare(this.hathiX, this.hathiY);
 };
 
+/**
+ * Hathi turns left
+ */
 Hathi.prototype.turnLeft = function () {
     this.hideBubble();
     this.hathiDir = (this.hathiDir + 1) % 4;
@@ -861,7 +952,10 @@ Hathi.prototype.turnLeft = function () {
     this.drawSquare(this.hathiX, this.hathiY);
 };
 
-
+/*
+ * Hathi makes one step forward.
+ * @returns {Number} Hathi.OK if the step was possible
+ */
 Hathi.prototype.forward = function () {
     this.hideBubble();
 
@@ -924,7 +1018,15 @@ Hathi.prototype.forward = function () {
 };
 
 
-
+/**
+ * Animate Hathi
+ * @param {type} oldX
+ * @param {type} oldY
+ * @param {type} newX
+ * @param {type} newY
+ * @param {type} falling
+ * @returns {undefined}
+ */
 Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY,falling = false) {
     var nx = (newX+1) * this.squareSize;
     var ny = (newY+1) * this.squareSize;
@@ -949,7 +1051,17 @@ Hathi.prototype.moveHathi = function(oldX,oldY,newX,newY,falling = false) {
     }
 };
 
-
+/**
+ * Animate rock
+ * @param {type} hathiX
+ * @param {type} hathiY
+ * @param {type} oldX
+ * @param {type} oldY
+ * @param {type} newX
+ * @param {type} newY
+ * @param {type} vanish
+ * @returns {undefined}
+ */
 Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = false) {
     newX = ( newX + this.width ) % this.width;
     newY = ( newY + this.height ) % this.height;
@@ -1035,28 +1147,49 @@ Hathi.prototype.moveRock = function(hathiX,hathiY,oldX,oldY,newX,newY,vanish = f
         });    
 }
 
-
+/**
+ * Check if Hathis last tep was successfull
+ * @returns {Boolean}
+ */
 Hathi.prototype.steppedForward = function() {
    return this.moved;
 }
 
-
+/**
+ * Check if the field is empty, only contains bananas
+ * or a basket.
+ * @param {type} x
+ * @param {type} y
+ * @returns {unresolved}
+ */
 Hathi.prototype.isEmpty = function(x,y) {
     x = ( x + this.width ) % this.width;
     y = ( y + this.height ) % this.height;
-    return ( (this.field[x][y] >= 0) || (this.field[x][y] == Hathi.OASIS) );
+    return ( (this.field[x][y] >= 0) || (this.field[x][y] == Hathi.OASIS) || (this.field[x][y] == Hathi.BASKET) );
 };
 
+/**
+ * 
+ * @returns {Number}
+ */
 Hathi.prototype.onCollisionWithBorder = function () {
     this.showBubble("img/stopsign.png");
     return Hathi.OK;
 };
 
+/**
+ * 
+ * @returns {Number}
+ */
 Hathi.prototype.onCollisionWithRock = function () {
     this.showBubble("img/stopsign.png");
     return Hathi.OK;
 };
 
+/**
+ * 
+ * @returns {Number}
+ */
 Hathi.prototype.onCollisionWithTree = function () {
     this.showBubble("img/stopsign.png");
     if ( this.terminateOnCollision ) {
@@ -1066,6 +1199,10 @@ Hathi.prototype.onCollisionWithTree = function () {
     }
 };
 
+/**
+ * 
+ * @returns {Number}
+ */
 Hathi.prototype.onFall = function () {
     this.showBubble("img/stopsign.png");
     if ( this.terminateOnFall ) {
@@ -1075,6 +1212,10 @@ Hathi.prototype.onFall = function () {
     }
 };
 
+/**
+ * 
+ * @returns {Number}
+ */
 Hathi.prototype.noBanana = function() {
     this.showBubble("img/nobanana.png");
     if ( this.terminateOnNoBanana) {
@@ -1084,44 +1225,77 @@ Hathi.prototype.noBanana = function() {
     }
 };
 
+/**
+ * 
+ * @returns {Boolean}
+ */
 Hathi.prototype.isOnBanana = function() {
     return ( this.field[this.hathiX][this.hathiY] > 0 );
 };
 
+/**
+ * 
+ * @returns {Boolean}
+ */
+Hathi.prototype.isOnBasket = function() {
+    return ( this.field[this.hathiX][this.hathiY] <= Hathi.BASKET );
+};
+
+/**
+ * 
+ * @param {type} type
+ * @returns {Boolean}
+ */
 Hathi.prototype.isOn = function(type) {
     return ( this.field[this.hathiX][this.hathiY] == type );
 };
 
-
+/**
+ * 
+ * @returns {Number}
+ */
 Hathi.prototype.pickUpBanana = function() {
-    if ( this.field[this.hathiX][this.hathiY] <= 0 ) {
+    // If there is no banana on the field
+    if ( (this.field[this.hathiX][this.hathiY] <= 0) && (this.field[this.hathiX][this.hathiY] >= Hathi.BASKET ) ) {
         return this.noBanana();
     }
     
-    if (this.bananas < 64 ) {
+    if ( this.field[this.hathiX][this.hathiY] > 0 ) {
+        // pick a banana from the ground
         this.field[this.hathiX][this.hathiY]--;
         this.bananas++;
         this.drawSquare(this.hathiX,this.hathiY);
         this.showBubble("img/banana.png", this.bananas );
     } else {
-        this.showBubble("img/banana.png");        
+        // pick a banana from a basket
+        this.field[this.hathiX][this.hathiY]++;
+        this.bananas++;
+        this.drawSquare(this.hathiX,this.hathiY);
+        this.showBubble("img/banana.png", this.bananas);        
     }
     return Hathi.OK;
 };
 
-
+/**
+ * Drop a banana
+ * @returns {undefined|Number}
+ */
 Hathi.prototype.dropBanana = function() {
     var result;
     
-    if ( this.field[this.hathiX][this.hathiY] < 0 ) {
-        // this.onCollision();
+    if ( (this.field[this.hathiX][this.hathiY] < 0) && (this.field[this.hathiX][this.hathiY] > Hathi.BASKET) ) {
+        this.showBubble("img/nobanana.png");
+        result = Hathi.NO_BANANA_DROP;
         return;
     }
     
     if ( this.bananas > 0 ) {
-        this.field[this.hathiX][this.hathiY]++;
+        if (this.field[this.hathiX][this.hathiY] <=  Hathi.BASKET ) {
+            this.field[this.hathiX][this.hathiY]--;
+        } else {
+            this.field[this.hathiX][this.hathiY]++;
+        }
         this.bananas--;
-        this.showBubble("img/nobanana.png");
         result = Hathi.OK;
     } else {
         this.showBubble("img/nobanana.png");
@@ -1132,27 +1306,72 @@ Hathi.prototype.dropBanana = function() {
         }
     }
     this.drawSquare(this.hathiX,this.hathiY);
-    
+     
     return result;
 };
 
+/**
+ * Returns Hathis collected bananas
+ * @returns {Number}
+ */
 Hathi.prototype.getBananas = function() {
     this.showBubble("img/banana.png",this.bananas);
     return this.bananas;
 }
 
+/**
+ * Returns bananas on ground
+ * @returns {Number}
+ */
+Hathi.prototype.getBananasOnField = function() {
+    if ( (this.field[this.hathiX][this.hathiY] > Hathi.BASKET) && (this.field[this.hathiX][this.hathiY] < 0) ) {
+        this.showBubble("img/nobanana.png",0);
+        return 0;
+    }
+    var v = 0;
+    if ( this.field[this.hathiX][this.hathiY] < 0 ) {
+        v = -Number(this.field[this.hathiX][this.hathiY]) + Hathi.BASKET;
+        this.showBubble("img/basket.png",v);
+    } else {
+        v = this.field[this.hathiX][this.hathiY];
+        this.showBubble("img/banana.png",v);
+    }
+    return v;
+}
 
+/**
+ * 
+ * @returns {unresolved}
+ */
 Hathi.prototype.isForwardEmpty = function() {
     return this.isEmpty(this.hathiX+this.hathiDX,this.hathiY+this.hathiDY);
 };
 
+/**
+ * 
+ * @param {type} type
+ * @returns {Boolean}
+ */
 Hathi.prototype.isForward = function(type) {
     var x = (this.hathiX+this.hathiDX+this.width) % this.width;
     var y = (this.hathiY+this.hathiDY+this.height) % this.height;
     return ( this.field[x][y] == type );
 };
 
+/**
+ * 
+ * @param {type} text
+ * @returns {undefined}
+ */
+Hathi.prototype.say = function(text) {
+    this.showTextBubble(text);
+}
 
+/**
+ * 
+ * @param {type} event
+ * @returns {undefined}
+ */
 Hathi.prototype.clicked = function(event) {
     if ( !World.editable ) return;
     
@@ -1172,7 +1391,11 @@ Hathi.prototype.clicked = function(event) {
             hathi.turnRight();
         } else {
             hathi.field[x][y]--;
-            if ( hathi.field[x][y] < -4 ) hathi.field[x][y] = 1;
+            if ( hathi.field[x][y] == -5 ) {
+                hathi.field[x][y] = Hathi.BASKET;
+            } else if ( hathi.field[x][y] < Hathi.BASKET ) {
+                hathi.field[x][y] = 1;
+            }
             hathi.put(hathi.field[x][y],x,y);
         }
     }
@@ -1180,7 +1403,11 @@ Hathi.prototype.clicked = function(event) {
 };
 
 
-
+/**
+ * 
+ * @param {type} event
+ * @returns {undefined}
+ */
 Hathi.prototype.rightclicked = function(event) { 
     if ( !World.editable ) return;
     
@@ -1235,6 +1462,10 @@ Hathi.prototype.toDom = function() {
                     case Hathi.OASIS:
                         el = document.createElement("oasis");
                         break;
+                    case Hathi.BASKET:
+                        el = document.createElement("basket");
+                        el.setAttribute("count", (-this.field[col][row]+Hathi.BASKET));
+                        break;
                     default:
                         el = document.createElement("banana");
                         el.setAttribute("count", this.field[col][row]);
@@ -1250,7 +1481,11 @@ Hathi.prototype.toDom = function() {
     return root;
 };
 
-
+/**
+ * 
+ * @param {type} xml
+ * @returns {undefined}
+ */
 Hathi.prototype.fromDom = function(xml) {
     this.width = Number(xml.getAttribute("width"));
     this.height = Number(xml.getAttribute("height"));
@@ -1276,6 +1511,8 @@ Hathi.prototype.fromDom = function(xml) {
                     type = Hathi.ROCK;
                 } else if ( child.nodeName == "oasis" ) {
                     type = Hathi.OASIS;
+                } else if ( child.nodeName == "basket" ) {
+                    type = Hathi.BASKET - Number(child.getAttribute("count"));
                 } else if ( child.nodeName == "banana" ) {
                     type = child.getAttribute("count");
                 } else if ( child.nodeName == "hole" ) {
@@ -1289,7 +1526,12 @@ Hathi.prototype.fromDom = function(xml) {
     this.redraw();
 };
 
-
+/**
+ * 
+ * @param {type} func
+ * @param {type} args
+ * @returns {unresolved}
+ */
 World.wrapper = function(func,args) {
     return func.apply(World.hathi,args);
 };
@@ -1309,16 +1551,9 @@ World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
       'turnRight','turnLeft','forward','steppedForward',
       'isOnBanana','pickUpBanana','dropBanana','isForwardEmpty',
-      'isForward'
+      'isForward', 'say', 'isOnBasket', 'getBananas', 'getBananasOnField'
     ];
     AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs);
-    /*
-    for ( var i = 0; i < funcs.length; i++ ) {
-        interpreter.setProperty(scope,funcs[i],
-            interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
-        );        
-    }
-    */
 };
 
 
