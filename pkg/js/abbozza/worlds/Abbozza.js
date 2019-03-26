@@ -330,6 +330,20 @@ Abbozza.loadSketch = function () {
     Abbozza.openOverlay(_("msg.load_sketch"));
     var sketch = Connection.getXML("/abbozza/load",
             function (sketch, xhttp) {
+                var editMode = xhttp.getResponseHeader("X-abbozza-mode");
+                
+                switch ( editMode ) {
+                    case "workshop" :
+                        Abbozza.setEditMode( Abbozza.WORKSHOP_MODE );
+                        break;
+                    case "authors" :
+                        Abbozza.setEditMode( Abbozza.AUTHORS_MODE );
+                        break;
+                    case "regular": 
+                        Abbozza.setEditMode( Abbozza.REGULAR_MODE );
+                        break;
+                }
+
                 var location = xhttp.getResponseHeader("Content-Location");
                 var tags = sketch.getElementsByTagName("system");
                 if (tags.length > 0) {
@@ -344,10 +358,11 @@ Abbozza.loadSketch = function () {
                         return;
                     }
                 }
-                Abbozza.setContentLocation(location);
                 Abbozza.closeOverlay();
-                Abbozza.clearSketch();
-                Abbozza.setSketch(sketch);
+                Abbozza.clearSketch( Abbozza.editMode != Abbozza.WORKSHOP_MODE );
+                if ( Abbozza.setSketch(sketch) ) {
+                    Abbozza.setContentLocation(location);
+                }
             },
             function (response) {
                 Abbozza.closeOverlay();
@@ -362,7 +377,7 @@ Abbozza.loadSketch = function () {
 Abbozza.originalSetSketch = Abbozza.setSketch;
 
 Abbozza.setSketch = function (sketch, page = - 1) {
-    Abbozza.originalSetSketch(sketch,page);
+    var taskChanged = Abbozza.originalSetSketch(sketch,page);
 
     /*
     // Restore the layout
@@ -397,13 +412,15 @@ Abbozza.setSketch = function (sketch, page = - 1) {
     AbbozzaInterpreter.reset();
     if (Abbozza.sourceEditor)
         Abbozza.sourceEditor.value = "";
+
+    return taskChanged;
 }
 
 
 Abbozza.originalClearSketch = Abbozza.clearSketch;
 
-Abbozza.clearSketch = function() {
-    Abbozza.originalClearSketch();
+Abbozza.clearSketch = function(cleanTask = true) {
+    Abbozza.originalClearSketch(cleanTask);
 
     var worlds = null;
     AbbozzaInterpreter.reset();
