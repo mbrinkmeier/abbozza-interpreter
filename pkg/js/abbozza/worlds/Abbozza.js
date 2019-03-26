@@ -198,21 +198,12 @@ Abbozza.initSystem = function (systemPrefix, devAllow, helpUrl) {
 
     Desktop.init("/js/abbozza/desktop/");
 
-    Abbozza.modeIcon = document.createElement("img");
-    Abbozza.modeIcon.className = "rightAligned";
-    Abbozza.modeIcon.src = "/img/regular.png";
-    Abbozza.modeIcon.width = 40;
-    Desktop.footer.appendChild(Abbozza.modeIcon);
+    Abbozza.createModeIcon();
     
-    // Abbozza.workspaceDiv = document.createElement("DIV");
-    // Abbozza.workspaceDiv.id = "workspace";
-    // Desktop.desktop.appendChild(Abbozza.workspaceDiv);
-  
     Abbozza.workspaceDiv = document.createElement("DIV");
     Abbozza.workspaceDiv.id = "workspace";
 
     Abbozza.workspaceFrame = Abbozza.createFrame("Workspace", "workspace", null, Abbozza.workspaceDiv, "50%", "50%", "50%", "100%");
-    // Abbozza.workspaceFrame = new Frame("Workspace", null, false, "workspace");
 
     Abbozza.workspaceFrame.div.addEventListener("frame_resize",
             function (event) {
@@ -259,7 +250,7 @@ Abbozza.initSystem = function (systemPrefix, devAllow, helpUrl) {
      */
     window.onbeforeunload = Abbozza.onUnload;
 
-    ToolboxMgr.rebuild();
+    // ToolboxMgr.rebuild();
     Blockly.svgResize(Blockly.mainWorkspace);
 };
 
@@ -321,7 +312,7 @@ Abbozza.loadSketch = function () {
         return;
     }
 
-// Store current sketch
+    // Store current sketch
     if ((document.location.search != null) && (document.location.search != "")) {
         Abbozza.storeSketch(document.location.search.substring(1));
     }
@@ -359,7 +350,7 @@ Abbozza.loadSketch = function () {
                     }
                 }
                 Abbozza.closeOverlay();
-                Abbozza.clearSketch( Abbozza.editMode != Abbozza.WORKSHOP_MODE );
+                Abbozza.clearSketch( Abbozza.getEditMode() != Abbozza.WORKSHOP_MODE );
                 if ( Abbozza.setSketch(sketch) ) {
                     Abbozza.setContentLocation(location);
                 }
