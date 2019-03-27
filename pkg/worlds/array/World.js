@@ -364,7 +364,7 @@ ArrayWorld.prototype.showAsIndex = function(varname,color) {
 
 
 World.wrapper = function(func,args) {
-    return func.apply(World.hanoi,args);
+    return func.apply(World.arrayWorld,args);
 }
 
 
@@ -374,7 +374,7 @@ World.createWrapper = function(func) {
         for ( var i = 0 ; i < arguments.length; i++ ) {
             args[i] = arguments[i];
         }
-        return World.wrapper(World.hanoi[func],args);        
+        return World.wrapper(World.arrayWorld[func],args);        
     }
 }
 
