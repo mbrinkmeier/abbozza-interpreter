@@ -380,7 +380,7 @@ World.createWrapper = function(func) {
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
-      'moveDisc','getNumberOfDiscs','getSize','reset'
+      'swap','reset','showAsIndex','getLength','set','get',
     ];
     for ( var i = 0; i < funcs.length; i++ ) {
         interpreter.setProperty(scope,funcs[i],

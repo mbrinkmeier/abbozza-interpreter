@@ -101,7 +101,7 @@ Abbozza.ArraySet = {
 }
 
 Blockly.Blocks['array_set'] = Abbozza.ArraySet;
-AbbozzaCode['array_set'] = ['set(#.#)',["V_INDEX","V_VALUE"]];
+AbbozzaCode['array_set'] = ['set(#,#);',["V_INDEX","V_VALUE"]];
 
 
 Abbozza.ArrayGet = {
@@ -215,5 +215,5 @@ Abbozza.ArrayAsIndex = {
 }
 
 Blockly.Blocks['array_as_index'] = Abbozza.ArrayAsIndex;
-AbbozzaCode['array_as_index'] = ['showAsIndex(#)',["F_VAR"]];
+AbbozzaCode['array_as_index'] = ['showAsIndex(#);',["F_VAR"]];
 
