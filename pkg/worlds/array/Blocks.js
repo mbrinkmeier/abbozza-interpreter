@@ -179,7 +179,7 @@ Abbozza.ArraySwap = {
 }
 
 Blockly.Blocks['array_swap'] = Abbozza.ArraySwap;
-AbbozzaCode['array_swap'] = ['swap(#.#)',["V_INDEX","V_INDEX2"]];
+AbbozzaCode['array_swap'] = ['swap(#,#);',["V_INDEX","V_INDEX2"]];
 
 
 Abbozza.ArrayAsIndex = {
