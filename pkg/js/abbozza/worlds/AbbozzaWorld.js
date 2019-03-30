@@ -230,14 +230,19 @@ AbbozzaWorld.prototype.step = function () {
  */
 AbbozzaWorld.prototype.stepWorld = function() {};
 
-
+/**
+ * Create the wrappers for datastructures.
+ * 
+ * @param {type} interpreter
+ * @param {type} scope
+ * @returns {undefined}
+ */
 AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     var wrapper;
     interpreter.setProperty(scope, "getPressedKey", interpreter.createNativeFunction(World.getPressedKey));
     interpreter.setProperty(scope, "getLastKey", interpreter.createNativeFunction(World.getLastKey));
 
     // Add the functions for WS communication
-    console.log(WebSocket);
     AbbozzaInterpreter.createWrappers(interpreter,scope,
         [
             ["WSopen",false,WebSocket,WebSocket.open],
@@ -441,7 +446,12 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     }
 }
 
-
+/**
+ * Activate the keyboard by adding the event handlers
+ * 
+ * @param {type} view
+ * @returns {undefined}
+ */
 AbbozzaWorld.prototype._activateKeyboard = function (view) {
     World.curKey = "";
     World.lastKey = "";
@@ -449,16 +459,31 @@ AbbozzaWorld.prototype._activateKeyboard = function (view) {
     view.addEventListener("keyup", this.onKeyUp);
 }
 
+/**
+ * Handler for the KeyDown event
+ * 
+ * @param {type} event
+ */
 AbbozzaWorld.prototype.onKeyDown = function (event) {
     World.curKey = World.getKeyString(event);
 }
 
+/**
+ * Handler for the KeyUp event
+ * 
+ * @param {type} event
+ */
 AbbozzaWorld.prototype.onKeyUp = function (event) {
     World.lastKey = World.curKey;
     World.curKey = "";
 }
 
-
+/**
+ * Get the string describing the key given by the event
+ * 
+ * @param {type} event
+ * @returns {String}
+ */
 AbbozzaWorld.prototype.getKeyString = function (event) {
     var val = event.key;
     if (event.shiftKey)
@@ -472,12 +497,30 @@ AbbozzaWorld.prototype.getKeyString = function (event) {
     return val;
 }
 
+/**
+ * Get the currently pressed key
+ * @returns {AbbozzaWorld.curKey|type.curKey|String}
+ */
 AbbozzaWorld.prototype.getPressedKey = function () {
-    return World.curKey;
+    return this.curKey;
 }
 
+/**
+ * Get the key that was pressed last.
+ * @returns {type.lastKey|AbbozzaWorld.lastKey|String|AbbozzaWorld.curKey|type.curKey}
+ */
 AbbozzaWorld.prototype.getLastKey = function () {
-    var val = World.lastKey;
-    World.lastKey = "";
+    var val = this.lastKey;
+    this.lastKey = "";
     return val;
+}
+
+/**
+ * Add blocks to the list of possible variable declarations.
+ * 
+ * @param {type} list
+ * @returns {undefined}
+ */
+AbbozzaWorld.prototype.addVariableBlocks = function(list) {
+   return list; 
 }

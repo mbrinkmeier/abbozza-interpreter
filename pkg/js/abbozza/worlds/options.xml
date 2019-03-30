@@ -11,6 +11,7 @@
         </item>
         <item name="gui.operations" option="operations" default="false">
             <item name="gui.local_variables" option="localVars" default="false"/>
+            <item name="gui.threads" option="threads" default="false"/>
         </item>
         <group name="gui.datastructures">
             <item name="gui.stacks" option="stack" default="false"/>

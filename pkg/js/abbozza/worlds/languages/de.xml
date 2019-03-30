@@ -2,6 +2,10 @@
 <language id="de">
     <blocks>
         <msg id="block.MAIN">Hauptprogramm</msg> 
+        <msg id="func.start_thread">Starte # als Thread</msg> 
+        <msg id="func.thread_running">Thread # läuft noch</msg> 
+        <msg id="func.wait_for_thread">Warte auf Thread</msg> 
+        <msg id="func.sync_thread">Synchronisiere mit Thread</msg> 
     </blocks>
     <categories>
         <msg id="cat.web">Internet</msg>

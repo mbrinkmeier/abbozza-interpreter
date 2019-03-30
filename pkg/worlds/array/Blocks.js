@@ -215,5 +215,5 @@ Abbozza.ArrayAsIndex = {
 }
 
 Blockly.Blocks['array_as_index'] = Abbozza.ArrayAsIndex;
-AbbozzaCode['array_as_index'] = ['showAsIndex("#");',["F_VAR"]];
+AbbozzaCode['array_as_index'] = ['showAsIndex("#","#");',["F_VAR","F_COLOR"]];
 

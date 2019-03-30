@@ -320,6 +320,43 @@ AbbozzaInterpreter.exec["var_assign"] = function(entry) {
     }
 };
 
+AbbozzaInterpreter.exec['var_int_step_up'] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            var name = this.getFieldValue("VAR");
+            var val = Number(AbbozzaInterpreter.getSymbol(name));
+            AbbozzaInterpreter.setSymbol(name,val+1);
+            entry.finished();
+            break;
+    }
+};
+
+AbbozzaInterpreter.exec['var_int_step_down'] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            var name = this.getFieldValue("VAR");
+            var val = Number(AbbozzaInterpreter.getSymbol(name));
+            AbbozzaInterpreter.setSymbol(name,val-1);
+            entry.finished();
+            break;
+    }
+};
+
+
+AbbozzaInterpreter.exec['var_int_change_by'] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            entry.name = this.getFieldValue("VAR");
+            entry.val = Number(AbbozzaInterpreter.getSymbol(name));
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1:
+            AbbozzaInterpreter.setSymbol(entry.name,entry.val + Number(entry.callResult));
+            entry.finished();
+            break;
+    }
+};
 
 /*************************
  * MATH blocks
@@ -890,6 +927,166 @@ AbbozzaInterpreter.exec["func_call"] = function(entry) {
     }
 };
 
+
+AbbozzaInterpreter.exec["func_start_thread"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get name and check for parameters
+            entry.par = [];
+            entry.name = this.getFieldValue("NAME");
+            entry.symbol = Abbozza.getGlobalSymbol(entry.name);
+            if (entry.symbol == null)  {
+                entry.fnished();
+            }
+            entry.funcBlock = Abbozza.getTopBlock(entry.name);
+            if (entry.funcBlock == null)  {
+                entry.finished();
+            }
+            entry.parameters = entry.funcBlock.symbols.getParameters(true);
+            
+            if ( this.getInput("PAR0") != null ) {
+                entry.no = 0;
+                AbbozzaInterpreter.callInput(this,"PAR0",entry.parameters[entry.no][1]);
+                entry.phase = 1;
+            } else {
+                entry.par = null;
+                // Start the thread
+                AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+                entry.finished();
+            }
+            break;
+        case 1 :
+            // Collect parameters
+            entry.par.push(entry.callResult);
+            entry.no++;
+            if ( this.getInput("PAR" + entry.no ) != null ) {
+                AbbozzaInterpreter.callInput(this,"PAR" + entry.no,entry.parameters[entry.no][1]);
+            } else {
+                // Call function
+                AbbozzaInterpreter.callFunction(entry.funcBlock,entry.par);
+                entry.phase = 2;
+            }
+            break;
+        case 2 : 
+            // Start the thread
+            AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["func_start_thread_id"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get name and check for parameters
+            entry.par = [];
+            entry.name = this.getFieldValue("NAME");
+            entry.symbol = Abbozza.getGlobalSymbol(entry.name);
+            if (entry.symbol == null)  {
+                entry.fnished();
+            }
+            entry.funcBlock = Abbozza.getTopBlock(entry.name);
+            if (entry.funcBlock == null)  {
+                entry.finished();
+            }
+            entry.parameters = entry.funcBlock.symbols.getParameters(true);
+            
+            if ( this.getInput("PAR0") != null ) {
+                entry.no = 0;
+                AbbozzaInterpreter.callInput(this,"PAR0",entry.parameters[entry.no][1]);
+                entry.phase = 1;
+            } else {
+                entry.par = null;
+                // Start the thread
+                entry.returnValue = AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+                entry.finished();
+            }
+            break;
+        case 1 :
+            // Collect parameters
+            entry.par.push(entry.callResult);
+            entry.no++;
+            if ( this.getInput("PAR" + entry.no ) != null ) {
+                AbbozzaInterpreter.callInput(this,"PAR" + entry.no,entry.parameters[entry.no][1]);
+            } else {
+                // Call function
+                AbbozzaInterpreter.callFunction(entry.funcBlock,entry.par);
+                entry.phase = 2;
+            }
+            break;
+        case 2 : 
+            // Start the thread
+            entry.returnValue = AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["func_thread_running"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get the thread id
+            AbbozzaInterpreter.callInput(this,"ID");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var thread = AbbozzaInterpreter.getThread(entry.callResult);
+            if ( thread != null ) {
+                entry.returnValue = thread.isRunning();
+            } else {
+                entry.returnValue = false;
+            }
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["func_wait_for_thread"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get the thread id
+            AbbozzaInterpreter.callInput(this,"ID");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var thread = AbbozzaInterpreter.getThread(entry.callResult);
+            if ( thread != null ) {
+                if ( !thread.isRunning() ) {
+                    entry.finished();
+                }
+            } else {
+                entry.finished();
+            }
+    }
+};
+
+AbbozzaInterpreter.exec["func_sync_thread"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get the thread id
+            AbbozzaInterpreter.callInput(this,"ID");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var thread = AbbozzaInterpreter.getThread(entry.callResult);
+            if ( thread != null ) {
+                if ( !thread.isRunning() ) {
+                    entry.finished();
+                } else {
+                    AbbozzaInterpreter.activeThread.syncWithThread(thread);                
+                    entry.phase = 2;
+                }
+            } else {
+                entry.finished();
+            }
+            break;
+        case 2:
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["func_main_thread"] = function(entry) {
+    entry.returnValue = 0;
+    entry.finished();
+};
 
 
 AbbozzaInterpreter.exec["func_decl"] = function(entry) {

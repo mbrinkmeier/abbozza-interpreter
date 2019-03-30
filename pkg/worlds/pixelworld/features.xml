@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features>
+
+    <!-- The basic features, w/o variables, operations, arrays ... -->    
+    <feature id="feat.PIXELWORLD">
+       <category id="cat.PIXELWORLD" color="#00A000">
+            <block type="pixel_set">
+                <value name="X">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="Y">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="RED">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="GREEN">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="BLUE">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+            </block>
+            <block type="pixel_get">
+                <value name="X">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="Y">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+            </block>
+            <block type="pixel_new_pixel">
+                <value name="X">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="Y">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+            </block>
+            <block type="pixel_set_coord"></block>
+            <block type="pixel_get_coord"></block>
+            <block type="pixel_set_color"></block>
+            <block type="pixel_get_color"></block>
+            <block type="pixel_new_color">
+                <value name="RED">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="GREEN">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+                <value name="BLUE">
+                    <block type="math_number"><mutation confirmed="false"/>
+                        <field name="VALUE">0</field>
+                    </block>
+                </value>
+            </block>
+            <block type="pixel_new_color_choice"/>                                    
+            <block type="pixel_set_color_comp"></block>
+            <block type="pixel_get_color_comp"></block>
+            <!-- block type="pixel_set_draw_color"/ -->
+       </category>             
+    </feature>
+</features>

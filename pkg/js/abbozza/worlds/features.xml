@@ -159,8 +159,7 @@
 
 
     <!-- Advanced blocks -->
-    <feature id="feat.ADVANCED" option="advanced">
-        
+    <feature id="feat.ADVANCED" option="advanced">   
         <!-- Advanced loops -->
         <category id="cat.CTRL">
             <block type="loop_count_dir">
@@ -264,6 +263,20 @@
         </category>
     </feature>
     
+            
+    <!-- Threads -->
+    <feature id="feat.THREAD" option="threads">
+        <category id="cat.FUNC">
+            <block type="func_start_thread"></block>
+            <block type="func_start_thread_id"></block>
+            <block type="func_thread_running"></block>
+            <block type="func_wait_for_thread"></block>
+            <block type="func_sync_thread"></block>
+            <block type="func_main_thread"></block>
+        </category>
+    </feature>
+
+
     <feature id="feat.stack" option="stack">
         <category id="cat.DATASTRUCTURES" color="#C000C0">
             <block type="stack_new"></block>
