@@ -295,7 +295,13 @@ AbbozzaInterpreter.exec["var_block"] = function(entry) {
             entry.returnValue = ar;
         } else {
             // Return the value
-            entry.returnValue = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
+            var symbol = Abbozza.getSymbol(this,entry.name);
+            if ( symbol[1].startsWith("#") ) {
+                var ref = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
+                entry.returnValue = AbbozzaInterpreter.getObjectValue(ref);       
+            } else {
+                entry.returnValue = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
+            }
         }
         entry.finished();
     }
@@ -314,7 +320,16 @@ AbbozzaInterpreter.exec["var_assign"] = function(entry) {
             break;
         case 2 :
             entry.var = entry.callResult;
-            AbbozzaInterpreter.setSymbol(entry.var[0],entry.value,entry.var[1]);
+            var symbol = Abbozza.getSymbol(this,entry.var[0]);
+            if ( symbol[1].startsWith("#") ) {
+                // If the variable stores an object, create a persistent one ...
+                var ref = AbbozzaInterpreter.createObject(symbol[1].substring(1), entry.value );
+                // ... and store the reference
+                AbbozzaInterpreter.setSymbol(entry.var[0],ref,entry.var[1]);
+            } else {
+                // Otherwise, simply store the value
+                AbbozzaInterpreter.setSymbol(entry.var[0],entry.value,entry.var[1]);
+            }
             entry.finished();
             break;
     }
@@ -1167,7 +1182,8 @@ AbbozzaInterpreter.exec["stack_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, new Stack() );
+            // entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, new Stack() );
+            entry.returnValue = new Stack();
             entry.finished();
             break;
         default :
@@ -1257,7 +1273,8 @@ AbbozzaInterpreter.exec["queue_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, new Queue() );
+            // entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, new Queue() );
+            entry.returnValue = new Queue();
             entry.finished();
             break;
         default :
@@ -1346,7 +1363,8 @@ AbbozzaInterpreter.exec["list_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("LIST_" + type, new List() );
+            // entry.returnValue = AbbozzaInterpreter.createObject("LIST_" + type, new List() );
+            entry.returnValue = new List();
             entry.finished();
             break;
         default :
@@ -1512,7 +1530,8 @@ AbbozzaInterpreter.exec['bintree_new'] = function(entry) {
             break;
         case 1:
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("BINTREE_" + type, new BinTree(entry.callResult) );
+            // entry.returnValue = AbbozzaInterpreter.createObject("BINTREE_" + type, new BinTree(entry.callResult) );
+            entry.returnValue = new BinTree(entry.callResult);
             entry.finished();
             break;
         default :

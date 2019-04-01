@@ -61,7 +61,8 @@ Abbozza.PixelNewPixel = {
                 entry.phase = 2;
                 break;
             case 2 :
-                entry.returnValue = AbbozzaInterpreter.createObject("#PIXEL", new Pixel(entry._x_, entry.callResult));
+                // entry.returnValue = AbbozzaInterpreter.createObject("#PIXEL", new Pixel(entry._x_, entry.callResult));
+                entry.returnValue = new Pixel(entry._x_, entry.callResult);
                 entry.finished();
         }
     }
@@ -72,7 +73,7 @@ AbbozzaCode['pixel_new_pixel'] = ['new Pixel(#,#)', ["V_X", "V_Y"]];
 
 
 /**
- * This block declares a variable of type Pixel.
+ * This block declares a variable of type Color.
  *   
  * @type type
  */
@@ -96,7 +97,7 @@ Blockly.Blocks['pixel_var_color'] = Abbozza.VariableColor;
 
 
 /**
- * Create a new pixel.
+ * Create a new color.
  * 
  * @type type
  */
@@ -143,7 +144,8 @@ Abbozza.PixelNewColor = {
                 entry.phase = 3;
                 break;
             case 3 :
-                entry.returnValue = AbbozzaInterpreter.createObject("#COLOR", new Color(entry._red_, entry._green_, entry.callResult));
+                // entry.returnValue = AbbozzaInterpreter.createObject("#COLOR", new Color(entry._red_, entry._green_, entry.callResult));
+                entry.returnValue = new Color(entry._red_, entry._green_, entry.callResult);
                 entry.finished();
         }
     }
@@ -153,7 +155,7 @@ Blockly.Blocks['pixel_new_color'] = Abbozza.PixelNewColor;
 AbbozzaCode['pixel_new_color'] = ['new Color(#,#,#)', ["V_RED", "V_GREEN", "V_BLUE"]];
 
 /**
- * Create a new pixel.
+ * Create a new color using a color picker.
  * 
  * @type type
  */
@@ -180,7 +182,8 @@ Abbozza.PixelNewColorChoice = {
                 var red = parseInt(result[1], 16);
                 var green = parseInt(result[2], 16);
                 var blue = parseInt(result[3], 16);
-                entry.returnValue = AbbozzaInterpreter.createObject("#COLOR", new Color(red, green, blue));
+                // entry.returnValue = AbbozzaInterpreter.createObject("#COLOR", new Color(red, green, blue));
+                entry.returnValue = new Color(red, green, blue);
                 entry.finished();
         }
     }
@@ -205,7 +208,7 @@ AbbozzaCode['pixel_new_color_choice'] = function (generator) {
 
 
 /**
- * Set the coordinate of a pixel object
+ * Set a coordinate of a pixel object
  * 
  * @type type
  */
@@ -218,19 +221,19 @@ Abbozza.PixelSetCoord = {
         this.setInputsInline(false);
         this.appendValueInput("VALUE")
                 .appendField(new Blockly.FieldImage("img/pixelworld.png", 16, 16))
-                .appendField(__("var.set",0))
+                .appendField(__("var.set", 0))
                 .appendField(new VariableTypedDropdown(this, "#PIXEL", null, false), "PIXEL")
                 .appendField(".")
-                .appendField(new Blockly.FieldDropdown([["x","X"],["y","Y"]]), "COORD")
-                .appendField(__("var.set",1))
-                .setCheck(["NUMBER","DECIMAL"]);
+                .appendField(new Blockly.FieldDropdown([["x", "X"], ["y", "Y"]]), "COORD")
+                .appendField(__("var.set", 1))
+                .setCheck(["NUMBER", "DECIMAL"]);
         this.setTooltip('');
         this.setOutput(false);
     },
     execute: function (entry) {
-        switch ( entry.phase ) {
+        switch (entry.phase) {
             case 0 :
-                AbbozzaInterpreter.callInput(this,"VALUE");
+                AbbozzaInterpreter.callInput(this, "VALUE");
                 entry.phase = 1;
                 break;
             case 1 :
@@ -239,13 +242,13 @@ Abbozza.PixelSetCoord = {
                 var reference = AbbozzaInterpreter.getSymbol(name);
                 var pixel = AbbozzaInterpreter.getObjectValue(reference);
                 if (pixel instanceof Pixel) {
-                    if ( coord == "X" ) {
+                    if (coord == "X") {
                         pixel.x = entry.callResult;
                     } else {
-                        pixel.y = entry.callResult;                        
+                        pixel.y = entry.callResult;
                     }
                 } else {
-                    ErrorMgr.addError(this,_("err.wrong_name"));
+                    ErrorMgr.addError(this, _("err.wrong_name"));
                     Abbozza.throwException(1, _("err.unknown_class"));
                 }
                 entry.finished();
@@ -257,7 +260,7 @@ Blockly.Blocks['pixel_set_coord'] = Abbozza.PixelSetCoord;
 AbbozzaCode['pixel_set_coord'] = ['#.set#(#);', ["F_PIXEL", "F_COORD", "V_VALUE"]];
 
 /**
- * Set the coordinate of a pixel object
+ * Get a coordinate of a pixel object
  * 
  * @type type
  */
@@ -270,28 +273,28 @@ Abbozza.PixelGetCoord = {
         this.setInputsInline(false);
         this.appendDummyInput("VALUE")
                 .appendField(new Blockly.FieldImage("img/pixelworld.png", 16, 16))
-                .appendField(_("pixel.get") )
+                .appendField(_("pixel.get"))
                 .appendField(new VariableTypedDropdown(this, "#PIXEL", null, false), "PIXEL")
                 .appendField(".")
-                .appendField(new Blockly.FieldDropdown([["x","X"],["y","Y"]]), "COORD");
+                .appendField(new Blockly.FieldDropdown([["x", "X"], ["y", "Y"]]), "COORD");
         this.setTooltip('');
-        this.setOutput(true,"NUMBER");
+        this.setOutput(true, "NUMBER");
     },
     execute: function (entry) {
-        switch ( entry.phase ) {
+        switch (entry.phase) {
             case 0 :
                 var coord = this.getFieldValue("COORD");
                 var name = this.getFieldValue("PIXEL");
                 var reference = AbbozzaInterpreter.getSymbol(name);
                 var pixel = AbbozzaInterpreter.getObjectValue(reference);
                 if (pixel instanceof Pixel) {
-                    if ( coord == "X" ) {
+                    if (coord == "X") {
                         entry.returnValue = pixel.getX();
                     } else {
                         entry.returnValue = pixel.getY();
                     }
                 } else {
-                    ErrorMgr.addError(this,_("err.wrong_name"));
+                    ErrorMgr.addError(this, _("err.wrong_name"));
                     Abbozza.throwException(1, _("err.unknown_class"));
                 }
                 entry.finished();
@@ -304,6 +307,7 @@ AbbozzaCode['pixel_get_coord'] = ['#.get#()', ["F_PIXEL", "F_COORD"]];
 
 
 /**
+ * Set a color component of a color object.
  * 
  * @type type
  */
@@ -316,19 +320,19 @@ Abbozza.PixelSetColorComp = {
         this.setInputsInline(false);
         this.appendValueInput("VALUE")
                 .appendField(new Blockly.FieldImage("img/pixelworld.png", 16, 16))
-                .appendField(__("var.set",0))
+                .appendField(__("var.set", 0))
                 .appendField(new VariableTypedDropdown(this, "#COLOR", null, false), "COLOR")
                 .appendField(".")
                 .appendField(new Blockly.FieldDropdown([[_("dev.RED"), "Red"], [_("dev.GREEN"), "Green"], [_("dev.BLUE"), "Blue"]]), "COMP")
-                .appendField(__("var.set",1))
-                .setCheck(["NUMBER","DECIMAL"]);
+                .appendField(__("var.set", 1))
+                .setCheck(["NUMBER", "DECIMAL"]);
         this.setTooltip('');
         this.setOutput(false);
     },
     execute: function (entry) {
-        switch ( entry.phase ) {
+        switch (entry.phase) {
             case 0 :
-                AbbozzaInterpreter.callInput(this,"VALUE");
+                AbbozzaInterpreter.callInput(this, "VALUE");
                 entry.phase = 1;
                 break;
             case 1 :
@@ -337,15 +341,15 @@ Abbozza.PixelSetColorComp = {
                 var reference = AbbozzaInterpreter.getSymbol(name);
                 var color = AbbozzaInterpreter.getObjectValue(reference);
                 if (color instanceof Color) {
-                    if ( comp == "Red" ) { 
+                    if (comp == "Red") {
                         color.red = entry.callResult;
-                    } else if ( comp == "Green" ) {
-                        color.green = entry.callResult;                        
+                    } else if (comp == "Green") {
+                        color.green = entry.callResult;
                     } else {
-                        color.blue = entry.callResult;                                                
+                        color.blue = entry.callResult;
                     }
                 } else {
-                    ErrorMgr.addError(this,_("err.wrong_name"));
+                    ErrorMgr.addError(this, _("err.wrong_name"));
                     Abbozza.throwException(1, _("err.unknown_class"));
                 }
                 entry.finished();
@@ -357,6 +361,7 @@ Blockly.Blocks['pixel_set_color_comp'] = Abbozza.PixelSetColorComp;
 AbbozzaCode['pixel_set_color_comp'] = ['#.set#(#);', ["F_COLOR", "F_COMP", "V_VALUE"]];
 
 /**
+ * Get a color component of a color object
  * 
  * @type type
  */
@@ -374,25 +379,25 @@ Abbozza.PixelGetColorComp = {
                 .appendField(".")
                 .appendField(new Blockly.FieldDropdown([[_("dev.RED"), "Red"], [_("dev.GREEN"), "Green"], [_("dev.BLUE"), "Blue"]]), "COMP");
         this.setTooltip('');
-        this.setOutput(true,"NUMBER");
+        this.setOutput(true, "NUMBER");
     },
     execute: function (entry) {
-        switch ( entry.phase ) {
+        switch (entry.phase) {
             case 0 :
                 var comp = this.getFieldValue("COMP");
                 var name = this.getFieldValue("COLOR");
                 var reference = AbbozzaInterpreter.getSymbol(name);
                 var color = AbbozzaInterpreter.getObjectValue(reference);
                 if (color instanceof Color) {
-                    if ( comp == "Red" ) { 
+                    if (comp == "Red") {
                         entry.returnValue = color.getRed();
-                    } else if ( comp == "Green" ) {
-                        entry.returnValue = color.getGreen();                       
+                    } else if (comp == "Green") {
+                        entry.returnValue = color.getGreen();
                     } else {
-                        entry.returnValue = color.getBlue();                                           
+                        entry.returnValue = color.getBlue();
                     }
                 } else {
-                    ErrorMgr.addError(this,_("err.wrong_name"));
+                    ErrorMgr.addError(this, _("err.wrong_name"));
                     Abbozza.throwException(1, _("err.unknown_class"));
                 }
                 entry.finished();
@@ -404,6 +409,7 @@ Blockly.Blocks['pixel_get_color_comp'] = Abbozza.PixelGetColorComp;
 AbbozzaCode['pixel_get_color_comp'] = ['#.get#()', ["F_COLOR", "F_COMP"]];
 
 /**
+ * Set the color of a pixel.
  * 
  * @type type
  */
@@ -431,9 +437,9 @@ Abbozza.PixelSetColor = {
         reference = AbbozzaInterpreter.getSymbol(name);
         var color = AbbozzaInterpreter.getObjectValue(reference);
         if ((pixel instanceof Pixel) && (color instanceof Color)) {
-            World.pixelworld.set(pixel,color);
+            World.pixelworld.set(pixel, color);
         } else {
-            ErrorMgr.addError(this,_("err.wrong_name"));
+            ErrorMgr.addError(this, _("err.wrong_name"));
             Abbozza.throwException(1, _("err.unknown_class"));
         }
         entry.finished();
@@ -443,6 +449,51 @@ Abbozza.PixelSetColor = {
 
 Blockly.Blocks['pixel_set_color'] = Abbozza.PixelSetColor;
 AbbozzaCode['pixel_set_color'] = ['#.setColor(#);', ["F_PIXEL", "F_COLOR"]];
+
+/**
+ * Set the color of a pixel.
+ * 
+ * @type type
+ */
+Abbozza.PixelSetColorObj = {
+    init: function () {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.PIXELWORLD"));
+        this.setPreviousStatement(true, "STATEMENT");
+        this.setNextStatement(true, "STATEMENT");
+        this.setInputsInline(false);
+        this.appendValueInput("COLOR")
+                .appendField(new Blockly.FieldImage("img/pixelworld.png", 16, 16))
+                .appendField(_("pixel.set") + " " + _("pixel.pixel"))
+                .appendField(new VariableTypedDropdown(this, "#PIXEL", null, false), "PIXEL")
+                .appendField(_("pixel.to_color"))
+                .setCheck("#COLOR");
+        this.setTooltip('');
+        this.setOutput(false);
+    },
+    execute: function (entry) {
+        if (entry.phase == 0) {
+            AbbozzaInterpreter.callInput(this, "COLOR");
+            entry.phase = 2;
+        } else {
+            var name = this.getFieldValue("PIXEL");
+            var reference = AbbozzaInterpreter.getSymbol(name);
+            var pixel = AbbozzaInterpreter.getObjectValue(reference);
+            console.log(entry.callResult);
+            if ((pixel instanceof Pixel) && (entry.callResult instanceof Color)) {
+                World.pixelworld.set(pixel, entry.callResult);
+            } else {
+                ErrorMgr.addError(this, _("err.wrong_name"));
+                Abbozza.throwException(1, _("err.unknown_class"));
+            }
+            entry.finished();
+        }
+    }
+}
+
+
+Blockly.Blocks['pixel_set_color_obj'] = Abbozza.PixelSetColorObj;
+AbbozzaCode['pixel_set_color_obj'] = ['#.setColor(#);', ["F_PIXEL", "V_COLOR"]];
 
 
 /**
@@ -473,9 +524,9 @@ Abbozza.PixelGetColor = {
         name = this.getFieldValue("COLOR");
         var colref = AbbozzaInterpreter.getSymbol(name);
         if ((pixel instanceof Pixel) && (color instanceof Color)) {
-            AbbozzaInterpreter.setObjectValue(colref,pixel.getColor(pixel));
+            AbbozzaInterpreter.setObjectValue(colref, pixel.getColor());
         } else {
-            ErrorMgr.addError(this,_("err.wrong_name"));
+            ErrorMgr.addError(this, _("err.wrong_name"));
             Abbozza.throwException(1, _("err.unknown_class"));
         }
         entry.finished();
@@ -483,7 +534,43 @@ Abbozza.PixelGetColor = {
 }
 
 Blockly.Blocks['pixel_get_color'] = Abbozza.PixelGetColor;
-AbbozzaCode['pixel_get_color'] = ['# = #.getColor();', ["V_COLOR","V_PIXEL"]];
+AbbozzaCode['pixel_get_color'] = ['# = #.getColor();', ["V_COLOR", "V_PIXEL"]];
+
+/**
+ * 
+ * @type type
+ */
+Abbozza.PixelGetColorObj = {
+    init: function () {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.PIXELWORLD"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+        this.setInputsInline(false);
+        this.appendDummyInput("PIXEL")
+                .appendField(new Blockly.FieldImage("img/pixelworld.png", 16, 16))
+                .appendField( _("pixel.color") + " " + _("pixel.from") + " " + _("pixel.pixel"))
+                .appendField(new VariableTypedDropdown(this, "#PIXEL", null, false), "PIXEL");
+        this.setTooltip('');
+        this.setOutput(true,"#COLOR");
+    },
+
+    execute: function (entry) {
+        var name = this.getFieldValue("PIXEL");
+        var reference = AbbozzaInterpreter.getSymbol(name);
+        var pixel = AbbozzaInterpreter.getObjectValue(reference);
+        if (pixel instanceof Pixel) {
+            entry.returnValue = pixel.getColor();
+        } else {
+            ErrorMgr.addError(this, _("err.wrong_name"));
+            Abbozza.throwException(1, _("err.unknown_class"));
+        }
+        entry.finished();
+    }
+}
+
+Blockly.Blocks['pixel_get_color_obj'] = Abbozza.PixelGetColorObj;
+AbbozzaCode['pixel_get_color_obj'] = ['#.getColor()', ["F_PIXEL"]];
 
 
 
@@ -512,7 +599,7 @@ Abbozza.PixelSetDrawColor = {
         if (color instanceof Color) {
             World.pixelworld.setDrawColor(color);
         } else {
-            ErrorMgr.addError(this,_("err.wrong_name"));
+            ErrorMgr.addError(this, _("err.wrong_name"));
             Abbozza.throwException(1, _("err.unknown_class"));
         }
         entry.finished();
@@ -521,6 +608,7 @@ Abbozza.PixelSetDrawColor = {
 
 Blockly.Blocks['pixel_set_draw_color'] = Abbozza.PixelSetDrawColor;
 AbbozzaCode['pixel_set_draw_color'] = ['setDrawColor(#);', ["F_COLOR"]];
+
 
 
 /**
@@ -648,3 +736,44 @@ Abbozza.PixelGet = {
 
 Blockly.Blocks['pixel_get'] = Abbozza.PixelGet;
 AbbozzaCode['pixel_get'] = ['getPixel#(#,#)', ["F_COLOR", "V_X", "V_Y"]];
+
+
+/**
+ * Clear the canvas in the given color.
+ * @type type
+ */
+Abbozza.PixelClear = {
+    init: function () {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.PIXELWORLD"));
+        this.setPreviousStatement(true, "STATEMENT");
+        this.setNextStatement(true, "STATEMENT");
+        this.setInputsInline(false);
+        this.appendValueInput("COLOR")
+                .appendField(new Blockly.FieldImage("img/pixelworld.png", 16, 16))
+                .appendField(_("pixel.clear"))
+                .setCheck("#COLOR");
+        this.setTooltip('');
+        this.setOutput(false);
+    },
+    execute: function (entry) {
+        switch (entry.phase) {
+            case 0 :
+                AbbozzaInterpreter.callInput(this,"COLOR");
+                entry.phase = 1;
+                break;
+            case 1 :
+                var color  = entry.callResult;
+                if ( color instanceof Color ) {
+                    World.pixelworld.clear(color);
+                } else {
+                    ErrorMgr.addError(this, _("err.unknown_class"));
+                    Abbozza.throwException(1, _("err.unknown_class"));
+                }
+                entry.finished();
+        }
+    }
+}
+
+Blockly.Blocks['pixel_clear'] = Abbozza.PixelClear;
+AbbozzaCode['pixel_clear'] = ['clear(#);', ["V_COLOR"]];
