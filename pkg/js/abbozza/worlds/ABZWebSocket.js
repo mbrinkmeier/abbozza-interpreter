@@ -78,6 +78,12 @@ ABZWebSocket.onmessage = function(msg) {
     }
 }
 
+
+ABZWebSocket.isOpen = function() {
+    return (this.socket.readyState == 1);
+}
+
+
 /**
  * Send a message to the socket.
  * @param {type} msg
@@ -162,7 +168,7 @@ ABZWebSocket.getLine = function() {
 
 
 ABZWebSocket.getCurrent = function() {
-    return currentData;
+    return ABZWebSocket.currentData;
 }
 
 

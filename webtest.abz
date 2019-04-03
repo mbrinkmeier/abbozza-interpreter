@@ -1,0 +1,45 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+<block deletable="false" id="main" inline="false" type="main" x="100" y="20">
+<mutation>
+<title>&lt;title&gt;</title>
+<symbols/>
+</mutation>
+<data>main</data>
+<statement name="STATEMENTS">
+<block id="M_8]pc+=bxT{341g-2T0" type="websocket_open">
+<field name="URL">ws://localhost:54243</field>
+<next>
+<block id="bKUz_S?MlCh;JCl*]*J0" type="loop_endless">
+<statement name="STATEMENTS">
+<block id="ayr)-7/[ss[]_SyFJ3zE" type="cond_if">
+<value name="CONDITION">
+<block id="+[+VHLu_zb!7p`E-wXum" type="websocket_available"/>
+</value>
+<statement name="STATEMENTS">
+<block id="XCAo+Gda5/`;pFmd5Tze" type="websocket_readln">
+<next>
+<block id="5I*p-lj+1U0I#_ouIbmA" type="console_println">
+<value name="TEXT">
+<block id="m*Zpi+*;)@2L~Oyc]TS}" type="websocket_get_current"/>
+</value>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<system world="console">worlds</system>
+<description/>
+<options apply="no" protected="no">{option.operations=false,option.source=false,option.console_example.enabled=false,option.colorDefault=false,option.bintree=false,option.stack=false,option.multArrays=false,option.localVars=false,option.linArrays=false,option.websocket=true,option.calls=false,option.debug=false,option.colorType=false,option.threads=false,option.queue=false,option.test=false,option.list=false,option.advanced=true,option.colorCategory=false,option.lastWorld=hathi,option.noArrays=false}</options>
+<task curpage="0" height="468" width="1069">&lt;page&gt;&lt;/page&gt;</task>
+<layout>
+<frame height="100%" id="workspace" visibility="visible" width="50%" x="50%" y="0%"/>
+<frame height="51%" id="task" visibility="hidden" width="50%" x="67%" y="0%"/>
+<frame height="51%" id="world" visibility="visible" width="50%" x="0%" y="0%"/>
+</layout>
+</xml>

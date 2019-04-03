@@ -63,6 +63,24 @@ Blockly.Blocks['websocket_close'] = Abbozza.WebSocketClose;
 /**
  * Writes a string with a newline to the serial port.
  */
+Abbozza.WebSocketIsOpen = {
+   init: function() {
+    this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getColor("cat.USB"));
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
+        .appendField(_("websocket.is_open"));
+    this.setOutput(true,"BOOLEAN");  
+    this.setTooltip('');
+    }
+}
+
+Blockly.Blocks['websocket_is_open'] = Abbozza.WebSocketIsOpen;
+
+
+/**
+ * Writes a string with a newline to the serial port.
+ */
 Abbozza.WebSocketAvailable = {
    init: function() {
     this.setHelpUrl(Abbozza.HELP_URL);
@@ -220,6 +238,8 @@ Abbozza.WebSocketReadChars = {
         .appendField(__("websocket.READChars",0))
         .setCheck("NUMBER");
     this.appendDummyInput(__("websocket.READChars",0));
+    this.setPreviousStatement(true,"STATEMENT");
+    this.setNextStatement(true,"STATEMENT");
     this.setInputsInline(true);
     this.setOutput(false);  
     this.setTooltip('');
@@ -239,6 +259,8 @@ Abbozza.WebSocketReadLn = {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
         .appendField(_("websocket.READLN"));
+    this.setPreviousStatement(true,"STATEMENT");
+    this.setNextStatement(true,"STATEMENT");
     this.setOutput(false);  
     this.setTooltip('');
  }
@@ -253,14 +275,14 @@ Blockly.Blocks['websocket_readln'] = Abbozza.WebSocketReadLn;
 Abbozza.WebSocketReadAll = {
     init: function () {
         this.setHelpUrl(Abbozza.HELP_URL);
-        this.setColour(ColorMgr.getColor("cat.SERIAL"));
+        this.setColour(ColorMgr.getColor("cat.USB"));
         this.appendDummyInput()
                 .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
                 .appendField(_("websocket.READ_ALL"));
         this.setInputsInline(false);
         this.setOutput(false);
-        this.setPreviousStatement(false);
-        this.setNextStatement(false);
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");
         this.setTooltip('');
     }
 };
@@ -279,7 +301,7 @@ Abbozza.WebSocketGetCurrent = {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
         .appendField(_("websocket.GETCURRENT"));
-    this.setOutput(true,"STRING);  
+    this.setOutput(true,"STRING");
     this.setTooltip('');
  }
 }
