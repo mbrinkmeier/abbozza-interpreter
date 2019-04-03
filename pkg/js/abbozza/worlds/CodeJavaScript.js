@@ -351,8 +351,10 @@ AbbozzaCode['websocket_open'] = ["WSopen('#');",["F_URL"]];
 AbbozzaCode['websocket_close'] = ["WSclose();",[]];
 AbbozzaCode['websocket_available'] = ["WSisAvailable()",[]];
 AbbozzaCode['websocket_println'] = ["WSsend(#);",["V_VALUE"]];
-AbbozzaCode['websocket_readln'] = ["WSreadln()",[]];
-AbbozzaCode['websocket_read_all'] = ["WSreadAll()",[]];
+AbbozzaCode['websocket_readchars'] = ["WSreadChars(#);",["V_LEN"]];
+AbbozzaCode['websocket_readln'] = ["WSreadln();",[]];
+AbbozzaCode['websocket_read_all'] = ["WSreadAll();",[]];
+AbbozzaCode['websocket_get_Current'] = ["WScurrentChars()",[]];
 AbbozzaCode['websocket_write_byte'] = ["WSsendByte(#);",["V_VALUE"]];
 AbbozzaCode['websocket_read_byte'] = ["WSreadByte()",[]];
 

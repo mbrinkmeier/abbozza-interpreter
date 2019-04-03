@@ -21,13 +21,18 @@
 
 ABZWebSocket = {
     socket: null,
+    currentData: "",
     queue : ""
 };
 
-
+/**
+ * Open the Websocket
+ */
 ABZWebSocket.open = function(url) {
     console.log("Opening " + url);
     this.socket = new WebSocket(url);
+    queue = "";
+    currentData = "";
     
     this.socket.onopen = this.onopen;
     this.socket.onclose = this.onclose;
@@ -43,6 +48,7 @@ ABZWebSocket.onopen = function() {
     console.log("Opening");
     ABZWebSocket.queue = "";
 }
+
 
 ABZWebSocket.onclose = function() {
     // Reset the queue
@@ -105,8 +111,10 @@ ABZWebSocket.availableBytes = function() {
     return ABZWebSocket.queue.length;
 }
 
+
 /**
  * Returns the first byte in the queue, or -1 is the queue is empty.
+ *
  * @returns {int} The first byte in the queue
  */
 ABZWebSocket.getByte = function() {
@@ -118,14 +126,23 @@ ABZWebSocket.getByte = function() {
     return result;
 }
 
+
+ABZWebSocket.getChars = function(count) {
+    var len = count;
+    if ( ABZWebSocket.queue.length < len ) len = ABZWebSocket.queue.length;
+    ABZWebSocket.currentData = ABZWebSocket.queue.substring(0,len);
+    ABZWebSocket.queue = ABZWebSocket.queue.substring(len);
+}
+
+
 /**
  * Returns the whole queue.
  * @returns {String} The whle queue as a string.
  */
 ABZWebSocket.getAll = function() {
-    var result = ABZWebSocket.queue;
+    ABZWebSocket.currentData = ABZWebSocket.queue;
     ABZWebSocket.queue = "";
-    return result;
+    // return result;
 }
 
 /**
@@ -137,11 +154,17 @@ ABZWebSocket.getLine = function() {
     var result = null;
     var idx = ABZWebSocket.queue.indexOf("\n"); 
     if ( idx != -1 ) {
-        result = ABZWebSocket.queue.slice(0,idx);
+        ABZWebSocket.currentData = ABZWebSocket.queue.slice(0,idx);
         ABZWebSocket.queue = ABZWebSocket.queue.substr(idx+1);
     }
-    return result;
+    // return result;
 }
+
+
+ABZWebSocket.getCurrent = function() {
+    return currentData;
+}
+
 
 ABZWebSocket.resetBuffer = function() {
     ABZWebSocket.queue = "";

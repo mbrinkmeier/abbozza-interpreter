@@ -332,7 +332,9 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
             ["WSisAvailable",false,WebSocket,WebSocket.isAvailable],
             ["WSsend",false,WebSocket,WebSocket.sendln],
             ["WSreadln",false,WebSocket,WebSocket.getLine],
+            ["WSreadChars",false,WebSocket,WebSocket.getChars],
             ["WSreadAll",false,WebSocket,WebSocket.getAll],
+            ["WSreadChars",false,WebSocket,WebSocket.getCurrents],
             ["WSsendByte",false,WebSocket,WebSocket.sendByte],
             ["WSreadByte",false,WebSocket,WebSocket.getByte]
         ]);

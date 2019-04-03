@@ -359,7 +359,9 @@
                 </value>
             </block>
             <block type="websocket_readln"></block>
+            <block type="websocket_readchars"></block>
             <block type="websocket_read_all"></block>
+            <block type="websocket_get_current"></block>
             <block type="websocket_write_byte">
                 <value name ="VALUE">
                     <block type="math_number"><mutation confirmed="false"/></block>

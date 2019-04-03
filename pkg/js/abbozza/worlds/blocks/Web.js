@@ -42,6 +42,7 @@ Abbozza.WebSocketOpen = {
 
 Blockly.Blocks['websocket_open'] = Abbozza.WebSocketOpen;
 
+
 Abbozza.WebSocketClose = {
     init: function() {
     this.setHelpUrl(Abbozza.HELP_URL);
@@ -58,6 +59,23 @@ Abbozza.WebSocketClose = {
 
 Blockly.Blocks['websocket_close'] = Abbozza.WebSocketClose;
 
+
+/**
+ * Writes a string with a newline to the serial port.
+ */
+Abbozza.WebSocketAvailable = {
+   init: function() {
+    this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getColor("cat.USB"));
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
+        .appendField(_("websocket.AVAILABLE"));
+    this.setOutput(true,"BOOLEAN");  
+    this.setTooltip('');
+    }
+}
+
+Blockly.Blocks['websocket_available'] = Abbozza.WebSocketAvailable;
 
 
 /**
@@ -126,9 +144,7 @@ Abbozza.WebSocketWriteByte = {
 Blockly.Blocks['websocket_write_byte'] = Abbozza.WebSocketWriteByte;
 
 
-/**
- * Read 4-byte int to the serial port
- */
+
 Abbozza.WebSocketReadByte = {
   init: function() {
     this.setHelpUrl(Abbozza.HELP_URL);
@@ -190,6 +206,29 @@ Abbozza.WebSocketPrintLn = {
 
 Blockly.Blocks['websocket_println'] = Abbozza.WebSocketPrintLn;
 
+
+
+/**
+ * Read characters from the buffer
+ */
+Abbozza.WebSocketReadChars = {
+   init: function() {
+     this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getColor("cat.USB"));
+    this.appendValueInput("LEN")
+        .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
+        .appendField(__("websocket.READChars",0))
+        .setCheck("NUMBER");
+    this.appendDummyInput(__("websocket.READChars",0));
+    this.setInputsInline(true);
+    this.setOutput(false);  
+    this.setTooltip('');
+ }
+}
+
+Blockly.Blocks['websocket_readchars'] = Abbozza.WebSocketReadChars;
+
+
 /**
  * Writes a string with a newline to the serial port.
  */
@@ -200,30 +239,12 @@ Abbozza.WebSocketReadLn = {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
         .appendField(_("websocket.READLN"));
-    this.setOutput(true,"STRING");  
+    this.setOutput(false);  
     this.setTooltip('');
  }
 }
 
 Blockly.Blocks['websocket_readln'] = Abbozza.WebSocketReadLn;
-
-
-/**
- * Writes a string with a newline to the serial port.
- */
-Abbozza.WebSocketAvailable = {
-   init: function() {
-    this.setHelpUrl(Abbozza.HELP_URL);
-    this.setColour(ColorMgr.getColor("cat.USB"));
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
-        .appendField(_("websocket.AVAILABLE"));
-    this.setOutput(true,"BOOLEAN");  
-    this.setTooltip('');
-    }
-}
-
-Blockly.Blocks['websocket_available'] = Abbozza.WebSocketAvailable;
 
 
 /**
@@ -237,7 +258,7 @@ Abbozza.WebSocketReadAll = {
                 .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
                 .appendField(_("websocket.READ_ALL"));
         this.setInputsInline(false);
-        this.setOutput(true, "STRING");
+        this.setOutput(false);
         this.setPreviousStatement(false);
         this.setNextStatement(false);
         this.setTooltip('');
@@ -245,3 +266,147 @@ Abbozza.WebSocketReadAll = {
 };
 
 Blockly.Blocks['websocket_read_all'] = Abbozza.WebSocketReadAll;
+
+
+
+/**
+ * Writes a string with a newline to the serial port.
+ */
+Abbozza.WebSocketGetCurrent = {
+   init: function() {
+     this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getColor("cat.USB"));
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("img/devices/usb.png",16,16))     
+        .appendField(_("websocket.GETCURRENT"));
+    this.setOutput(true,"STRING);  
+    this.setTooltip('');
+ }
+}
+
+Blockly.Blocks['websocket_get_current'] = Abbozza.WebSocketGetCurrent;
+
+
+
+
+
+
+/**
+ * Open WebSocket
+ */
+AbbozzaInterpreter.exec["websocket_open"] = function(entry) {
+    var url = this.getFieldValue("URL","TEXT");
+    // var port = Number(Abbozza.serverPort)+1;
+    entry.returnValue = ABZWebSocket.open(url);
+    entry.finished();
+}
+
+/**
+ * Close WebSocket
+ */
+AbbozzaInterpreter.exec["websocket_close"] = function(entry) {
+    entry.returnValue = ABZWebSocket.close();
+    entry.finished();
+}
+
+/**
+ * Check if bytes are available from USB
+ */
+AbbozzaInterpreter.exec["websocket_available"] = function(entry) {
+    entry.returnValue = ABZWebSocket.isAvailable();
+    entry.finished();
+}
+
+/**
+ * Write line to USB
+ */
+AbbozzaInterpreter.exec["websocket_println"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"VALUE","TEXT");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var msg = entry.callResult;
+            ABZWebSocket.sendln(msg);
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+}
+
+/**
+ * Read characters
+ */
+AbbozzaInterpreter.exec["websocket_readchars"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"LEN","NUMBER");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var len = entry.callResult;
+            ABZWebSocket.getChars(len);
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+}
+
+
+/**
+ * Read a line from USB
+ */
+AbbozzaInterpreter.exec["websocket_readln"] = function(entry) {
+    ABZWebSocket.getLine();
+    entry.finished();
+}
+
+/**
+ * Read the whole buffer
+ */
+AbbozzaInterpreter.exec["websocket_read_all"] = function(entry) {
+    ABZWebSocket.getAll();
+    entry.finished();
+}
+
+
+/**
+ * Read the whole buffer
+ */
+AbbozzaInterpreter.exec["websocket_get_current"] = function(entry) {
+    entry.returnValue = ABZWebSocket.getCurrent();
+    entry.finished();
+}
+
+
+
+/**
+ * Write byte to USB
+ */
+AbbozzaInterpreter.exec["websocket_write_byte"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            AbbozzaInterpreter.callInput(this,"VALUE","NUMBER");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var msg = entry.callResult % 256;
+            ABZWebSocket.send(String.fromCharCode(msg));
+            entry.finished();
+            break;
+        default :
+            entry.finished();
+    }
+}
+
+/**
+ * Read a byte
+ */
+AbbozzaInterpreter.exec["websocket_read_byte"] = function(entry) {
+    entry.returnValue = ABZWebSocket.getByte();
+    entry.finished();
+}
+
