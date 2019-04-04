@@ -327,16 +327,17 @@ AbbozzaWorld.prototype._initSourceInterpreter = function (interpreter, scope) {
     // Add the functions for WS communication
     AbbozzaInterpreter.createWrappers(interpreter,scope,
         [
-            ["WSopen",false,WebSocket,WebSocket.open],
-            ["WSclose",false,WebSocket,WebSocket.close],
-            ["WSisAvailable",false,WebSocket,WebSocket.isAvailable],
-            ["WSsend",false,WebSocket,WebSocket.sendln],
-            ["WSreadln",false,WebSocket,WebSocket.getLine],
-            ["WSreadChars",false,WebSocket,WebSocket.getChars],
-            ["WSreadAll",false,WebSocket,WebSocket.getAll],
-            ["WSreadChars",false,WebSocket,WebSocket.getCurrents],
-            ["WSsendByte",false,WebSocket,WebSocket.sendByte],
-            ["WSreadByte",false,WebSocket,WebSocket.getByte]
+            ["WSopen",false,ABZWebSocket,ABZWebSocket.open],
+            ["WSclose",false,ABZWebSocket,ABZWebSocket.close],
+            ["WSisAvailable",false,ABZWebSocket,ABZWebSocket.isAvailable],
+            ["WSisOpen",false,ABZWebSocket,ABZWebSocket.isOpen],
+            ["WSsend",false,ABZWebSocket,ABZWebSocket.sendln],
+            ["WSreadln",false,ABZWebSocket,ABZWebSocket.getLine],
+            ["WSreadChars",false,ABZWebSocket,ABZWebSocket.getChars],
+            ["WSreadAll",false,ABZWebSocket,ABZWebSocket.getAll],
+            ["WSreadChars",false,ABZWebSocket,ABZWebSocket.getCurrents],
+            ["WSsendByte",false,ABZWebSocket,ABZWebSocket.sendByte],
+            ["WSreadByte",false,ABZWebSocket,ABZWebSocket.getByte]
         ]);
     
     // Stack constructor.
