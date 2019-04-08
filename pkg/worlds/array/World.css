@@ -33,3 +33,19 @@
     height: 100%;
     display: block;
 }
+
+.variableWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+}
+
+.variableView {
+    border: 1px black solid;
+    padding: 0.5em;
+    border-radius: 0.25em;
+    margin: 1em;
+    background-color: white;
+    box-shadow: 0.2em 0.2em 0.1em 0.1em lightgray;
+}

@@ -48,6 +48,7 @@
                 </value>                
             </block>     
             <block type="array_as_index"/>
+            <block type="array_as_variable"/>
         </category>             
     </feature>
 </features>

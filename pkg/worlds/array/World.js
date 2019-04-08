@@ -72,6 +72,10 @@ function ArrayWorld(parent) {
     this.wrapper.appendChild(this.view);
     this.parent.appendChild(this.wrapper);
     
+    this.variableWrapper = document.createElement("div");
+    this.variableWrapper.className = "variableWrapper";
+    this.wrapper.appendChild(this.variableWrapper);
+
     this.topOffset = 50;
     this.duration = 500;    
     this.squareSize = 50;
@@ -100,6 +104,8 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
     this.squareSize = 50;
     this.indices = [];
     this.indexSvg = [];
+    this.vars = [];
+    this.varSvg = [];
 
     this.resize();
 
@@ -188,16 +194,25 @@ ArrayWorld.prototype.resize = function() {
  */
 ArrayWorld.prototype.redraw = function() {
     var ypos = (this.squareSize*3);
+
     for ( var i = 0 ; i < this.indices.length; i++ ) {
         var name = this.indices[i];
         var val = AbbozzaInterpreter.getSymbol(name);
-        if ( val == undefined ) val = 0;
+        if ( val == undefined ) val = -1;
         var svg = this.indexSvg[i];
         var xpos = ((val+1)*(this.squareSize) + (this.squareSize/2));
         svg.setAttribute("transform",
             "translate(" + xpos + "," + ypos + ")"
         );
     }
+
+    for ( i = 0 ; i < this.vars.length; i++ ) {
+        var name = this.vars[i];
+        var val = AbbozzaInterpreter.getSymbol(name);
+        var svg = this.varSvg[i];
+        svg.textContent = name + " = " + val;
+    }
+
 }
 
 /**
@@ -363,6 +378,16 @@ ArrayWorld.prototype.showAsIndex = function(varname,color) {
     );
 }
 
+ArrayWorld.prototype.showAsVariable = function(varname,color = "#000000") {
+    console.log(varname);
+    this.vars.push(varname);
+    var svg = document.createElement("DIV");
+    svg.className = "variableView";
+    svg.textContent = varname + " = ???";
+    this.variableWrapper.appendChild(svg);
+    this.varSvg.push(svg);
+}
+
 
 
 World.wrapper = function(func,args) {
@@ -382,7 +407,7 @@ World.createWrapper = function(func) {
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
-      'swap','reset','showAsIndex','getLength','set','get',
+      'swap','reset','showAsIndex','showAsVariable','getLength','set','get',
     ];
     for ( var i = 0; i < funcs.length; i++ ) {
         interpreter.setProperty(scope,funcs[i],
