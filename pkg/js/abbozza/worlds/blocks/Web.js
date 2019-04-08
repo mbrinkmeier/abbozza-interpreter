@@ -339,7 +339,6 @@ AbbozzaInterpreter.exec["websocket_is_open"] = function(entry) {
     entry.finished();
 }
 
-
 /**
  * Check if bytes are available from WebSocket
  */

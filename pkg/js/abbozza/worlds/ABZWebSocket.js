@@ -80,7 +80,8 @@ ABZWebSocket.onmessage = function(msg) {
 
 
 ABZWebSocket.isOpen = function() {
-    return (this.socket.readyState == 1);
+    if ( ABZWebSocket.socket == null ) return false;
+    return (ABZWebSocket.socket.readyState == 1);
 }
 
 
