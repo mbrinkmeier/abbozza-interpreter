@@ -11,7 +11,16 @@ Abbozza.ArrayReset = {
                 [_("array.ascending"),"ASC"],
                 [_("array.descending"),"DESC"]
             ]),"ORDER")
+            .setCheck("NUMBER")
             .appendField(__("array.reset",1));
+        this.appendValueInput("MIN")
+            .setAlign(Blockly.ALIGN_RIGHT)            
+            .setCheck("NUMBER")
+            .appendField(__("array.reset",2));
+        this.appendValueInput("MAX")
+            .setAlign(Blockly.ALIGN_RIGHT)            
+            .setCheck("NUMBER")
+            .appendField(__("array.reset",3));
         this.setTooltip('');
     },
     execute : function(entry) {
@@ -22,7 +31,17 @@ Abbozza.ArrayReset = {
                 entry.phase = 1;
                 break;
             case 1:
-                World.arrayWorld.reset(entry.callResult,entry.order);
+                entry.size = entry.callResult;
+                AbbozzaInterpreter.callInput(this,"MIN");
+                entry.phase = 2;
+                break;
+            case 2:
+                entry.min = entry.callResult;
+                AbbozzaInterpreter.callInput(this,"MAX");
+                entry.phase = 3;
+                break;
+            case 3:
+                World.arrayWorld.fill(entry.size,entry.min,entry.callResult,entry.order);
                 entry.finished();
                 break;
             default:
@@ -33,7 +52,7 @@ Abbozza.ArrayReset = {
 }
 
 Blockly.Blocks['array_reset'] = Abbozza.ArrayReset;
-AbbozzaCode['array_reset'] = ['reset(#);',["V_SIZE"]];
+AbbozzaCode['array_reset'] = ['fill(#,#,#,#);',["V_SIZE","V_MIN","V_MAX","F_ORDER"]];
 
 
 

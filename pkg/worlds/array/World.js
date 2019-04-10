@@ -43,6 +43,11 @@ World.initView = function(view) {
     };
 };
 
+World.resetWorld = function () {
+    this.arrayWorld.reset();
+};
+
+
 
 World.resize = function(event) {
     World.arrayWorld.resize();
@@ -79,7 +84,9 @@ function ArrayWorld(parent) {
     this.topOffset = 50;
     this.duration = 500;    
     this.squareSize = 50;
-    this.reset(10);
+    this.numberOfElements = 10;
+    
+    this.reset();
     
     this.redrawNeeded = false;
     this.redraw();
@@ -92,33 +99,61 @@ function ArrayWorld(parent) {
  * @param {int} elements The number of elements in the array
  * @param {string} order The order of the random elementsS
  */
-ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
-    elements = Number(elements);
-    if ( elements <= 0 ) discs = 1;
-    if ( elements > 30 ) discs = 30; // More than 30 is not sensible
-        
-    this.numberOfElements = elements;
-    this.values = [];
-    this.elementSvg = [];
-    this.valueSvg = [];
-    this.squareSize = 50;
-    this.indices = [];
-    this.indexSvg = [];
-    this.vars = [];
-    this.varSvg = [];
-
-    this.resize();
-
-    var min = 1;
-    var max = 1000;
+ArrayWorld.prototype.reset = function() {
     
+    // Remove all elements and values
     while (this.svg.firstChild) {
         this.svg.removeChild(this.svg.firstChild);
     }
+  
+    this.values = [];
+    this.elementSvg = [];
+    this.valueSvg = [];
 
+    // Remove variables
+    while (this.variableWrapper.firstChild) {
+        this.variableWrapper.removeChild(this.variableWrapper.firstChild);
+    }
+    this.vars = [];
+    this.varSvg = [];
+
+    if ( this.indices != null ) {
+        for ( var i = 0 ; i < this.indices.length; i++ ) {
+            var svg = this.indexSvg[i];
+            try {
+                this.svg.removeChild(svg);
+            }
+           catch (ex) {}
+        }
+    }
+    this.indices = [];
+    this.indexSvg = [];
+
+    this.fill(this.numberOfElements,0,100,"RANDOM");
+    this.resize();
+};
+
+/**
+ * Change the size of the array and fill it.
+ * 
+ * @param {type} elements The number of elements
+ * @param {type} order
+ * @returns {undefined}
+ */
+ArrayWorld.prototype.fill = function(elements,min=1,max=100,order = "RANDOM") {
+    
+    elements = Number(elements);    
+    this.numberOfElements = elements;
+
+ 
     // Create elements
     for ( var i = 0; i < this.numberOfElements; i++ ) {
-        var svg = document.createElementNS(svgNS,"rect");
+        var svg = this.elementSvg[i]; 
+        if ( svg == null ) {
+            svg = document.createElementNS(svgNS,"rect");
+            this.elementSvg[i] = svg;
+            this.svg.appendChild(svg);
+        }
         svg.setAttribute("height", this.squareSize + "px");
         svg.setAttribute("width", this.squareSize + "px");
         svg.setAttribute("stroke-width","1");
@@ -126,14 +161,18 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
         svg.setAttribute("fill","white");
         svg.setAttribute("x", (i+1)*this.squareSize + "px");
         svg.setAttribute("y",this.topOffset + "px");
-        this.svg.appendChild(svg);
-        this.elementSvg.push(svg);
-        
     }
-        
+ 
+    // Remove additional elements
+    //for ( var i = this.numberOfElements; i < this.elementSvg.length; i++ ) {
+    //    this.svg.removeChild(this.elementSvg[i]);
+    //    this.elementSvg[i] = null;
+    //}
+    
+    this.values = [];
     for ( var i = 0; i < this.numberOfElements; i++ ) {
         var value = Math.floor(min + Math.random() * (max-min)); 
-        this.values.push(value); 
+        this.values[i] = value; 
         if ( order == "DESC" ) {
             var l = this.values.length-1;
             while ( (l>0) && ( this.values[l-1] < value ) ) {
@@ -152,7 +191,11 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
     }
     
     for ( var i = 0; i < this.numberOfElements; i++ ) {
-        var val = document.createElementNS(svgNS,"text");
+        var val = this.valueSvg[i];
+        if ( val == null ) {
+            val = document.createElementNS(svgNS,"text");
+            this.valueSvg[i] = val;
+        }
         val.textContent = this.values[i];
         this.svg.appendChild(val);
         var bb = val.getBBox();
@@ -161,11 +204,15 @@ ArrayWorld.prototype.reset = function(elements,order = "RANDOM") {
         val.setAttribute("y",(this.topOffset + (this.squareSize/2) + (bb.height/4)) + "px");
         var shift = ((i+1)*(this.squareSize) + (this.squareSize/2) );
         val.setAttribute("transform","translate(" + shift + ",0)");
-        this.valueSvg.push(val);
-        
     }
-    
-    this.redraw();
+
+    // Remove additional values and valueSvgs
+    for ( var i = this.numberOfElements; i < this.valueSvg.length; i++ ) {
+        this.svg.removeChild(this.valueSvg[i]);
+        this.valueSvg[i] = null;
+    }
+
+    this.resize();
 };
 
 /**
@@ -213,7 +260,7 @@ ArrayWorld.prototype.redraw = function() {
         svg.textContent = name + " = " + val;
     }
 
-}
+};
 
 /**
  * Set the zoom factor of the svg.
@@ -379,7 +426,6 @@ ArrayWorld.prototype.showAsIndex = function(varname,color) {
 }
 
 ArrayWorld.prototype.showAsVariable = function(varname,color = "#000000") {
-    console.log(varname);
     this.vars.push(varname);
     var svg = document.createElement("DIV");
     svg.className = "variableView";
@@ -407,7 +453,7 @@ World.createWrapper = function(func) {
 
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
-      'swap','reset','showAsIndex','showAsVariable','getLength','set','get',
+      'swap','fill','showAsIndex','showAsVariable','getLength','set','get',
     ];
     for ( var i = 0; i < funcs.length; i++ ) {
         interpreter.setProperty(scope,funcs[i],

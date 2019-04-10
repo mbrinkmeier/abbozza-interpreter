@@ -4,13 +4,13 @@
         <msg id="cat.ARRAY">Array</msg>
     </categories>
     <blocks>
-        <msg id="array.reset">Initalisiere Array # mit Länge</msg>
+        <msg id="array.reset">Initalisiere Array # mit Länge # mit Werten von # bis</msg>
         <msg id="array.get">Element an Position</msg>
         <msg id="array.set">Setze Position # auf</msg>
         <msg id="array.length">Länge</msg>
         <msg id="array.swap">Tausche Positon # mit</msg>
         <msg id="array.as_index">Zeige # als Position</msg>
-        <msg id="array.as_index">Zeige Wert von #</msg>
+        <msg id="array.as_variable">Zeige Wert von #</msg>
         <msg id="array.random">zufällig</msg>
         <msg id="array.ascending">aufsteigend</msg>
         <msg id="array.descending">absteigend</msg>
