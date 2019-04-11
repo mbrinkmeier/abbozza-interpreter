@@ -30,6 +30,7 @@ Thread = function (myId) {
     this.id = myId;
     this.syncingWith = null;
     this.stateBeforeSync = 0;
+    this.nonBlocking = false;
 }
 
 Thread.STATE_OK = 0;
@@ -62,7 +63,7 @@ Thread.prototype.setup = function (block) {
 /**
  * Execute ONE step
  *  
- * @returns {undefined}
+ * @returns {boolean} true if the thread is not allowed to block.
  */
 Thread.prototype.executeStep = function () {
 
@@ -104,6 +105,9 @@ Thread.prototype.executeStep = function () {
             }
         }
 
+        // After execution, check if block is non-blockong
+        this.nonBlocking = topEntry.nonBlocking;
+        
         // After execution, check if block is finished
         if (topEntry.phase < 0) {
             // Remove entry from execution stack
@@ -148,6 +152,8 @@ Thread.prototype.executeStep = function () {
         }
         this.state = Thread.STATE_FINISHED;
     }
+    
+    return this.nonBlocking;
 };
 
 

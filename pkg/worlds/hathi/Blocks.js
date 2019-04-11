@@ -19,6 +19,7 @@ Abbozza.HathiForward = {
             entry.state = 2;
             entry.stateMsg = "hathi.fell_into_hole";            
         }
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -48,6 +49,7 @@ Abbozza.HathiTurn = {
         } else {
             World.hathi.turnRight();            
         }
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -67,6 +69,7 @@ Abbozza.HathiTurnRight = {
     },
     execute : function(entry) {
         World.hathi.turnRight();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -89,6 +92,7 @@ Abbozza.HathiPickUp = {
             entry.state = 2;
             entry.stateMsg = "hathi.no_banana";            
         };
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -111,6 +115,7 @@ Abbozza.HathiDrop = {
             entry.state = 2;
             entry.stateMsg = "hathi.no_banana_drop";            
         }
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -131,6 +136,7 @@ Abbozza.HathiGetBananas = {
     },
     execute : function(entry) {
         entry.returnValue = World.hathi.getBananas();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -230,6 +236,7 @@ Abbozza.HathiGetBananasOnField = {
     },
     execute : function(entry) {
         entry.returnValue = World.hathi.getBananasOnField();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -285,6 +292,7 @@ Abbozza.HathiSay = {
               break;
           case 1 : 
               World.hathi.say(entry.callResult);
+              entry.nonBlocking = true;
               entry.finished();
               break;
         }

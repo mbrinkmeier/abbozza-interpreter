@@ -352,6 +352,7 @@ Abbozza.PixelSetColorComp = {
                     ErrorMgr.addError(this, _("err.wrong_name"));
                     Abbozza.throwException(1, _("err.unknown_class"));
                 }
+                entry.nonBlocking = true;
                 entry.finished();
         }
     }
@@ -442,6 +443,7 @@ Abbozza.PixelSetColor = {
             ErrorMgr.addError(this, _("err.wrong_name"));
             Abbozza.throwException(1, _("err.unknown_class"));
         }
+        entry.nonBlocking = true;
         entry.finished();
     }
 }
@@ -486,6 +488,7 @@ Abbozza.PixelSetColorObj = {
                 ErrorMgr.addError(this, _("err.wrong_name"));
                 Abbozza.throwException(1, _("err.unknown_class"));
             }
+            entry.nonBlocking = true;
             entry.finished();
         }
     }
@@ -674,6 +677,7 @@ Abbozza.PixelSet = {
             case 5 :
                 entry._blue_ = entry.callResult;
                 World.pixelworld.setPixel(entry._x_, entry._y_, entry._red_, entry._green_, entry._blue_);
+                entry.nonBlocking = true;
                 entry.finished();
         }
     }
@@ -770,6 +774,7 @@ Abbozza.PixelClear = {
                     ErrorMgr.addError(this, _("err.unknown_class"));
                     Abbozza.throwException(1, _("err.unknown_class"));
                 }
+                entry.nonBlocking = true;
                 entry.finished();
         }
     }

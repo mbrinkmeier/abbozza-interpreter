@@ -170,12 +170,17 @@
         </div>     
 
         <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="/img/step.png"></div>
-        <div class="topButton" id="run" title="Run" onclick="AbbozzaInterpreter.run()"><img width=50 height=50  src="/img/run.png"></div>
+        <div class="topButton" id="runButtons">
+            <div class="toolButton" id="run" title="Run" onclick="AbbozzaInterpreter.run(false)"><img width=50 height=50  src="/img/run.png"></div>
+            <div class="toolButton" id="speedrun" title="Speed Run" onclick="AbbozzaInterpreter.run(true)"><img width=50 height=50  src="/img/run.png"></div>
+        </div>
         <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.reset()"><img width=50 height=50  src="/img/stop.png"></div>
         <div class="topButton" id="new" title="Neuer Sketch" onclick="Abbozza.newSketch()"><img width=50 height=50  src="/img/new.png"></div>
         <div class="topButton" id="load" title="Lade Sketch" onclick="Abbozza.loadSketch()"><img width=50 height=50  src="/img/load.png"></div>
         <div class="topButton" id="save" title="Speichere Sketch" onclick="Abbozza.saveSketch()"><img width=50 height=50  src="/img/save.png"></div>
-        <div class="topButton" id="tools" title="Werkzeuge"><div class="toolButton" id="serial" onclick="Abbozza.serialMonitor()"><img src="/img/serial.png"></div></div>
+        <div class="topButton" id="tools" title="Werkzeuge">
+            <div class="toolButton" id="serial" onclick="Abbozza.serialMonitor()"><img src="/img/serial.png"></div>
+        </div>
         <div class="topButton" id="config" title="Einstellungen" onclick="Abbozza.showConfiguration()"><img width=50 height=50  src="/img/settings.png"></div>		
         <div class="topButton" id="info" title="Informationen"><div class="toolButton" id="serial" onclick="Abbozza.openTaskWindow()"><img width=50 height=50  src="/img/info.png"></div></div>
         <div class="license_div">

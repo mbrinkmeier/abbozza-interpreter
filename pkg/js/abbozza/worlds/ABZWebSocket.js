@@ -30,14 +30,14 @@ ABZWebSocket = {
  */
 ABZWebSocket.open = function(url) {
     console.log("Opening " + url);
-    this.socket = new WebSocket(url);
+    ABZWebSocket.socket = new WebSocket(url);
     queue = "";
     currentData = "";
     
-    this.socket.onopen = this.onopen;
-    this.socket.onclose = this.onclose;
-    this.socket.onerror = this.onerror;
-    this.socket.onmessage = this.onmessage;
+    ABZWebSocket.socket.onopen = ABZWebSocket.onopen;
+    ABZWebSocket.socket.onclose = ABZWebSocket.onclose;
+    ABZWebSocket.socket.onerror = ABZWebSocket.onerror;
+    ABZWebSocket.socket.onmessage = ABZWebSocket.onmessage;
 }
 
 /**
@@ -80,7 +80,7 @@ ABZWebSocket.onmessage = function(msg) {
 
 
 ABZWebSocket.isOpen = function() {
-    return (this.socket.readyState == 1);
+    return (ABZWebSocket.socket.readyState == 1);
 }
 
 

@@ -62,6 +62,7 @@ Abbozza.HanoiReset = {
                 break;
             case 1:
                 World.hanoi.reset(entry.callResult);
+                entry.nonBlocking = true;
                 entry.finished();
                 break;
             default:

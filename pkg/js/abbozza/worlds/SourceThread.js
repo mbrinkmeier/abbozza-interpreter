@@ -33,6 +33,7 @@ SourceThread = function(myId) {
     this.interpreter = null;
     this.globalInterpreter;
     this.mark = null;
+    this.nonBlocking = false;
 }
 
 
@@ -61,17 +62,18 @@ SourceThread.prototype.setup = function(father, code) {
  */
 SourceThread.prototype.executeStep = function(setMarks = true) {
     if (this.state == Thread.STATE_SYNCING) {
-        return;
+        return true;
     }
 
     if ( this.state == Thread.STATE_WAITING ) {
         if ( !AbbozzaInterpreter.isThreadRunning(this.waitingFor)) {
             this.state == Thread.STATE_OK;
         } else {
-            return;
+            return true;
         }
     }
     
+    AbbozzaInterpreter.currentThread = this;
     this.globalInterpreter.stateStack = this.interpreter.stateStack;
     
     if ( this.globalInterpreter.stateStack.length ) {
@@ -100,8 +102,10 @@ SourceThread.prototype.executeStep = function(setMarks = true) {
         }
     } else {
         this.state = Thread.STATE_FINISHED;
-        return;
-    }   
+        return false;
+    }
+    
+    return this.nonBlocking;
 };
 
 SourceThread.prototype.cleanUp = function () {
