@@ -36,26 +36,22 @@ World.initView = function(view) {
     document.getElementById("size").value = World.hathi.squareSize;
     
     document.getElementById("width").oninput = function(event) {
-        if ( !World.editable ) {
-            document.getElementById("width").value = World.hathi.width;
-            return;
+        if ( this.editable ) {
+            World.hathi.setWidth(document.getElementById("width").value);
+        } else {
+            document.getElementById("width").value = World.hathi.width;            
         }
-        World.hathi.setWidth(document.getElementById("width").value);
     }
     
     document.getElementById("height").oninput = function(event) {
-        if ( !World.editable ) {
+        if ( this.editable ) {
+            World.hathi.setHeight(document.getElementById("height").value);
+        } else {
             document.getElementById("height").value = World.hathi.height;
-            return;
         }
-        World.hathi.setHeight(document.getElementById("height").value);
     }
     
     document.getElementById("size").oninput = function(event) {
-        if ( !World.editable ) {
-            document.getElementById("size").value = World.hathi.squareSize;
-            return;
-        }
         World.hathi.setSquareSize(document.getElementById("size").value);
     }
 };
@@ -156,15 +152,6 @@ function Hathi(view) {
     this.hathi_bubble.appendChild(this.hathi_bubble_text);
     this.hideBubble();
    
-    /*
-    this.collision = document.createElementNS(svgNS,"g");
-    this.collision_img = document.createElementNS(svgNS,"image");
-    this.collision_img.setAttribute("href","img/collision.png");
-    this.collision_img.setAttribute("width","80");
-    this.collision_img.setAttribute("height","80");
-    this.collision.appendChild(this.collision_img);
-    */
-   
     // The moving rock SVG object
     this.rock_svg_img = document.createElementNS(svgNS,"image");
     this.rock_svg_img.style.visibility = "hidden";
@@ -185,6 +172,8 @@ function Hathi(view) {
     this.terminateOnNoBanana = true;
     this.terminateOnNoBananaDrop = true;
     
+    this.editable = true;
+    
     this.loadImages();    
     this.reset();    
 };
@@ -195,6 +184,10 @@ Hathi.RIGHT = 0;
 Hathi.LEFT = 2;
 Hathi.DOWN = 3;
 
+// The various types of objects on fields.
+// A positive value indicates a number of bananays lying on the filed.
+// A negative value below the BASKET value counts the number of bananas
+// in the basket.
 Hathi.EMPTY = 0;
 Hathi.ROCK = -1;
 Hathi.HOLE = -2;
@@ -1243,10 +1236,20 @@ Hathi.prototype.isOnBasket = function() {
 
 /**
  * 
+ * @returns {Boolean}
+ */
+Hathi.prototype.isOnOasis = function() {
+    return ( this.field[this.hathiX][this.hathiY] == Hathi.OASIS );
+};
+
+/**
+ * 
  * @param {type} type
  * @returns {Boolean}
  */
 Hathi.prototype.isOn = function(type) {
+    if ( type == Hathi.BANANA ) return isOnBanana();
+    if ( type == Hathi.BASKET ) return isOnBasket();
     return ( this.field[this.hathiX][this.hathiY] == type );
 };
 
@@ -1329,7 +1332,7 @@ Hathi.prototype.getBananasOnField = function() {
         return 0;
     }
     var v = 0;
-    if ( this.field[this.hathiX][this.hathiY] < 0 ) {
+    if ( this.field[this.hathiX][this.hathiY] <= Hathi.BASKET ) {
         v = -Number(this.field[this.hathiX][this.hathiY]) + Hathi.BASKET;
         this.showBubble("img/basket.png",v);
     } else {
@@ -1355,6 +1358,12 @@ Hathi.prototype.isForwardEmpty = function() {
 Hathi.prototype.isForward = function(type) {
     var x = (this.hathiX+this.hathiDX+this.width) % this.width;
     var y = (this.hathiY+this.hathiDY+this.height) % this.height;
+    if ( type == Hathi.BANANA ) {
+        return ( this.field[x][y] > 0 );
+    }
+    if ( type == Hathi.BASKET ) {
+        return ( this.field[x][y] <= Hathi.BASKET );
+    }
     return ( this.field[x][y] == type );
 };
 
@@ -1373,7 +1382,7 @@ Hathi.prototype.say = function(text) {
  * @returns {undefined}
  */
 Hathi.prototype.clicked = function(event) {
-    if ( !World.editable ) return;
+    if ( !this.editable ) return;
     
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize)-1;
@@ -1409,7 +1418,7 @@ Hathi.prototype.clicked = function(event) {
  * @returns {undefined}
  */
 Hathi.prototype.rightclicked = function(event) { 
-    if ( !World.editable ) return;
+    if ( !this.editable ) return;
     
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize) - 1;
@@ -1526,6 +1535,11 @@ Hathi.prototype.fromDom = function(xml) {
     this.redraw();
 };
 
+
+Hathi.prototype.setEditable = function(editable) {
+    this.editable= editable;
+}
+
 /**
  * 
  * @param {type} func
@@ -1551,12 +1565,12 @@ World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
       'turnRight','turnLeft','forward','steppedForward',
       'isOnBanana','pickUpBanana','dropBanana','isForwardEmpty',
-      'isForward', 'say', 'isOnBasket', 'getBananas', 'getBananasOnField'
+      'isForward', 'say', 'isOnBasket', 'isOnOasis', 'getBananas', 'getBananasOnField'
     ];
     AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs);
 };
 
 
 World.setEditable = function(editable) {
-    this.editable = editable;
+    this.hathi.setEditable(editable);
 }

@@ -814,10 +814,18 @@ Abbozza.setTaskScene = function() {
 }
 
 
-
+/**
+ * Adapt the stored xml.
+ * 
+ * @param {type} xml
+ * @returns {undefined}
+ */
 Abbozza.storeSketchSystemSpecific = function(xml) {
-    var world = Abbozza.worldToDom();
-    if ( world ) xml.appendChild(world);
+    // Don't store the world in WORKSHOP_MODE 
+    if ( Abbozza.editMode != Abbozza.WORKSHOP_MODE ) {
+        var world = Abbozza.worldToDom();
+        if ( world ) xml.appendChild(world);
+    }
 }
 
 /**

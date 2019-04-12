@@ -215,6 +215,24 @@ Abbozza.HathiIsOnBasket = {
     }    
 }
 
+Abbozza.HathiIsOnOasis = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.HATHI"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(true, "BOOLEAN");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldImage("img/hathi_right.png",16,16))
+            .appendField(_("hathi.is_on_oasis"));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        entry.returnValue = World.hathi.isOnOasis();
+        entry.finished();
+        return true;    
+    }    
+}
 
 Abbozza.HathiGetBananasOnField = {
     init : function() {
@@ -250,6 +268,7 @@ Abbozza.HathiIsForward = {
             .appendField(new Blockly.FieldDropdown(
                 [
                     [ _("hathi.BANANA"), "" + Hathi.BANANA ],
+                    [ _("hathi.BASKET"), "" + Hathi.BASKET ],
                     [ _("hathi.ROCK"), "" + Hathi.ROCK ],
                     [ _("hathi.TREE"), "" + Hathi.TREE ],
                     [ _("hathi.HOLE"), "" + Hathi.HOLE ],
@@ -304,6 +323,7 @@ Blockly.Blocks['hathi_is_empty'] = Abbozza.HathiIsEmpty;
 Blockly.Blocks['hathi_moved'] = Abbozza.HathiMoved;
 Blockly.Blocks['hathi_is_on_banana'] = Abbozza.HathiIsOnBanana;
 Blockly.Blocks['hathi_is_on_basket'] = Abbozza.HathiIsOnBasket;
+Blockly.Blocks['hathi_is_on_oasis'] = Abbozza.HathiIsOnBasket;
 Blockly.Blocks['hathi_is_forward'] = Abbozza.HathiIsForward;
 Blockly.Blocks['hathi_say'] = Abbozza.HathiSay;
 
@@ -318,5 +338,6 @@ AbbozzaCode['hathi_is_empty'] = [ 'isForwardEmpty()',[]];
 AbbozzaCode['hathi_moved'] = [ 'steppedForward()',[]];
 AbbozzaCode['hathi_is_on_banana'] = [ 'isOnBanana()',[]];
 AbbozzaCode['hathi_is_on_basket'] = [ 'isOnBasket()',[]];
+AbbozzaCode['hathi_is_on_basket'] = [ 'isOnOasis()',[]];
 AbbozzaCode['hathi_is_forward'] = [ 'isForward(#)',["F_TYPE"]];
 AbbozzaCode['hathi_say'] = [ 'say(#)',["V_TEXT"]];
