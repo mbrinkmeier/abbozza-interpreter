@@ -75,6 +75,7 @@ SourceThread.prototype.executeStep = function(setMarks = true) {
     
     AbbozzaInterpreter.currentThread = this;
     this.globalInterpreter.stateStack = this.interpreter.stateStack;
+    AbbozzaInterpreter.currentThread.nonBlocking = false;
     
     if ( this.globalInterpreter.stateStack.length ) {
         try {

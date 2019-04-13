@@ -40,6 +40,8 @@ Pixel.createWrapper = function(name) {
 }
 
 Pixel.setColorWrapper = function(color) {
+    // Speed run has to stop for update of view
+    AbbozzaInterpreter.currentThread.nonBlocking = true;
     this.data.setColor(color.data);
 }
 

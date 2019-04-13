@@ -1526,35 +1526,21 @@ Hathi.prototype.fromDom = function(xml) {
     this.redraw();
 };
 
-/**
- * 
- * @param {type} func
- * @param {type} args
- * @returns {unresolved}
- */
-World.wrapper = function(func,args) {
-    return func.apply(World.hathi,args);
-};
-
-
-World.createWrapper = function(func) {
-    return function(arg) {
-        var args= [];
-        for ( var i = 0 ; i < arguments.length; i++ ) {
-            args[i] = arguments[i];
-        }
-        return World.wrapper(World.hathi[func],args);        
-    };
-};
 
 World.initSourceInterpreter = function(interpreter,scope) {
+    // Blocking wrappers
     var funcs = [
-      'turnRight','turnLeft','forward','steppedForward',
-      'isOnBanana','pickUpBanana','dropBanana','isForwardEmpty',
-      'isForward', 'say', 'isOnBasket', 'getBananas', 'getBananasOnField'
+      'steppedForward','isOnBanana','isForwardEmpty','isForward','isOnBasket'
     ];
-    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs);
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs,false);
+    
+    // Non-Blocking wrappers
+    var funcs = [
+      'turnRight','turnLeft','forward','pickUpBanana','dropBanana', 'say', 'getBananas', 'getBananasOnField'
+    ];
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs,true);
 };
+
 
 
 World.setEditable = function(editable) {

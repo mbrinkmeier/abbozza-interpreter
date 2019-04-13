@@ -363,31 +363,22 @@ ArrayWorld.prototype.showAsIndex = function(varname,color) {
     );
 }
 
-
-
-World.wrapper = function(func,args) {
-    return func.apply(World.arrayWorld,args);
-}
-
-
-World.createWrapper = function(func) {
-    return function(arg) {
-        var args= [];
-        for ( var i = 0 ; i < arguments.length; i++ ) {
-            args[i] = arguments[i];
-        }
-        return World.wrapper(World.arrayWorld[func],args);        
-    }
-}
-
+/**
+ * Add the wrappers
+ * 
+ * @param {type} interpreter
+ * @param {type} scope
+ * @returns {undefined}
+ */
 World.initSourceInterpreter = function(interpreter,scope) {
-    var funcs = [
-      'swap','reset','showAsIndex','getLength','set','get',
-    ];
-    for ( var i = 0; i < funcs.length; i++ ) {
-        interpreter.setProperty(scope,funcs[i],
-            interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
-        );        
-    }
+    AbbozzaInterpreter.createWrappers( interpreter, scope,
+        [
+            [ "swap"       ,World.arrayWorld,World.arrayWorld.swap       ,false,true ],
+            [ "reset"      ,World.arrayWorld,World.arrayWorld.reset      ,false,true ],
+            [ "showAsIndex",World.arrayWorld,World.arrayWorld.showAsIndex,false,true ],
+            [ "getLength"  ,World.arrayWorld,World.arrayWorld.getLength  ,false,false],
+            [ "set"        ,World.arrayWorld,World.arrayWorld.set        ,false,true ],
+            [ "get"        ,World.arrayWorld,World.arrayWorld.get        ,false,false]
+        ]
+    );
 }
-

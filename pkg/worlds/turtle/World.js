@@ -395,32 +395,20 @@ Turtle.prototype.getPixelBlue = function () {
 }
 
 
-World.wrapper = function (func, args) {
-    return func.apply(World.turtle, args);
-}
-
-
-World.createWrapper = function (func) {
-    return function (arg) {
-        var args = [];
-        for (var i = 0; i < arguments.length; i++) {
-            args[i] = arguments[i];
-        }
-        return World.wrapper(World.turtle[func], args);
-    }
-}
-
-World.initSourceInterpreter = function (interpreter, scope) {
+World.initSourceInterpreter = function(interpreter,scope) {
+    // Blocking wrappers
     var funcs = [
-        'reset', 'clear', 'forward', 'backward', 'turn', 'turnLeft', 'turnRight', 'setDirection', 'setColor', 'penUp', 'penDown',
-        'hide', 'show', 'setWidth', 'setColor', 'setRGBColor', 'getX', 'getY', 'getDirection', 'getWidth',
+        'setWidth', 'getX', 'getY', 'getDirection', 'getWidth',
         'getColor', 'isHidden', 'isPenDown', 'getPixelRed', 'getPixelGreen',
-        'getPixelBlue'
+        'getPixelBlue', 'turn', 'turnLeft', 'turnRight', 'setDirection', 'penUp', 'penDown',
+        'hide', 'show', 'setColor', 'setRGBColor'
     ];
-    for (var i = 0; i < funcs.length; i++) {
-        interpreter.setProperty(scope, funcs[i],
-                interpreter.createNativeFunction(World.createWrapper(funcs[i]))
-                );
-    }
-}
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.turtle,funcs,false);
+    
+    // Non-Blocking wrappers whih require update of the view
+    var funcs = [
+        'reset', 'clear', 'forward', 'backward'
+    ];
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.turtle,funcs,true);
+};
 
