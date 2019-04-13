@@ -36,7 +36,7 @@ World.initView = function(view) {
     document.getElementById("size").value = World.hathi.squareSize;
     
     document.getElementById("width").oninput = function(event) {
-        if ( this.editable ) {
+        if ( this.isEditable() ) {
             World.hathi.setWidth(document.getElementById("width").value);
         } else {
             document.getElementById("width").value = World.hathi.width;            
@@ -44,7 +44,7 @@ World.initView = function(view) {
     }
     
     document.getElementById("height").oninput = function(event) {
-        if ( this.editable ) {
+        if ( this.isEditable() ) {
             World.hathi.setHeight(document.getElementById("height").value);
         } else {
             document.getElementById("height").value = World.hathi.height;
@@ -177,6 +177,50 @@ function Hathi(view) {
     this.loadImages();    
     this.reset();    
 };
+
+/**
+ * 
+ * @param {type} func
+ * @param {type} args
+ * @returns {unresolved}
+ */
+World.wrapper = function(func,args) {
+    return func.apply(World.hathi,args);
+};
+
+
+World.createWrapper = function(func) {
+    return function(arg) {
+        var args= [];
+        for ( var i = 0 ; i < arguments.length; i++ ) {
+            args[i] = arguments[i];
+        }
+        return World.wrapper(World.hathi[func],args);        
+    };
+};
+
+World.initSourceInterpreter = function(interpreter,scope) {
+    var funcs = [
+      'turnRight','turnLeft','forward','steppedForward',
+      'isOnBanana','pickUpBanana','dropBanana','isForwardEmpty',
+      'isForward', 'say', 'isOnBasket', 'isOnOasis', 'getBananas', 'getBananasOnField'
+    ];
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs);
+};
+
+
+World.setEditable = function(editable) {
+    this.hathi.setEditable(editable);
+}
+
+World.isEditable = function() {
+    return ( this.editable && (Abboza.editMode != Abbozza.WORKSHOP_MODE) );
+}
+
+/**
+ * 
+ *
+ */
 
 
 Hathi.UP = 1;
@@ -1382,7 +1426,7 @@ Hathi.prototype.say = function(text) {
  * @returns {undefined}
  */
 Hathi.prototype.clicked = function(event) {
-    if ( !this.editable ) return;
+    if ( !this.isEditable() ) return;
     
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize)-1;
@@ -1418,7 +1462,7 @@ Hathi.prototype.clicked = function(event) {
  * @returns {undefined}
  */
 Hathi.prototype.rightclicked = function(event) { 
-    if ( !this.editable ) return;
+    if ( !this.isEditable()) return;
     
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize) - 1;
@@ -1540,37 +1584,3 @@ Hathi.prototype.setEditable = function(editable) {
     this.editable= editable;
 }
 
-/**
- * 
- * @param {type} func
- * @param {type} args
- * @returns {unresolved}
- */
-World.wrapper = function(func,args) {
-    return func.apply(World.hathi,args);
-};
-
-
-World.createWrapper = function(func) {
-    return function(arg) {
-        var args= [];
-        for ( var i = 0 ; i < arguments.length; i++ ) {
-            args[i] = arguments[i];
-        }
-        return World.wrapper(World.hathi[func],args);        
-    };
-};
-
-World.initSourceInterpreter = function(interpreter,scope) {
-    var funcs = [
-      'turnRight','turnLeft','forward','steppedForward',
-      'isOnBanana','pickUpBanana','dropBanana','isForwardEmpty',
-      'isForward', 'say', 'isOnBasket', 'isOnOasis', 'getBananas', 'getBananasOnField'
-    ];
-    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs);
-};
-
-
-World.setEditable = function(editable) {
-    this.hathi.setEditable(editable);
-}
