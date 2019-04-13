@@ -653,14 +653,14 @@ AbbozzaInterpreter.executeSourceStep = function () {
     // All Threads finished
     if (state == Thread.STATE_FINISHED) {
         this.setState(this.STATE_UNDEFINED, this.STATE_TERMINATED);
-        this.terminating();
+        this.terminatingSource();
     } else if (state == Thread.STATE_ABORTED) {
         this.setState(this.STATE_UNDEFINED, this.STATE_ERROR);
-        this.terminating();
+        this.terminatingSource();
     } else if (Abbozza.exceptions.length > 0) {
         // Check if there are thrown and untreated exceptions
         this.setState(this.STATE_UNDEFINED, this.STATE_ERROR);
-        this.terminating();
+        this.terminatingSource();
     } else if (state == Thread.STATE_BREAKPOINT) {
         this.atBreakpoint = true;
     }
@@ -828,6 +828,55 @@ AbbozzaInterpreter.terminating = function () {
     }
 
     switch (this.state) {
+        case AbbozzaInterpreter.STATE_ERROR:
+            var eventDetail = null;
+            var exception = null;
+            var newEvent;
+            if (Abbozza.exceptions.length > 0) {
+                for (var i = 0; i < Abbozza.exceptions.length; i++) {
+                    exception = Abbozza.exceptions[i];
+                    eventDetail = {
+                        detail: {
+                            code: exception[0],
+                            msg: exception[1]
+                        }
+                    }
+                    World.error(exception);
+                    newEvent = new CustomEvent("abz_error", eventDetail);
+                    document.dispatchEvent(newEvent);
+                }
+                Abbozza.exceptions = [];
+            }
+            break;
+        default:
+            var show = World.terminate();
+            var newEvent = new CustomEvent("abz_stop");
+            document.dispatchEvent(newEvent);
+            for (var idx = 0; idx < this.threads.length; idx++) {
+                if (this.threads[idx]) {
+                    this.threads[idx].cleanUp();
+                }
+            }
+            if (show) {
+                Abbozza.openOverlay(_("gui.finished"));
+                Abbozza.overlayWaitForClose();
+            }
+    }
+}
+
+
+/**
+ * This operation is called if the execution is terminating.
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.terminatingSource = function () {
+    // If the source is currently running ...
+    if ((this.state != this.STATE_UNDEFINED) || (this.sourceState == this.STATE_UNDEFINED)) {
+        return;
+    }
+
+    switch (this.sourceState) {
         case AbbozzaInterpreter.STATE_ERROR:
             var eventDetail = null;
             var exception = null;

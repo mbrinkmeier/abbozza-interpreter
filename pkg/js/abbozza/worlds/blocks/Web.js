@@ -332,7 +332,15 @@ AbbozzaInterpreter.exec["websocket_close"] = function(entry) {
 }
 
 /**
- * Check if bytes are available from USB
+ * Check if WebSocket is open
+ */
+AbbozzaInterpreter.exec["websocket_is_open"] = function(entry) {
+    entry.returnValue = ABZWebSocket.isOpen();
+    entry.finished();
+}
+
+/**
+ * Check if bytes are available from WebSocket
  */
 AbbozzaInterpreter.exec["websocket_available"] = function(entry) {
     entry.returnValue = ABZWebSocket.isAvailable();
@@ -340,7 +348,7 @@ AbbozzaInterpreter.exec["websocket_available"] = function(entry) {
 }
 
 /**
- * Write line to USB
+ * Write line to WebSocket
  */
 AbbozzaInterpreter.exec["websocket_println"] = function(entry) {
     switch ( entry.phase ) {
@@ -379,7 +387,7 @@ AbbozzaInterpreter.exec["websocket_readchars"] = function(entry) {
 
 
 /**
- * Read a line from USB
+ * Read a line from WebSocket
  */
 AbbozzaInterpreter.exec["websocket_readln"] = function(entry) {
     ABZWebSocket.getLine();
@@ -406,7 +414,7 @@ AbbozzaInterpreter.exec["websocket_get_current"] = function(entry) {
 
 
 /**
- * Write byte to USB
+ * Write byte to WebSocket
  */
 AbbozzaInterpreter.exec["websocket_write_byte"] = function(entry) {
     switch ( entry.phase ) {
