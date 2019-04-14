@@ -372,7 +372,7 @@ AbbozzaInterpreter.executeStep = function () {
     for (idx = 0; idx < threadMsgs.length; idx++) {
         var msg = threadMsgs[idx];
         window.setTimeout(function () {
-            Abbozza.openOverlay(_(msg));
+            Abbozza.openOverlay(_(msg),Abbozza.workspaceFrame.div);
             Abbozza.overlayWaitForClose();
         }, 1);
     }
@@ -563,14 +563,14 @@ AbbozzaInterpreter.speedRun = function () {
                 if (AbbozzaInterpreter.lastMark)
                     AbbozzaInterpreter.lastMark.clear();
                 World.terminate();
-                Abbozza.openOverlay(_("gui.finished"));
+                Abbozza.openOverlay(_("gui.finished"),Abbozza.workspaceFrame.div);
                 Abbozza.overlayWaitForClose();
             }
         } catch (e) {
             this.setState(this.STATE_UNDEFINED, this.STATE_ERROR);
             running = false;
             World.error();
-            Abbozza.openOverlay(_("gui.aborted_by_error"));
+            Abbozza.openOverlay(_("gui.aborted_by_error"),Abbozza.workspaceFrame.div);
             Abbozza.appendOverlayText("\n");
             Abbozza.appendOverlayText(e);
             Abbozza.overlayWaitForClose();
@@ -645,7 +645,7 @@ AbbozzaInterpreter.executeSourceStep = function () {
     for (idx = 0; idx < threadMsgs.length; idx++) {
         var msg = threadMsgs[idx];
         window.setTimeout(function () {
-            Abbozza.openOverlay(_(msg));
+            Abbozza.openOverlay(_(msg),Abbozza.sourceFrame.div);
             Abbozza.overlayWaitForClose();
         }, 1);
     }
@@ -858,7 +858,7 @@ AbbozzaInterpreter.terminating = function () {
                 }
             }
             if (show) {
-                Abbozza.openOverlay(_("gui.finished"));
+                Abbozza.openOverlay(_("gui.finished"),Abbozza.workspaceFrame.div);
                 Abbozza.overlayWaitForClose();
             }
     }
@@ -907,7 +907,7 @@ AbbozzaInterpreter.terminatingSource = function () {
                 }
             }
             if (show) {
-                Abbozza.openOverlay(_("gui.finished"));
+                Abbozza.openOverlay(_("gui.finished"),Abbozza.sourceFrame.div);
                 Abbozza.overlayWaitForClose();
             }
     }
