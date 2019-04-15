@@ -295,7 +295,13 @@ AbbozzaInterpreter.exec["var_block"] = function(entry) {
             entry.returnValue = ar;
         } else {
             // Return the value
-            entry.returnValue = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
+            var symbol = Abbozza.getSymbol(this,entry.name);
+            if ( symbol[1].startsWith("#") ) {
+                var ref = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
+                entry.returnValue = AbbozzaInterpreter.getObjectValue(ref);       
+            } else {
+                entry.returnValue = AbbozzaInterpreter.getSymbol(entry.name,entry.dim);
+            }
         }
         entry.finished();
     }
@@ -314,12 +320,58 @@ AbbozzaInterpreter.exec["var_assign"] = function(entry) {
             break;
         case 2 :
             entry.var = entry.callResult;
-            AbbozzaInterpreter.setSymbol(entry.var[0],entry.value,entry.var[1]);
+            var symbol = Abbozza.getSymbol(this,entry.var[0]);
+            if ( symbol[1].startsWith("#") ) {
+                // If the variable stores an object, create a persistent one ...
+                var ref = AbbozzaInterpreter.createObject(symbol[1].substring(1), entry.value );
+                // ... and store the reference
+                AbbozzaInterpreter.setSymbol(entry.var[0],ref,entry.var[1]);
+            } else {
+                // Otherwise, simply store the value
+                AbbozzaInterpreter.setSymbol(entry.var[0],entry.value,entry.var[1]);
+            }
             entry.finished();
             break;
     }
 };
 
+AbbozzaInterpreter.exec['var_int_step_up'] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            var name = this.getFieldValue("VAR");
+            var val = Number(AbbozzaInterpreter.getSymbol(name));
+            AbbozzaInterpreter.setSymbol(name,val+1);
+            entry.finished();
+            break;
+    }
+};
+
+AbbozzaInterpreter.exec['var_int_step_down'] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            var name = this.getFieldValue("VAR");
+            var val = Number(AbbozzaInterpreter.getSymbol(name));
+            AbbozzaInterpreter.setSymbol(name,val-1);
+            entry.finished();
+            break;
+    }
+};
+
+
+AbbozzaInterpreter.exec['var_int_change_by'] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            entry.name = this.getFieldValue("VAR");
+            entry.val = Number(AbbozzaInterpreter.getSymbol(name));
+            AbbozzaInterpreter.callInput(this,"VALUE");
+            entry.phase = 1;
+            break;
+        case 1:
+            AbbozzaInterpreter.setSymbol(entry.name,entry.val + Number(entry.callResult));
+            entry.finished();
+            break;
+    }
+};
 
 /*************************
  * MATH blocks
@@ -891,6 +943,166 @@ AbbozzaInterpreter.exec["func_call"] = function(entry) {
 };
 
 
+AbbozzaInterpreter.exec["func_start_thread"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get name and check for parameters
+            entry.par = [];
+            entry.name = this.getFieldValue("NAME");
+            entry.symbol = Abbozza.getGlobalSymbol(entry.name);
+            if (entry.symbol == null)  {
+                entry.fnished();
+            }
+            entry.funcBlock = Abbozza.getTopBlock(entry.name);
+            if (entry.funcBlock == null)  {
+                entry.finished();
+            }
+            entry.parameters = entry.funcBlock.symbols.getParameters(true);
+            
+            if ( this.getInput("PAR0") != null ) {
+                entry.no = 0;
+                AbbozzaInterpreter.callInput(this,"PAR0",entry.parameters[entry.no][1]);
+                entry.phase = 1;
+            } else {
+                entry.par = null;
+                // Start the thread
+                AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+                entry.finished();
+            }
+            break;
+        case 1 :
+            // Collect parameters
+            entry.par.push(entry.callResult);
+            entry.no++;
+            if ( this.getInput("PAR" + entry.no ) != null ) {
+                AbbozzaInterpreter.callInput(this,"PAR" + entry.no,entry.parameters[entry.no][1]);
+            } else {
+                // Call function
+                AbbozzaInterpreter.callFunction(entry.funcBlock,entry.par);
+                entry.phase = 2;
+            }
+            break;
+        case 2 : 
+            // Start the thread
+            AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["func_start_thread_id"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get name and check for parameters
+            entry.par = [];
+            entry.name = this.getFieldValue("NAME");
+            entry.symbol = Abbozza.getGlobalSymbol(entry.name);
+            if (entry.symbol == null)  {
+                entry.fnished();
+            }
+            entry.funcBlock = Abbozza.getTopBlock(entry.name);
+            if (entry.funcBlock == null)  {
+                entry.finished();
+            }
+            entry.parameters = entry.funcBlock.symbols.getParameters(true);
+            
+            if ( this.getInput("PAR0") != null ) {
+                entry.no = 0;
+                AbbozzaInterpreter.callInput(this,"PAR0",entry.parameters[entry.no][1]);
+                entry.phase = 1;
+            } else {
+                entry.par = null;
+                // Start the thread
+                entry.returnValue = AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+                entry.finished();
+            }
+            break;
+        case 1 :
+            // Collect parameters
+            entry.par.push(entry.callResult);
+            entry.no++;
+            if ( this.getInput("PAR" + entry.no ) != null ) {
+                AbbozzaInterpreter.callInput(this,"PAR" + entry.no,entry.parameters[entry.no][1]);
+            } else {
+                // Call function
+                AbbozzaInterpreter.callFunction(entry.funcBlock,entry.par);
+                entry.phase = 2;
+            }
+            break;
+        case 2 : 
+            // Start the thread
+            entry.returnValue = AbbozzaInterpreter.startThread(entry.funcBlock,entry.par);
+            entry.finished();
+    }
+};
+
+
+AbbozzaInterpreter.exec["func_thread_running"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get the thread id
+            AbbozzaInterpreter.callInput(this,"ID");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var thread = AbbozzaInterpreter.getThread(entry.callResult);
+            if ( thread != null ) {
+                entry.returnValue = thread.isRunning();
+            } else {
+                entry.returnValue = false;
+            }
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["func_wait_for_thread"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get the thread id
+            AbbozzaInterpreter.callInput(this,"ID");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var thread = AbbozzaInterpreter.getThread(entry.callResult);
+            if ( thread != null ) {
+                if ( !thread.isRunning() ) {
+                    entry.finished();
+                }
+            } else {
+                entry.finished();
+            }
+    }
+};
+
+AbbozzaInterpreter.exec["func_sync_thread"] = function(entry) {
+    switch ( entry.phase ) {
+        case 0 :
+            // Get the thread id
+            AbbozzaInterpreter.callInput(this,"ID");
+            entry.phase = 1;
+            break;
+        case 1 :
+            var thread = AbbozzaInterpreter.getThread(entry.callResult);
+            if ( thread != null ) {
+                if ( !thread.isRunning() ) {
+                    entry.finished();
+                } else {
+                    AbbozzaInterpreter.activeThread.syncWithThread(thread);                
+                    entry.phase = 2;
+                }
+            } else {
+                entry.finished();
+            }
+            break;
+        case 2:
+            entry.finished();
+    }
+};
+
+AbbozzaInterpreter.exec["func_main_thread"] = function(entry) {
+    entry.returnValue = 0;
+    entry.finished();
+};
+
 
 AbbozzaInterpreter.exec["func_decl"] = function(entry) {
     switch ( entry.phase ) {
@@ -970,7 +1182,8 @@ AbbozzaInterpreter.exec["stack_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, new Stack() );
+            // entry.returnValue = AbbozzaInterpreter.createObject("STACK_" + type, new Stack() );
+            entry.returnValue = new Stack();
             entry.finished();
             break;
         default :
@@ -1060,7 +1273,8 @@ AbbozzaInterpreter.exec["queue_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, new Queue() );
+            // entry.returnValue = AbbozzaInterpreter.createObject("QUEUE_" + type, new Queue() );
+            entry.returnValue = new Queue();
             entry.finished();
             break;
         default :
@@ -1149,7 +1363,8 @@ AbbozzaInterpreter.exec["list_new"] = function(entry) {
     switch ( entry.phase) {
         case 0 :
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("LIST_" + type, new List() );
+            // entry.returnValue = AbbozzaInterpreter.createObject("LIST_" + type, new List() );
+            entry.returnValue = new List();
             entry.finished();
             break;
         default :
@@ -1315,7 +1530,8 @@ AbbozzaInterpreter.exec['bintree_new'] = function(entry) {
             break;
         case 1:
             var type = entry.block.getFieldValue("TYPE");
-            entry.returnValue = AbbozzaInterpreter.createObject("BINTREE_" + type, new BinTree(entry.callResult) );
+            // entry.returnValue = AbbozzaInterpreter.createObject("BINTREE_" + type, new BinTree(entry.callResult) );
+            entry.returnValue = new BinTree(entry.callResult);
             entry.finished();
             break;
         default :
@@ -1462,92 +1678,4 @@ AbbozzaInterpreter.exec["bintree_get_data"] = function(entry) {
             entry.finished();
     }
 };
-
-/**
- * Check if bytes are available from USB
- */
-AbbozzaInterpreter.exec["websocket_open"] = function(entry) {
-    var url = this.getFieldValue("URL","TEXT");
-    // var port = Number(Abbozza.serverPort)+1;
-    entry.returnValue = ABZWebSocket.open(url);
-    entry.finished();
-}
-
-/**
- * Check if bytes are available from USB
- */
-AbbozzaInterpreter.exec["websocket_close"] = function(entry) {
-    entry.returnValue = ABZWebSocket.close();
-    entry.finished();
-}
-
-/**
- * Check if bytes are available from USB
- */
-AbbozzaInterpreter.exec["websocket_available"] = function(entry) {
-    entry.returnValue = ABZWebSocket.isAvailable();
-    entry.finished();
-}
-
-/**
- * Write line to USB
- */
-AbbozzaInterpreter.exec["websocket_println"] = function(entry) {
-    switch ( entry.phase ) {
-        case 0 :
-            AbbozzaInterpreter.callInput(this,"VALUE","TEXT");
-            entry.phase = 1;
-            break;
-        case 1 :
-            var msg = entry.callResult;
-            ABZWebSocket.sendln(msg);
-            entry.finished();
-            break;
-        default :
-            entry.finished();
-    }
-}
-
-/**
- * Read a line from USB
- */
-AbbozzaInterpreter.exec["websocket_readln"] = function(entry) {
-    entry.returnValue = ABZWebSocket.getLine();
-    entry.finished();
-}
-
-/**
- * Read the whole buffer
- */
-AbbozzaInterpreter.exec["websocket_read_all"] = function(entry) {
-    entry.returnValue = ABZWebSocket.getAll();
-    entry.finished();
-}
-
-/**
- * Write byte to USB
- */
-AbbozzaInterpreter.exec["websocket_write_byte"] = function(entry) {
-    switch ( entry.phase ) {
-        case 0 :
-            AbbozzaInterpreter.callInput(this,"VALUE","NUMBER");
-            entry.phase = 1;
-            break;
-        case 1 :
-            var msg = entry.callResult % 256;
-            ABZWebSocket.send(String.fromCharCode(msg));
-            entry.finished();
-            break;
-        default :
-            entry.finished();
-    }
-}
-
-/**
- * Read a byte
- */
-AbbozzaInterpreter.exec["websocket_read_byte"] = function(entry) {
-    entry.returnValue = ABZWebSocket.getByte();
-    entry.finished();
-}
 

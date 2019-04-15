@@ -111,6 +111,7 @@ public class AbbozzaWorlds extends AbbozzaServer implements HttpHandler {
         worldManager.registerWorld(new World("worlds/turtle"));
         worldManager.registerWorld(new World("worlds/hanoi"));
         worldManager.registerWorld(new World("worlds/array"));
+        worldManager.registerWorld(new World("worlds/pixelworld"));
 
         registerPluginWorlds();
 

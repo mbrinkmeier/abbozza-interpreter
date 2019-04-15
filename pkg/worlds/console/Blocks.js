@@ -15,6 +15,7 @@ Abbozza.ConsolePrint = {
             entry.phase = 1;
         } else {
             World.mycon.print(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -38,6 +39,7 @@ Abbozza.ConsolePrintln = {
             entry.phase = 1;
         } else {
             World.mycon.println(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -56,6 +58,7 @@ Abbozza.ConsoleClear = {
     },
     execute : function(entry) {
         World.mycon.clear();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    

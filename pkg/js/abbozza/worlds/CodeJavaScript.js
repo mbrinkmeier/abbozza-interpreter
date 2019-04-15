@@ -222,6 +222,10 @@ AbbozzaCode['var_block'] = function (generator) {
 }
 AbbozzaCode['var_assign'] = ["# = #;", ["V_LEFT", "V_RIGHT"]];
 
+AbbozzaCode['var_int_step_up'] = ["#++",["F_VAR"]];
+AbbozzaCode['var_int_step_down'] = ["#--",["F_VAR"]];
+AbbozzaCode['var_int_change_by'] =  ["#+=#",["F_VAR","V_VALUE"]];
+
 // Functions
 AbbozzaCode['func_decl'] = function (generator) {
     var name = this.name;
@@ -347,7 +351,81 @@ AbbozzaCode['websocket_open'] = ["WSopen('#');",["F_URL"]];
 AbbozzaCode['websocket_close'] = ["WSclose();",[]];
 AbbozzaCode['websocket_available'] = ["WSisAvailable()",[]];
 AbbozzaCode['websocket_println'] = ["WSsend(#);",["V_VALUE"]];
-AbbozzaCode['websocket_readln'] = ["WSreadln()",[]];
-AbbozzaCode['websocket_read_all'] = ["WSreadAll()",[]];
+AbbozzaCode['websocket_readchars'] = ["WSreadChars(#);",["V_LEN"]];
+AbbozzaCode['websocket_readln'] = ["WSreadln();",[]];
+AbbozzaCode['websocket_read_all'] = ["WSreadAll();",[]];
+AbbozzaCode['websocket_get_Current'] = ["WScurrentChars()",[]];
 AbbozzaCode['websocket_write_byte'] = ["WSsendByte(#);",["V_VALUE"]];
 AbbozzaCode['websocket_read_byte'] = ["WSreadByte()",[]];
+
+AbbozzaCode['func_start_thread'] = function (generator) {
+    var code = "";
+    var name = generator.fieldToCode(this, "NAME");
+
+    var symbols = this.getRootBlock().symbols;
+    var symbol = symbols.exists(name);
+    if (!symbol || ((symbol[3] != symbols.FUN_SYMBOL) && (symbol[3] != symbols.ISR_SYMBOL))) {
+        ErrorMgr.addError(this, _("err.WRONG_NAME") + ": " + name);
+    }
+
+    var block;
+
+    code = name + "(";
+    var no = 0;
+    var par;
+    var inp;
+    while (inp = this.getInput("PAR" + no)) {
+        if (inp.type == Blockly.INPUT_VALUE) {
+            par = generator.valueToCode(this, "PAR" + no);
+            if (no != 0)
+                code = code + ",";
+            code = code + par;
+        }
+        no++;
+    }
+    code = code + ")";
+
+    if (symbol[1] == "VOID") {
+        code = code + ";";
+    }
+
+    return "startThread('" + code + "');";
+};
+
+
+AbbozzaCode['func_start_thread_id'] = function (generator) {
+    var code = "";
+    var name = generator.fieldToCode(this, "NAME");
+
+    var symbols = this.getRootBlock().symbols;
+    var symbol = symbols.exists(name);
+    if (!symbol || ((symbol[3] != symbols.FUN_SYMBOL) && (symbol[3] != symbols.ISR_SYMBOL))) {
+        ErrorMgr.addError(this, _("err.WRONG_NAME") + ": " + name);
+    }
+
+    var block;
+
+    code = name + "(";
+    var no = 0;
+    var par;
+    var inp;
+    while (inp = this.getInput("PAR" + no)) {
+        if (inp.type == Blockly.INPUT_VALUE) {
+            par = generator.valueToCode(this, "PAR" + no);
+            if (no != 0)
+                code = code + ",";
+            code = code + par;
+        }
+        no++;
+    }
+    code = code + ")";
+
+    if (symbol[1] == "VOID") {
+        code = code + ";";
+    }
+
+    return "startThread('" + code + "')";
+};
+
+AbbozzaCode['func_thread_running'] = ["isThreadRunning(#)",["V_ID"]];
+AbbozzaCode['func_wait_for_Thread'] = ["waitForThread(#);",["V_ID"]];

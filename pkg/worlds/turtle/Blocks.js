@@ -10,6 +10,7 @@ Abbozza.TurtleClear = {
     },
     execute : function(entry) {
         World.turtle.clear();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -29,6 +30,7 @@ Abbozza.TurtleReset = {
     },
     execute : function(entry) {
         World.turtle.reset();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -54,6 +56,7 @@ Abbozza.TurtleForward = {
             entry.phase = 1;
         } else {
             World.turtle.forward(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -79,6 +82,7 @@ Abbozza.TurtleBackward = {
             entry.phase = 1;
         } else {
             World.turtle.backward(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -105,6 +109,7 @@ Abbozza.TurtleTurnLeft = {
             entry.phase = 1;
         } else {
             World.turtle.turnLeft(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -132,6 +137,7 @@ Abbozza.TurtleTurnRight = {
             entry.phase = 1;
         } else {
             World.turtle.turnRight(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -158,6 +164,7 @@ Abbozza.TurtleSetDirection = {
             entry.phase = 1;
         } else {
             World.turtle.setDirection(entry.callResult);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -208,6 +215,7 @@ Abbozza.TurtleSetColor = {
         if ( entry.phase == 0 ) {
             var col = this.getFieldValue("COLOR");
             World.turtle.setColor(col);
+            entry.nonBlocking = true;
             entry.finished();
         }        
         return true;    
@@ -257,6 +265,7 @@ Abbozza.TurtleSetRGBColor = {
                 break;
             case 3 :
                 World.turtle.setRGBColor(entry.red , entry.green , entry.callResult);
+                entry.nonBlocking = true;
                 entry.finished();
                 break;
                 
@@ -322,6 +331,7 @@ Abbozza.TurtleHide = {
     },
     execute : function(entry) {
         World.turtle.hide();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    
@@ -342,6 +352,7 @@ Abbozza.TurtleShow = {
     },
     execute : function(entry) {
         World.turtle.show();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }    

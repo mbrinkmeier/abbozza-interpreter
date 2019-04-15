@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="de">
+    <categories>
+        <msg id="cat.PIXELWORLD">PixelWorld</msg>
+    </categories>
+    <blocks>
+        <msg id="pixel.pixel">Pixel</msg>
+        <msg id="pixel.color">Farbe</msg>
+        <msg id="pixel.set">Setze</msg>
+        <msg id="pixel.get">Hole</msg>
+        <msg id="pixel.from">von</msg>
+        <msg id="pixel.to_color">auf Farbe</msg>
+        <msg id="pixel.get"></msg>
+    </blocks>
+</language>

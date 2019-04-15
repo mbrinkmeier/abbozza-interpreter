@@ -2,6 +2,10 @@
 <language id="de">
     <blocks>
         <msg id="block.MAIN">Hauptprogramm</msg> 
+        <msg id="func.start_thread">Starte # als Thread</msg> 
+        <msg id="func.thread_running">Thread # läuft noch</msg> 
+        <msg id="func.wait_for_thread">Warte auf Thread</msg> 
+        <msg id="func.sync_thread">Synchronisiere mit Thread</msg> 
     </blocks>
     <categories>
         <msg id="cat.web">Internet</msg>
@@ -51,8 +55,11 @@
         <msg id ="websocket.PRINT">Sende</msg>
         <msg id ="websocket.PRINTLN">Sende Zeile</msg>
         <msg id ="websocket.AVAILABLE">Zeichen empfangen</msg>
-        <msg id ="websocket.READLN">Lies Zeiles</msg>
-        <msg id ="websocket.READ_ALL">Lies Alles</msg>
+        <msg id ="websocket.is_open">Ist verbunden</msg>
+        <msg id ="websocket.READLN">Lies nächste Zeile</msg>
+        <msg id ="websocket.READ_ALL">Lies alle Zeichen</msg>
+        <msg id ="websocket.READCHARS">Lies bis zu # Zeichen</msg>
+        <msg id ="websocket.GETCURRENT">Aktuelle Zeichen</msg>
         <msg id ="websocket.WRITE_BYTE">Sende Byte</msg>
         <msg id ="websocket.READ_BYTE">Lies Byte</msg>
         <msg id ="websocket.WRITE_INT">Sende Zahl</msg>

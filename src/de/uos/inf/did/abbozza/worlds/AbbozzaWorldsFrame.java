@@ -4,17 +4,12 @@ import de.uos.inf.did.abbozza.core.AbbozzaLocale;
 import de.uos.inf.did.abbozza.core.AbbozzaServer;
 import de.uos.inf.did.abbozza.tools.GUITool;
 import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -102,6 +97,7 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         selectWorldButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        startBrowserItem = new javax.swing.JMenuItem();
         settingsItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         quitITem = new javax.swing.JMenuItem();
@@ -133,6 +129,14 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         });
 
         jMenu1.setText("abbozza!");
+
+        startBrowserItem.setText(AbbozzaLocale.entry("gui.SET_WORLD"));
+        startBrowserItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startBrowserItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(startBrowserItem);
 
         settingsItem.setText(AbbozzaLocale.entry("gui.settings"));
         settingsItem.addActionListener(new java.awt.event.ActionListener() {
@@ -200,6 +204,10 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
         abbozza.openConfigDialog();
     }//GEN-LAST:event_settingsItemActionPerformed
 
+    private void startBrowserItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startBrowserItemActionPerformed
+        abbozza.setWorld((World) worldBox.getSelectedItem(),true);
+    }//GEN-LAST:event_startBrowserItemActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea descriptionPane;
@@ -210,6 +218,7 @@ public class AbbozzaWorldsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem quitITem;
     private javax.swing.JButton selectWorldButton;
     private javax.swing.JMenuItem settingsItem;
+    private javax.swing.JMenuItem startBrowserItem;
     private javax.swing.JComboBox<de.uos.inf.did.abbozza.worlds.World> worldBox;
     // End of variables declaration//GEN-END:variables
 

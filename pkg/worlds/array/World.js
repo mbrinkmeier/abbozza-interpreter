@@ -191,6 +191,7 @@ ArrayWorld.prototype.redraw = function() {
     for ( var i = 0 ; i < this.indices.length; i++ ) {
         var name = this.indices[i];
         var val = AbbozzaInterpreter.getSymbol(name);
+        if ( val == undefined ) val = 0;
         var svg = this.indexSvg[i];
         var xpos = ((val+1)*(this.squareSize) + (this.squareSize/2));
         svg.setAttribute("transform",
@@ -354,6 +355,7 @@ ArrayWorld.prototype.showAsIndex = function(varname,color) {
     svg.insertBefore(svgPath,svgText);
     svg.insertBefore(svgRect,svgText);
     var val = AbbozzaInterpreter.getSymbol(varname);
+    if ( val == undefined ) val = 0;
     var ypos = (this.squareSize*3);
     var xpos = ((val+1)*(this.squareSize) + (this.squareSize/2));
     svg.setAttribute("transform",

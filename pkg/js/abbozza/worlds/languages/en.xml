@@ -2,6 +2,10 @@
 <language id="de">
     <blocks>
         <msg id="block.MAIN">Main program</msg> 
+        <msg id="func.start_thread">Start # as thread</msg> 
+        <msg id="func.thread_running">Thread # is running</msg> 
+        <msg id="func.wait_for_thread">Wait for thread</msg>
+        <msg id="func.sync_thread">Synchronise with thread</msg> 
     </blocks>
     <categories>
     </categories>
@@ -44,6 +48,22 @@
         <msg id="key.TAB">Tabulator</msg>
         <msg id="key.INSERT">Insert</msg>        
         <msg id="key.ESCAPE">Escape (Esc)</msg>
+        
+        <msg id ="websocket.PRINT">Send</msg>
+        <msg id ="websocket.PRINTLN">Send line</msg>
+        <msg id ="websocket.AVAILABLE">Characters received</msg>
+        <msg id ="websocket.is_open">Is open</msg>
+        <msg id ="websocket.READLN">Read next line</msg>
+        <msg id ="websocket.READ_ALL">Read all characters</msg>
+        <msg id ="websocket.READCHARS">Read at most # characters</msg>
+        <msg id ="websocket.GETCURRENT">Current characters</msg>
+        <msg id ="websocket.WRITE_BYTE">Send Byte</msg>
+        <msg id ="websocket.READ_BYTE">Read Byte</msg>
+        <msg id ="websocket.WRITE_INT">Send Number</msg>
+        <msg id ="websocket.READ_INT">Read Number</msg>
+        <msg id="websocket.OPEN">Open WebSocket</msg>
+        <msg id="websocket.CLOSE">Close WebSocket</msg>        
+        
     </blocks>
     <errors>
         <msg id="err.unknown_stack">Unknown stack!</msg>

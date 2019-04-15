@@ -23,6 +23,7 @@ Abbozza.ArrayReset = {
                 break;
             case 1:
                 World.arrayWorld.reset(entry.callResult,entry.order);
+                entry.nonBlocking = true;
                 entry.finished();
                 break;
             default:
@@ -91,6 +92,7 @@ Abbozza.ArraySet = {
                 break;
             case 2:
                 World.arrayWorld.set(entry.index,entry.callResult);
+                entry.nonBlocking = true;
                 entry.finished();
                 return true;
                 break;
@@ -169,6 +171,7 @@ Abbozza.ArraySwap = {
                 break;
             case 2:
                 World.arrayWorld.swap(entry.index,entry.callResult);
+                entry.nonBlocking = true;
                 entry.finished();
                 return true;
                 break;
@@ -205,6 +208,7 @@ Abbozza.ArrayAsIndex = {
                 var varName = this.getFieldValue("VAR");
                 var color = this.getFieldValue("COLOR");
                 World.arrayWorld.showAsIndex(varName, color);
+                entry.nonBlocking = true;
                 entry.finished();
                 return true;
                 break;
@@ -215,5 +219,5 @@ Abbozza.ArrayAsIndex = {
 }
 
 Blockly.Blocks['array_as_index'] = Abbozza.ArrayAsIndex;
-AbbozzaCode['array_as_index'] = ['showAsIndex("#");',["F_VAR"]];
+AbbozzaCode['array_as_index'] = ['showAsIndex("#","#");',["F_VAR","F_COLOR"]];
 

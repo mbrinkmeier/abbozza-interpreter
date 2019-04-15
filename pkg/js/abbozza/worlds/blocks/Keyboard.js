@@ -34,6 +34,7 @@ Abbozza.KeyGetPressed = {
   },
     execute : function(entry) {
         entry.returnValue = World.getPressedKey();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }
@@ -52,6 +53,7 @@ Abbozza.KeyGetLast = {
   },
     execute : function(entry) {
         entry.returnValue = World.getLastKey();
+        entry.nonBlocking = true;
         entry.finished();
         return true;    
     }

@@ -25,27 +25,125 @@
 
 AbbozzaInterpreter = {
     state: -1, // undefined state
-    sourceState: 0,
+    sourceState: -1,
     delay: 500,
     worker: null,
     globalSymbols: [],
     breakLoop: false,
     threads: [],
+    sourceThreads : [],
     activeThread: null,
+    activeSourceThread: null,
     atBreakpoint: false,
     exec: [],
     executedSteps: 0,
     executedBlocks: 0,
     exceptions: [],
-    objects: []
+    objects: [],
+    currentThreadId: 0,
+    speedRunning: false
 };
 
-AbbozzaInterpreter.STATE_UNDEFINED = -1;
-AbbozzaInterpreter.STATE_READY = 0;     // The Interpreter is initialized and ready to run
-AbbozzaInterpreter.STATE_RUNNING = 1;   // The interpreter is running
+AbbozzaInterpreter.STATE_UNDEFINED = -1; // The interpreter is in an undefined state or not running
+AbbozzaInterpreter.STATE_READY = 0;      // The Interpreter is initialized and ready to run
+AbbozzaInterpreter.STATE_RUNNING = 1;    // The interpreter is running
 AbbozzaInterpreter.STATE_PAUSED = 2;     // The interpreter is paused, ready to continue
 AbbozzaInterpreter.STATE_TERMINATED = 3; // The program terminated regularly
 AbbozzaInterpreter.STATE_ERROR = 4;      // The program terminated with an error
+
+
+/**
+ * Set the state of both interpreters
+ * 
+ * @param {type} state
+ * @param {type} sourceState
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.setState = function (state, sourceState) {
+    this.state = state;
+    this.sourceState = sourceState;
+
+    switch (this.state) {
+        case AbbozzaInterpreter.STATE_UNDEFINED:
+            break;
+        case AbbozzaInterpreter.STATE_READY:
+        case AbbozzaInterpreter.STATE_PAUSED:
+        case AbbozzaInterpreter.STATE_TERMINATED:
+        case AbbozzaInterpreter.STATE_ERROR:
+            document.getElementById("run").children[0].src = "/img/run.png";
+            document.getElementById("speedrun").children[0].src = "/img/run.png";
+            break;
+        case AbbozzaInterpreter.STATE_RUNNING:
+            document.getElementById("run").children[0].src = "/img/pause.png";
+            document.getElementById("speedrun").children[0].src = "/img/pause.png";
+            break;
+    }
+
+    switch (this.sourceState) {
+        case AbbozzaInterpreter.STATE_UNDEFINED:
+            break;
+        case AbbozzaInterpreter.STATE_PAUSED:
+        case AbbozzaInterpreter.STATE_READY:
+        case AbbozzaInterpreter.STATE_TERMINATED:
+        case AbbozzaInterpreter.STATE_ERROR:
+            document.getElementById("runSource").src = "/img/run.png";
+            break;
+        case AbbozzaInterpreter.STATE_RUNNING:
+            document.getElementById("runSource").src = "/img/pause.png";
+            break;
+    }
+};
+
+
+/**
+ * Switch the interpreter to blocks
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.switchToBlocks = function () {
+    // If already executing blocks, do nothing
+    if (this.state != this.STATE_UNDEFINED)
+        return;
+
+    this.setState(this.STATE_READY, this.STATE_UNDEFINED);
+
+    AbbozzaInterpreter.sourceInterpreter = null;
+    this.reset();
+}
+
+
+/**
+ * Switch the interpreter to source
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.switchToSource = function () {
+    // If already executing source, do nothing
+    if (this.sourceState != this.STATE_UNDEFINED)
+        return;
+
+    this.setState(this.STATE_UNDEFINED, this.STATE_READY);
+
+    this.resetSource();
+}
+
+/**
+ * Returns true if the source is currently running.
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.isRunningSource = function () {
+    if ((this.state == this.STATE_UNDEFINED) || (this.sourceState != this.STATE_UNDEFINED)) {
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ ** BLOCKS 
+ **/
+
 
 /**
  * Initialize the interpreter
@@ -66,27 +164,35 @@ AbbozzaInterpreter.reset = function () {
     this.setSpeed(document.getElementById("speed").value);
 
     World.reset();
-    this.state = AbbozzaInterpreter.STATE_READY;
+
+    this.setState(AbbozzaInterpreter.STATE_READY, AbbozzaInterpreter.STATE_UNDEFINED);
+
     var newEvent = new CustomEvent("abz_reset");
     document.dispatchEvent(newEvent);
 };
 
 /**
- * The step button s pressed
+ * The step button is pressed
  * 
  * @returns {undefined}
  */
 AbbozzaInterpreter.step = function () {
+    // If the source is currently running
+    if ((this.state == this.STATE_UNDEFINED) || (this.sourceState != this.STATE_UNDEFINED)) {
+        // Switch to blocks
+        this.switchToBlocks();
+    }
+
     switch (this.state) {
         case AbbozzaInterpreter.STATE_READY:
             // Do the first step and pause
             this.start();
-            this.state = AbbozzaInterpreter.STATE_PAUSED;
+            AbbozzaInterpreter.setState(this.STATE_PAUSED, this.STATE_UNDEFINED);
             this.doStep();
             break;
         case AbbozzaInterpreter.STATE_RUNNING:
             // Switch to pause
-            this.state = AbbozzaInterpreter.STATE_PAUSED;
+            AbbozzaInterpreter.setState(this.STATE_PAUSED, this.STATE_UNDEFINED);
             break;
         case AbbozzaInterpreter.STATE_PAUSED:
             // do a step
@@ -97,33 +203,43 @@ AbbozzaInterpreter.step = function () {
             // Reset and do a step
             this.reset();
             this.start();
-            this.state = AbbozzaInterpreter.STATE_PAUSED;
+            AbbozzaInterpreter.setState(this.STATE_PAUSED, this.STATE_UNDEFINED);
             this.doStep();
             break;
+        default: // STATE_UNDEFINED
     }
 };
 
 
 /**
- * The step button s pressed
+ * The run button s pressed
  * 
  * @returns {undefined}
  */
-AbbozzaInterpreter.run = function () {
+AbbozzaInterpreter.run = function (speedRun = false) {
+    
+    this.speedRunning = speedRun;
+    
+    // If the source is currently running
+    if ((this.state == this.STATE_UNDEFINED) || (this.sourceState != this.STATE_UNDEFINED)) {
+        // Switch to blocks
+        this.switchToBlocks();
+    }
+
     switch (this.state) {
         case AbbozzaInterpreter.STATE_READY:
             // Do the first step and pause
             this.start();
-            this.state = AbbozzaInterpreter.STATE_RUNNING;
+            AbbozzaInterpreter.setState(this.STATE_RUNNING, this.STATE_UNDEFINED);
             this.doStep();
             break;
         case AbbozzaInterpreter.STATE_RUNNING:
             // Switch to pause
-            this.state = AbbozzaInterpreter.STATE_PAUSED;
+            AbbozzaInterpreter.setState(this.STATE_PAUSED, this.STATE_UNDEFINED);
             break;
         case AbbozzaInterpreter.STATE_PAUSED:
             // do a step
-            this.state = AbbozzaInterpreter.STATE_RUNNING;
+            AbbozzaInterpreter.setState(this.STATE_RUNNING, this.STATE_UNDEFINED);
             this.doStep();
             break;
         case AbbozzaInterpreter.STATE_TERMINATED:
@@ -131,35 +247,12 @@ AbbozzaInterpreter.run = function () {
             // Reset and do a step
             this.reset();
             this.start();
-            this.state = AbbozzaInterpreter.STATE_RUNNING;
+            AbbozzaInterpreter.setState(this.STATE_RUNNING, this.STATE_UNDEFINED);
             this.doStep();
             break;
     }
 };
 
-
-
-/**
- * This operation is executed by a timer to repeatedly execute steps.
- * 
- * @returns {undefined}
- */
-AbbozzaInterpreter.doStep = function () {
-    if ((AbbozzaInterpreter.state != AbbozzaInterpreter.STATE_RUNNING) &&
-            (AbbozzaInterpreter.state != AbbozzaInterpreter.STATE_PAUSED)) {
-        return;
-    }
-
-    if (!Abbozza.waitingForAnimation) {
-        AbbozzaInterpreter.executeStep();
-        // If RUNNING automatically execute the next step
-        if (AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_RUNNING) {
-            window.setTimeout(AbbozzaInterpreter.doStep, AbbozzaInterpreter.delay);
-        }
-    } else {
-        window.setTimeout(AbbozzaInterpreter.doStep, 0);
-    }
-};
 
 /**
  * Prepare the first step of execution after init
@@ -167,6 +260,11 @@ AbbozzaInterpreter.doStep = function () {
  * @returns {AbbozzaInterpreter.startBlocks}
  */
 AbbozzaInterpreter.start = function () {
+    // If the source is currently running ...
+    if ((this.state == this.STATE_UNDEFINED) || (this.sourceState != this.STATE_UNDEFINED)) {
+        return;
+    }
+
     World.start();
     for (var i = 0; i < this.threads.length; i++) {
         this.threads[i].cleanUp();
@@ -179,17 +277,61 @@ AbbozzaInterpreter.start = function () {
     this.objects = [];
 }
 
+
+/**
+ * This operation is executed by a timer to repeatedly execute steps.
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.doStep = function () {
+    // If the source is currently running ...
+    if ((AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_UNDEFINED) || (AbbozzaInterpreter.sourceState != AbbozzaInterpreter.STATE_UNDEFINED)) {
+        return;
+    }
+
+    if ((AbbozzaInterpreter.state != AbbozzaInterpreter.STATE_RUNNING) &&
+            (AbbozzaInterpreter.state != AbbozzaInterpreter.STATE_PAUSED)) {
+        return;
+    }
+
+    // Repeat execute step, while
+    // - stepping is deactivated
+    // - not waiting for animation
+    // - entry is blocking
+    // But at least once.
+    if (!Abbozza.waitingForAnimation) {
+        var nonBlocking = false;
+        var steps = 0;
+        do  { 
+            nonBlocking = AbbozzaInterpreter.executeStep();          
+            steps++;
+        } while ( (steps <= 10000) && !nonBlocking && !Abbozza.waitingForAnimation && AbbozzaInterpreter.speedRunning && (AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_RUNNING) );
+        // If RUNNING automatically execute the next step
+        if (AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_RUNNING) {
+            window.setTimeout(AbbozzaInterpreter.doStep, AbbozzaInterpreter.delay);
+        }
+    } else {
+        window.setTimeout(AbbozzaInterpreter.doStep, 0);
+    }
+};
+
+
 /**
  * Execute ONE block step
  *  
- * @returns {undefined}
+ * @returns {boolean} True if at least one thread is non-blocking, false otherwise
  */
 AbbozzaInterpreter.executeStep = function () {
+    // If the source is currently running ...
+    if ((AbbozzaInterpreter.state == AbbozzaInterpreter.STATE_UNDEFINED) || (AbbozzaInterpreter.sourceState != AbbozzaInterpreter.STATE_UNDEFINED)) {
+        return false;
+    }
 
     var threadMsgs = [];
-
+    var nonBlocking = false;
+    
     if (this.atBreakpoint && (this.state == AbbozzaInterpreter.STATE_RUNNING)) {
-        this.state = AbbozzaInterpreter.STATE_PAUSED;
+        this.setState(this.STATE_PAUSED, this.STATE_UNDEFINED);
         var newEvent = new CustomEvent("abz_breakpoint");
         document.dispatchEvent(newEvent);
         this.atBreakpoint = false;
@@ -201,13 +343,14 @@ AbbozzaInterpreter.executeStep = function () {
                 }
             }
         }
-        return;
+        return false;
     }
 
     var state = Thread.STATE_FINISHED;
     for (var idx = 0; idx < this.threads.length; idx++) {
-        if (this.threads[idx] && this.threads[idx].state < Thread.STATE_FINISHED) {
-            this.threads[idx].executeStep();
+        var thread = this.threads[idx];
+        if (thread && (thread.state < Thread.STATE_FINISHED)) {
+            nonBlocking = nonBlocking || thread.executeStep();
             var tstate = this.threads[idx].state;
             if ((tstate == Thread.STATE_BREAKPOINT) && (state != Thread.STATE_ABORTED)) {
                 state = Thread.STATE_BREAKPOINT;
@@ -234,19 +377,299 @@ AbbozzaInterpreter.executeStep = function () {
 
     // All Threads finished 
     if (state == Thread.STATE_FINISHED) {
-        this.state = AbbozzaInterpreter.STATE_TERMINATED;
+        this.setState(this.STATE_TERMINATED, this.STATE_UNDEFINED);
         this.terminating();
     } else if (state == Thread.STATE_ABORTED) {
-        this.state = AbbozzaInterpreter.STATE_ERROR;
+        this.setState(this.STATE_ERROR, this.STATE_UNDEFINED);
         this.terminating();
     } else if (Abbozza.exceptions.length > 0) {
         // Check if there are thrown and untreated exceptions
-        this.state = AbbozzaInterpreter.STATE_ERROR;
+        this.setState(this.STATE_ERROR, this.STATE_UNDEFINED);
         this.terminating();
     } else if (state == Thread.STATE_BREAKPOINT) {
         this.atBreakpoint = true;
     }
+    
+    return nonBlocking;
 };
+
+
+/**
+ ** Source Interpreter
+ **/
+
+AbbozzaInterpreter.sourceInterpreter = null;
+
+/**
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.resetSource = function () {
+    // cleanup source threads
+    for ( var idx = 0; idx < this.sourceThreads.length; idx++ ) {
+        if ( this.sourceThreads[idx] ) {
+            this.sourceThreads[idx].cleanUp();
+        }
+    }
+    
+    this.sourceThreads = [];
+    Abbozza.exceptions = [];
+    
+    this.setSpeed(document.getElementById("speed").value);
+
+    World.reset();
+ 
+    // Initialize the global interpreter, father of all
+    this.sourceCode = Abbozza.sourceEditor.getValue();
+    AbbozzaInterpreter.sourceInterpreter = new Interpreter(this.sourceCode, World._initSourceInterpreter);
+
+    this.setState(AbbozzaInterpreter.STATE_UNDEFINED, AbbozzaInterpreter.STATE_READY);
+
+    var newEvent = new CustomEvent("abz_reset");
+    document.dispatchEvent(newEvent);
+}
+
+/**
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.stepSource = function () {
+    // If the source is currently running
+    if ((this.sourceState == this.STATE_UNDEFINED) || (this.state != this.STATE_UNDEFINED)) {
+        // Switch to blocks
+        this.switchToSource();
+    }
+
+    switch (this.sourceState) {
+        case AbbozzaInterpreter.STATE_READY:
+            // Do the first step and pause
+            this.startSource();
+            this.setState(this.STATE_UNDEFINED, this.STATE_PAUSED);
+            this.doSourceStep();
+            break;
+        case AbbozzaInterpreter.STATE_RUNNING:
+            // Switch to pause
+            this.setState(this.STATE_UNDEFINED, this.STATE_PAUSED);
+            break;
+        case AbbozzaInterpreter.STATE_PAUSED:
+            // do a step
+            this.doSourceStep();
+            break;
+        case AbbozzaInterpreter.STATE_TERMINATED:
+        case AbbozzaInterpreter.STATE_ERROR:
+            // Reset and do a step
+            this.resetSource();
+            this.startSource();
+            this.setState(this.STATE_UNDEFINED, this.STATE_PAUSED);
+            this.doSourceStep();
+            break;
+        default:
+            // Do the first step and pause
+            this.resetSource();
+            this.startSource();
+            this.setState(this.STATE_UNDEFINED, this.STATE_PAUSED);
+            this.doSourceStep();
+            break;
+    }
+};
+
+
+/**
+ * Operations for the interpretation of source code
+ */
+AbbozzaInterpreter.runSource = function (speedRun = false) {
+
+    this.speedRunning = speedRun;
+
+    // If the source is currently running
+    if ((this.sourceState == this.STATE_UNDEFINED) || (this.state != this.STATE_UNDEFINED)) {
+        // Switch to blocks
+        this.switchToSource();
+    }
+
+    switch (this.sourceState) {
+        case AbbozzaInterpreter.STATE_READY:
+            // Do the first step and pause
+            this.startSource();
+            this.setState(this.STATE_UNDEFINED, this.STATE_RUNNING);
+            this.doSourceStep();
+            break;
+        case AbbozzaInterpreter.STATE_RUNNING:
+            // Switch to pause
+            this.setState(this.STATE_UNDEFINED, this.STATE_PAUSED);
+            break;
+        case AbbozzaInterpreter.STATE_PAUSED:
+            // do a step
+            this.setState(this.STATE_UNDEFINED, this.STATE_RUNNING);
+            this.doSourceStep();
+            break;
+        case AbbozzaInterpreter.STATE_TERMINATED:
+        case AbbozzaInterpreter.STATE_ERROR:
+            // Reset and do a step
+            this.resetSource();
+            this.startSource();
+            this.setState(this.STATE_UNDEFINED, this.STATE_RUNNING);
+            this.doSourceStep();
+            break;
+        default:
+            // Do the first step and pause
+            this.resetSource();
+            this.startSource();
+            this.setState(this.STATE_UNDEFINED, this.STATE_PAUSED);
+            this.doSourceStep();
+            break;
+    }
+}
+
+
+/**
+ * Prepare the first step of execution after init
+ * 
+ * @returns {AbbozzaInterpreter.startBlocks}
+ */
+AbbozzaInterpreter.startSource = function (speedRun = false) {
+    // If the blocks are currently running ...
+    if ((this.sourceState == this.STATE_UNDEFINED) || (this.state != this.STATE_UNDEFINED)) {
+        return;
+    }
+
+    World.start();
+    
+    for ( var i = 0; i < this.sourceThreads.length; i++ ) {
+        this.sourceThreads[i].cleanUp();
+    }
+    this.setupSourceThreads();
+    
+    this.executedSteps = 0;
+    Abbozza.exceptions = [];
+    
+    if ( speedRun ) this.speedRun(); 
+}
+
+
+AbbozzaInterpreter.speedRun = function () {
+
+    this.setState(this.STATE_UNDEFINED, this.STATE_RUNNING);
+    
+    while (this.sourceState == this.STATE_RUNNING ) {
+        try {
+            var stepped = AbbozzaInterpreter.sourceInterpreter.step();
+            World.step();
+            if (!stepped) {
+                this.setState(this.STATE_UNDEFINED, this.STATE_TERMINATED);
+                if (AbbozzaInterpreter.lastMark)
+                    AbbozzaInterpreter.lastMark.clear();
+                World.terminate();
+                Abbozza.openOverlay(_("gui.finished"));
+                Abbozza.overlayWaitForClose();
+            }
+        } catch (e) {
+            this.setState(this.STATE_UNDEFINED, this.STATE_ERROR);
+            running = false;
+            World.error();
+            Abbozza.openOverlay(_("gui.aborted_by_error"));
+            Abbozza.appendOverlayText("\n");
+            Abbozza.appendOverlayText(e);
+            Abbozza.overlayWaitForClose();
+        }
+    }
+
+    // Simple Speedrun
+    // AbbozzaInterpreter.sourceInterpreter.run();
+    // return;
+}
+
+/**
+ * This operation is executed by a timer to repeatedly execute steps.
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.doSourceStep = function () {
+    // If the blocks are currently running ...
+    if ((AbbozzaInterpreter.sourceState == AbbozzaInterpreter.STATE_UNDEFINED) || (AbbozzaInterpreter.state != AbbozzaInterpreter.STATE_UNDEFINED)) {
+        return;
+    }
+
+    if ((AbbozzaInterpreter.sourceState != AbbozzaInterpreter.STATE_RUNNING) &&
+            (AbbozzaInterpreter.sourceState != AbbozzaInterpreter.STATE_PAUSED)) {
+        return;
+    }
+
+    if (!Abbozza.waitingForAnimation) {
+        var nonBlocking = false;
+        var steps = 0;
+        do  { 
+            nonBlocking = AbbozzaInterpreter.executeSourceStep();          
+            steps++;
+        } while ( (steps <= 10000) && !nonBlocking && !Abbozza.waitingForAnimation && AbbozzaInterpreter.speedRunning && (AbbozzaInterpreter.sourceState == AbbozzaInterpreter.STATE_RUNNING) );
+        // If RUNNING automatically execute the next step
+        if (AbbozzaInterpreter.sourceState == AbbozzaInterpreter.STATE_RUNNING)
+            window.setTimeout(AbbozzaInterpreter.doSourceStep, AbbozzaInterpreter.delay);
+    } else {
+        window.setTimeout(AbbozzaInterpreter.doSourceStep, 0);
+    }
+}
+
+
+AbbozzaInterpreter.executeSourceStep = function () {
+    // If the blocks are currently running ...
+    if ((this.sourceState == this.STATE_UNDEFINED) || (this.state != this.STATE_UNDEFINED)) {
+        return false;
+    }
+
+    var threadMsgs = [];
+    var nonBlocking = false;
+    
+    // Do one step in each thread
+    var state = Thread.STATE_FINISHED;
+    for ( var idx = 0; idx < this.sourceThreads.length; idx++ ) {
+        var thread = this.sourceThreads[idx];
+        console.log("Thread " + thread.id + " state : " + thread.state );
+        if ( thread && thread.state < Thread.STATE_FINISHED ) {
+            nonBlocking = nonBlocking || thread.executeStep();
+            var tstate = thread.state;
+            if ( tstate == Thread.STATE_ABORTED ) {
+                state = Thread.STATE_ABORTED;
+            } else if ( (tstate <= Thread.STATE_WAITING) && (state == Thread.STATE_FINISHED)) {
+                state = Thread.STATE_OK;
+            }
+            if ( thread.stateMsg != null ) {
+                threadMsgs.push(thread.stateMsg);
+            }
+        }
+    }
+    World.step();
+
+    for (idx = 0; idx < threadMsgs.length; idx++) {
+        var msg = threadMsgs[idx];
+        window.setTimeout(function () {
+            Abbozza.openOverlay(_(msg));
+            Abbozza.overlayWaitForClose();
+        }, 1);
+    }
+    
+    console.log("Threads : " + state);
+    // All Threads finished
+    if (state == Thread.STATE_FINISHED) {
+        this.setState(this.STATE_UNDEFINED, this.STATE_TERMINATED);
+        this.terminating();
+    } else if (state == Thread.STATE_ABORTED) {
+        this.setState(this.STATE_UNDEFINED, this.STATE_ERROR);
+        this.terminating();
+    } else if (Abbozza.exceptions.length > 0) {
+        // Check if there are thrown and untreated exceptions
+        this.setState(this.STATE_UNDEFINED, this.STATE_ERROR);
+        this.terminating();
+    } else if (state == Thread.STATE_BREAKPOINT) {
+        this.atBreakpoint = true;
+    }
+    
+    return nonBlocking;
+};
+
+/**
+ ** THREADS 
+ **/
 
 /**
  * Initialize threads
@@ -256,12 +679,15 @@ AbbozzaInterpreter.executeStep = function () {
 AbbozzaInterpreter.setupThreads = function () {
     var newThread;
     this.threads = [];
+    this.currentThreadId = 0;
+
     ErrorMgr.clearErrors();
     if (World.getStartBlocks) {
-        // Ask the world for Start block is any is provided
+        // Ask the world for Start block
         var startBlocks = World.getStartBlocks();
         for (var idx = 0; idx < startBlocks.length; idx++) {
-            newThread = new Thread();
+            this.currentThreadId++;
+            newThread = new Thread(this.currentThreadId);
             newThread.setup(startBlocks[idx]);
             this.threads.push(newThread);
         }
@@ -272,11 +698,120 @@ AbbozzaInterpreter.setupThreads = function () {
         for (var i = 0; i < topBlocks.length; i++) {
             var block = topBlocks[i];
             if (block.type.startsWith("main")) {
-                newThread = new Thread();
+                newThread = new Thread(0);
                 newThread.setup(block);
                 this.threads.push(newThread);
             }
         }
+    }
+}
+
+/**
+ * 
+ * @param {type} block
+ * @param {type} parameters
+ * @returns {Number} The thread id of the new thread;
+ */
+AbbozzaInterpreter.startThread = function (block, parameters) {
+    if (this.isRunningSource()) {
+        return -1;
+    } else {
+        this.currentThreadId++;
+        newThread = new Thread(this.currentThreadId);
+        newThread.setup(null);
+        newThread.callFunction(block, parameters);
+        this.threads.push(newThread);
+        return this.currentThreadId;
+    }
+}
+
+/**
+ * Get the thread object for the id.
+ * 
+ * @param {type} id
+ * @returns {Array}
+ */
+AbbozzaInterpreter.getThread = function (id) {
+    if (id < 0)
+        return null;
+
+    for (var i = 0; i < this.threads.length; i++) {
+        if (this.threads[i].id == id) {
+            console.log("Thread " + id + " : ");
+            console.log(this.threads[i]);
+            return this.threads[i];
+        }
+    }
+
+    return null;
+}
+
+
+/**
+ * Initialize threads
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.setupSourceThreads = function () {
+    var newThread;
+    this.sourceThreads = [];
+ 
+    // Start the main thread
+    newThread = new SourceThread(0);
+    this.currentThreadId = 0;
+    newThread.setup(this.sourceInterpreter,"main()");
+    this.sourceThreads.push(newThread);
+}
+
+/**
+ * Start an additional source thread
+ * 
+ * @returns {undefined}
+ */
+AbbozzaInterpreter.startSourceThread = function(code) {
+    if (!AbbozzaInterpreter.isRunningSource()) {
+        return -1;
+    } else {
+        AbbozzaInterpreter.currentThreadId++;
+        newThread = new SourceThread(AbbozzaInterpreter.currentThreadId);
+        newThread.setup(AbbozzaInterpreter.sourceInterpreter,code);
+        AbbozzaInterpreter.sourceThreads.push(newThread);
+        return AbbozzaInterpreter.currentThreadId;
+    }
+}
+
+/**
+ * Get the thread object for the id.
+ * 
+ * @param {type} id
+ * @returns {Array}
+ */
+AbbozzaInterpreter.getSourceThread = function (id) {
+    if (id < 0)
+        return null;
+
+    for (var i = 0; i < this.sourceThreads.length; i++) {
+        if (this.sourceThreads[i].id == id) {
+            return this.sourceThreads[i];
+        }
+    }
+
+    return null;
+}
+
+AbbozzaInterpreter.isThreadRunning = function(threadId) {
+    var thread = AbbozzaInterpreter.getSourceThread(threadId);
+    if ( thread ) {
+        return thread.isRunning();
+    }
+    return false;
+}
+
+AbbozzaInterpreter.waitForThread = function(threadId) {
+    var thread = AbbozzaInterpreter.getSourceThread(threadId);
+    if ( thread ) {
+        AbbozzaInterpreter.activeThread.state = Thread.STATE_WAITING;
+        AbbozzaInterpreter.activeThread.waitingFor = thread;
     }
 }
 
@@ -286,7 +821,11 @@ AbbozzaInterpreter.setupThreads = function () {
  * @returns {undefined}
  */
 AbbozzaInterpreter.terminating = function () {
-    // window.clearInterval(this.worker);    
+    // If the source is currently running ...
+    if ((this.state == this.STATE_UNDEFINED) || (this.sourceState != this.STATE_UNDEFINED)) {
+        return;
+    }
+
     switch (this.state) {
         case AbbozzaInterpreter.STATE_ERROR:
             var eventDetail = null;
@@ -317,7 +856,7 @@ AbbozzaInterpreter.terminating = function () {
                     this.threads[idx].cleanUp();
                 }
             }
-            if ( show ) {
+            if (show) {
                 Abbozza.openOverlay(_("gui.finished"));
                 Abbozza.overlayWaitForClose();
             }
@@ -497,10 +1036,17 @@ AbbozzaInterpreter.popLocalSymbols = function () {
 
 
 AbbozzaInterpreter.getSymbol = function (key, dim) {
-    var val = this.getLocalSymbol(key);
-    if (val == null) {
-        val = this.getGlobalSymbol(key);
+    var val = null;
+
+    if (this.sourceState != this.STATE_UNDEFINED) {
+        val = this.sourceInterpreter.getValueFromScope(key);
+    } else {
+        val = this.getLocalSymbol(key);
+        if (val == null) {
+            val = this.getGlobalSymbol(key);
+        }
     }
+
     // Run through the dimensions
     if (dim != null) {
         for (var i = 0; i < dim.length; i++) {
@@ -614,6 +1160,7 @@ function ExecStackEntry(block, isStatement, enfType = null) {
     this.enfType = enfType;
     this.state = 0; // Entry ok
     this.stateMsg = null; // No message
+    this.nonBlocking = false; // By default the block can block the execution
 }
 ;
 
@@ -653,517 +1200,66 @@ ExecStackEntry.prototype.finished = function () {
 };
 
 
+
+
 /**
- * A class for handling threads
+ **  
+ **/
+
+/**
  * 
+ * @param {type} interpreter
+ * @param {type} scope
+ * @param {type} wrappers
  * @returns {undefined}
  */
-Thread = function () {
-    this.callList = [];
-    this.execStack = [];
-    this.localSymbols = [];
-    this.highlightedBlock = null;
-    this.state = 0;
-    this.stateMsg = null;
-}
-
-Thread.STATE_OK = 0;
-Thread.STATE_BREAKPOINT = 1;
-Thread.STATE_FINISHED = 2;
-Thread.STATE_ABORTED = 3;
-
-Thread.prototype.setup = function (block) {
-    this.callList = [];
-    this.execStack = [];
-    this.localSymbols = [];
-
-    // Create an entry for the start block
-    newEntry = new ExecStackEntry(block, true);
-    this.execStack.push(newEntry);
-}
-
-
-
-/**
- * Execute ONE step
- *  
- * @returns {undefined}
- */
-Thread.prototype.executeStep = function () {
-
-    AbbozzaInterpreter.activeThread = this;
-
-    this.state = Thread.STATE_OK;
-    this.stateMsg = null;
-
-    if (this.execStack.length == 0) {
-        this.state = Thread.STATE_FINISHED;
-        return;
-    }
-
-    // Execute the top block
-    var topEntry = this.execStack[this.execStack.length - 1];
-    if (topEntry) {
-        if ((this.highlightedBlock != null) && (this.highlightedBlock != topEntry.block)) {
-            this.highlightedBlock.setHighlighted(false);
-        }
-        this.highlightedBlock = topEntry.block;
-        this.highlightedBlock.setHighlighted(true);
-
-        if (topEntry.phase >= 0) {
-            topEntry.execute();
-            // Execution of entry ended in error
-            if (topEntry.state != 0) {
-                this.state = Thread.STATE_ABORTED;
-                this.stateMsg = topEntry.stateMsg;
-                return;
-            } else if (this.state == Thread.STATE_ABORTED) {
-                return;
-            }
-        }
-
-        // After execution, check if block is finished
-        if (topEntry.phase < 0) {
-            // Remove entry from execution stack
-            this.execStack.pop();
-
-            if (topEntry.isStatement == false) {
-                // If it has a return value, take it and insert it as callResult into new top
-                var newTop = this.execStack[this.execStack.length - 1];
-                if (newTop) {
-                    newTop.callResult = topEntry.returnValue;
-                }
-            } else {
-                // Execute the next statement
-                var nextBlock = topEntry.block.getNextBlock();
-                if (nextBlock) {
-                    var newEntry = new ExecStackEntry(nextBlock, true);
-                    this.execStack.push(newEntry);
-                }
-            }
-
-            if (topEntry.block.type == "func_call") {
-                this.callList.push([AbbozzaInterpreter.executedSteps, null, null]);
-            }
-            topEntry = this.execStack[this.execStack.length - 1];
-        }
-
-    } else {
-        // Remove empty entry
-        this.execStack.pop();
-    }
-
-    // Check for breakpoint
-    topEntry = this.execStack[this.execStack.length - 1];
-    if (this.atBreakpoint()) {
-        this.state = Thread.STATE_BREAKPOINT;
-    }
-
-    // Terminate if the stack is empty
-    if (this.execStack.length == 0) {
-        this.state = Thread.STATE_FINISHED;
-    }
-};
-
-
-
-Thread.prototype.highlightTop = function () {
-    if (this.highlightedBlock) {
-        this.highlightedBlock.setHighlighted(false);
-        this.highlightedBlock = null;
-    }
-    var topEntry = this.execStack[this.execStack.length - 1];
-    if (topEntry) {
-        if ((this.highlightedBlock != null) && (this.highlightedBlock != topEntry.block)) {
-            this.highlightedBlock.setHighlighted(false);
-        }
-        this.highlightedBlock = topEntry.block;
-        this.highlightedBlock.setHighlighted(true);
-    }
-}
-
-Thread.prototype.atBreakpoint = function () {
-    var topEntry = this.execStack[this.execStack.length - 1];
-    if (topEntry && (topEntry.phase == 0) && (topEntry.block.isBreakpoint)) {
-        return true;
-    }
-    return false;
-}
-
-
-Thread.prototype.cleanUp = function () {
-    if (this.highlightedBlock) {
-        this.highlightedBlock.setHighlighted(false);
-        this.highlightedBlock = null;
-    }
-}
-
-
-Thread.prototype.callBlock = function (block) {
-    if (!block)
-        return false;
-
-    var entry = new ExecStackEntry(block);
-    this.execStack.push(entry);
-    return true;
-};
-
-
-Thread.prototype.callInput = function (block, name, enfType = null) {
-    if (!block)
-        return false;
-
-    if (block.getInput(name) == null) {
-        ErrorMgr.addError(block, _("err.NOINPUT"));
-        this.state = Thread.STATE_ABORTED;
-        return false;
-    }
-    var calledBlock = block.getInputTargetBlock(name);
-    if (calledBlock == null) {
-        ErrorMgr.addError(block, _("err.NOINPUT"));
-        this.state = Thread.STATE_ABORTED;
-        return false;
-    }
-
-    var entry = new ExecStackEntry(calledBlock, false, enfType);
-    if ((enfType == "NUMBER") || (enfType == "DECIMAL")) {
-        entry.returnValue = Number(entry.returnValue);
-    } else if ((enfType == "STRING") || (enfType == "TEXT")) {
-        entry.returnValue = String(entry.returnValue);
-    } else if (enfType == "BOOLEAN") {
-        if (typeof entry.returnValue == "string") {
-            entry.returnValue = (entry.returnValue != "");
-        } else if (typeof entry.returnValue == "number") {
-            entry.returnValue = (entry.returnValue != 0);
-        }
-    }
-    this.execStack.push(entry);
-
-    return true;
-};
-
-
-Thread.prototype.callStatement = function (block, name = null) {
-    if (!block)
-        return false;
-
-    var calledBlock;
-    if (name != null) {
-        calledBlock = block.getInputTargetBlock(name);
-    } else {
-        calledBlock = block;
-    }
-
-    if (calledBlock == null) {
-        return false;
-    }
-
-    var entry = new ExecStackEntry(calledBlock, true);
-    this.execStack.push(entry);
-    return true;
-};
-
-Thread.prototype.callFunction = function (block, parameters) {
-    if (!block)
-        return false;
-
-    var entry;
-    if (block.rettype != "VOID") {
-        entry = new ExecStackEntry(block, false);
-    } else {
-        entry = new ExecStackEntry(block, true);
-    }
-    entry.args = parameters;
-
-    this.execStack.push(entry);
-    this.callList.push([AbbozzaInterpreter.executedSteps, block, parameters]);
-
-    return true;
-};
-
-
-Thread.prototype.endFunctionCall = function (returnEntry) {
-    while ((this.execStack.length > 0) && (this.execStack[this.execStack.length - 1].block.type != "func_decl")) {
-        this.execStack.pop();
-    }
-    if (this.execStack.length > 0) {
-        var funcEntry = this.execStack[this.execStack.length - 1];
-        if ((funcEntry.block.rettype == "STRING") || (funcEntry.block.rettype == "TEXT")) {
-            funcEntry.returnValue = String(returnEntry.returnValue);
-        } else if ((funcEntry.block.rettype == "NUMBER") || (funcEntry.block.rettype == "DECIMAL")) {
-            funcEntry.returnValue = Number(returnEntry.returnValue);
-        } else if (funcEntry.block.rettype == "BOOLEAN") {
-            if (typeof entry.returnValue == "string") {
-                funcEntry.returnValue = (returnEntry.returnValue != "");
-            } else if (typeof entry.returnValue == "number") {
-                funcEntry.returnValue = (returnEntry.returnValue != 0);
-            }
-        } else {
-            funcEntry.returnValue = returnEntry.returnValue;
-        }
-        funcEntry.finished();
-    }
-    // this.callList.push([AbbozzaInterpreter.executedSteps, null, null]);
-};
-
-
-Thread.prototype.setLocalSymbol = function (key, value, dim = null) {
-    if (this.localSymbols.length == 0)
-        return null;
-
-    key = "_" + key + "_";
-    var symbols = this.localSymbols[this.localSymbols.length - 1];
-    if (dim == null) {
-        symbols[key] = value;
-    } else {
-        var ar = this.globalSymbols[key];
-        for (var i = 0; i < dim.length - 1; i++) {
-            ar = ar[dim[i]];
-        }
-        ar[dim[dim.length - 1]] = value;
-    }
-};
-
-
-Thread.prototype.getLocalSymbol = function (key) {
-    if (this.localSymbols.length == 0)
-        return null;
-
-    key = "_" + key + "_";
-    var symbols = this.localSymbols[this.localSymbols.length - 1];
-    return symbols[key];
-};
-
-
-Thread.prototype.getCallList = function () {
-    return this.callList;
-}
-
-
-
-AbbozzaInterpreter.sourceInterpreter = null;
-AbbozzaInterpreter.SOURCE_READY = 0;
-AbbozzaInterpreter.SOURCE_PAUSED = 1;
-AbbozzaInterpreter.SOURCE_RUNNING = 2;
-AbbozzaInterpreter.SOURCE_TERMINATED = 3;
-AbbozzaInterpreter.SOURCE_ERROR = 4;
-AbbozzaInterpreter.sourceState = 0;
-
-
-AbbozzaInterpreter.resetSource = function() {
-    World.reset();
-    Abbozza.exceptions = [];
-    
-    var code = Abbozza.sourceEditor.getValue();
-    AbbozzaInterpreter.sourceInterpreter = new Interpreter(code, World._initSourceInterpreter);
-
-    AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_READY;
-    var newEvent = new CustomEvent("abz_reset");
-    document.dispatchEvent(newEvent);
-}
-
-/**
- * Prepare the first step of execution after init
- * 
- * @returns {AbbozzaInterpreter.startBlocks}
- */
-AbbozzaInterpreter.startSource = function () {
-    World.start();
-    this.executedSteps = 0;
-    Abbozza.exceptions = [];
-}
-
-
-/*
- AbbozzaInterpreter.stepSource = function() {
- if ((AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_STOPPED)
- || (AbbozzaInterpreter.sourceState >= AbbozzaInterpreter.SOURCE_ABORTED)) {
- 
- }
- AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
- window.setTimeout(AbbozzaInterpreter.doSourceStep, 0);
- }
- */
-
-AbbozzaInterpreter.stepSource = function () {
-    switch (AbbozzaInterpreter.sourceState) {
-        case AbbozzaInterpreter.SOURCE_READY:
-            // Do the first step and pause
-            this.startSource();
-            this.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
-            this.doSourceStep();
-            break;
-        case AbbozzaInterpreter.SOURCE_RUNNING:
-            // Switch to pause
-            this.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
-            break;
-        case AbbozzaInterpreter.SOURCE_PAUSED:
-            // do a step
-            this.doSourceStep();
-            break;
-        case AbbozzaInterpreter.SOURCE_TERMINATED:
-        case AbbozzaInterpreter.SOURCE_ERROR:
-            // Reset and do a step
-            this.resetSource();
-            this.startSource();
-            this.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
-            this.doSourceStep();
-            break;
-        default:
-            // Do the first step and pause
-            this.resetSource();
-            this.startSource();
-            this.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
-            this.doSourceStep();
-            break;
-    }
-};
-
-
-/**
- * Operations for the interpretation of source code
- */
-AbbozzaInterpreter.runSource = function () {
-    switch (AbbozzaInterpreter.sourceState) {
-        case AbbozzaInterpreter.SOURCE_READY:
-            // Do the first step and pause
-            this.startSource();
-            this.sourceState = AbbozzaInterpreter.SOURCE_RUNNING;
-            this.doSourceStep();
-            break;
-        case AbbozzaInterpreter.SOURCE_RUNNING:
-            // Switch to pause
-            this.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
-            break;
-        case AbbozzaInterpreter.SOURCE_PAUSED:
-            // do a step
-            this.sourceState = AbbozzaInterpreter.SOURCE_RUNNING;
-            this.doSourceStep();
-            break;
-        case AbbozzaInterpreter.SOURCE_TERMINATED:
-        case AbbozzaInterpreter.SOURCE_ERROR:
-            // Reset and do a step
-            this.resetSource();
-            this.startSource();
-            this.sourceState = AbbozzaInterpreter.SOURCE_RUNNING;
-            this.doSourceStep();
-            break;
-        default:
-            // Do the first step and pause
-            this.resetSource();
-            this.startSource();
-            this.sourceState = AbbozzaInterpreter.SOURCE_PAUSED;
-            this.doSourceStep();
-            break;
-    }
-}
-
-
-
-
-/**
- * This operation is executed by a timer to repeatedly execute steps.
- * 
- * @returns {undefined}
- */
-AbbozzaInterpreter.doSourceStep = function () {
-    if ((AbbozzaInterpreter.sourceState != AbbozzaInterpreter.SOURCE_RUNNING) &&
-            (AbbozzaInterpreter.sourceState != AbbozzaInterpreter.SOURCE_PAUSED)) {
-        return;
-    }
-
-    if (!Abbozza.waitingForAnimation) {
-        AbbozzaInterpreter.executeSourceStep();
-        if (AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_RUNNING)
-            window.setTimeout(AbbozzaInterpreter.doSourceStep, AbbozzaInterpreter.delay);
-    } else {
-        window.setTimeout(AbbozzaInterpreter.doSourceStep, 0);
-    }
-}
-
-
-AbbozzaInterpreter.executeSourceStep = function () {
-    /*
-    if (AbbozzaInterpreter.sourceState == AbbozzaInterpreter.SOURCE_READY) {
-        World._onStart();
-        var code = Abbozza.sourceEditor.getValue();
-        AbbozzaInterpreter.sourceInterpreter = new Interpreter(code, World._initSourceInterpreter);
-    }
-    */
-   
-    try {
-        var state = AbbozzaInterpreter.sourceInterpreter.stateStack[AbbozzaInterpreter.sourceInterpreter.stateStack.length - 1];
-        var spos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.start);
-        var epos = Abbozza.sourceEditor.getDoc().posFromIndex(state.node.end);
-        if (AbbozzaInterpreter.lastMark)
-            AbbozzaInterpreter.lastMark.clear();
-        AbbozzaInterpreter.lastMark = Abbozza.sourceEditor.getDoc().markText(spos, epos, {className: "sourceMarker"});
-        var stepped = AbbozzaInterpreter.sourceInterpreter.step();
-        World.step();
-        if (!stepped) {
-            AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_TERMINATED;
-            if (AbbozzaInterpreter.lastMark)
-                AbbozzaInterpreter.lastMark.clear();
-            World.terminate();
-            Abbozza.openOverlay(_("gui.finished"));
-            Abbozza.overlayWaitForClose();
-        }
-    } catch (e) {
-        AbbozzaInterpreter.sourceState = AbbozzaInterpreter.SOURCE_ERROR;
-        if (AbbozzaInterpreter.lastMark) {
-            AbbozzaInterpreter.lastMark.clear();
-            AbbozzaInterpreter.lastMark = Abbozza.sourceEditor.getDoc().markText(spos, epos, {className: "sourceErrorMarker"});
-        }
-        
-        World.error();
-        Abbozza.openOverlay(_("gui.aborted_by_error"));
-        Abbozza.appendOverlayText("\n");
-        Abbozza.appendOverlayText(e);
-        Abbozza.overlayWaitForClose();
-    }
-}
-
-AbbozzaInterpreter.createWrappers = function(interpreter,scope,wrappers) {
-    for ( var i = 0; i < wrappers.length; i++) {
+AbbozzaInterpreter.createWrappers = function (interpreter, scope, wrappers) {
+    for (var i = 0; i < wrappers.length; i++) {
         var name = wrappers[i][0];
         var async = wrappers[i][1];
         var object = wrappers[i][2];
         var func = wrappers[i][3];
-        console.log(wrappers[i]);
-        interpreter.setProperty(scope,name,
-            AbbozzaInterpreter.createWrapper(interpreter,async,object,func)
-        );
+        var nonBlocking = wrappers[i][4];
+        interpreter.setProperty(scope, name,
+                AbbozzaInterpreter.createWrapper(interpreter, async, object, func, nonBlocking)
+                );
     }
 }
 
-AbbozzaInterpreter.createWrapper = function(interpreter,async,obj,func) {
+AbbozzaInterpreter.createWrapper = function (interpreter, async, obj, func, nonBlocking = false) {
     var object = obj;
     var method = func;
-    if ( async ) {
+    if (async) {
         return interpreter.createAsyncFunction(
-            function() {
-                return method.apply(object,Array.from(arguments));
-            }       
+                function () {
+                    return method.apply(object, Array.from(arguments));
+                    AbbozzaInterpreter.currentThread.nonBlocking = nonBlocking;
+                }
         );
     } else {
         return interpreter.createNativeFunction(
-            function() {
-                return method.apply(object,Array.from(arguments));
-            }       
+                function () {
+                    return method.apply(object, Array.from(arguments));
+                    AbbozzaInterpreter.currentThread.nonBlocking = nonBlocking;
+                }
         );
     }
 }
 
-AbbozzaInterpreter.createNativeWrappersByName = function(interpreter,scope,obj,funcs) {
+AbbozzaInterpreter.createNativeWrappersByName = function (interpreter, scope, obj, funcs) {
     for (var i = 0; i < funcs.length; i++) {
         interpreter.setProperty(scope, funcs[i],
-                AbbozzaInterpreter.createWrapper(interpreter,false,obj,obj[funcs[i]]));
+                AbbozzaInterpreter.createWrapper(interpreter, false, obj, obj[funcs[i]]));
     }
 }
 
-AbbozzaInterpreter.createAsyncWrappersByName = function(interpreter,scope,obj,funcs) {
+AbbozzaInterpreter.createAsyncWrappersByName = function (interpreter, scope, obj, funcs) {
     for (var i = 0; i < funcs.length; i++) {
         interpreter.setProperty(scope, funcs[i],
-                AbbozzaInterpreter.createWrapper(interpreter,true,obj,obj[funcs[i]]));
+                AbbozzaInterpreter.createWrapper(interpreter, true, obj, obj[funcs[i]]));
     }
+}
+
+
+AbbozzaInterpreter.createWrappers = function(interpreter,scope,object, wrappers) {
 }

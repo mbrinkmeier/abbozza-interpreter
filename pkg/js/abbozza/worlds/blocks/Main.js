@@ -202,3 +202,346 @@ Abbozza.VariableDeclControl = {
 
 Blockly.Blocks['devices_control'] = Abbozza.VariableDeclControl;
 Blockly.Blocks['var_control'] = Abbozza.VariableDeclControl;
+
+
+/*
+**
+** THREADS
+**
+**/
+
+
+/**
+ * Start Thread
+ */
+Abbozza.FunctionStartThread = {
+    callLabel: null,
+    init: function () {
+        this.setHelpUrl(Abbozza.HERLP_URL);
+        this.setColour(ColorMgr.getColor("cat.FUNC"));
+        var thisBlock = this;
+        this.callLabel = new Blockly.FieldLabel(__("func.START_THREAD", 0));
+        this.callLabel2 = new Blockly.FieldLabel(__("func.START_THREAD", 1));
+        this.appendDummyInput("INP")
+                .appendField(this.callLabel)
+                .appendField(new FunctionDropdown(this, function(entry) {
+                    thisBlock.refitInputs(entry);
+                }), "NAME")
+                .appendField(this.callLabel2);
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, "STATEMENT");
+        this.setNextStatement(true, "STATEMENT");
+        this.setTooltip('');
+    },
+    onchange: function () {
+        var name = this.getFieldValue("NAME");
+        // this.refitInputs(name);
+    },
+    refitInputs: function(name) {
+        var symbol = Abbozza.getGlobalSymbol(name);
+
+        if (symbol == null)
+            return;
+
+        var no = Abbozza.deleteInputs(this, "PAR");
+
+        var funcBlock = Abbozza.getTopBlock(name);
+        if (name == null)
+            return;
+
+        if (funcBlock.symbols == null)
+            return;
+
+        var parameters = funcBlock.symbols.getParameters(true);
+        var inp;
+
+        var localeEntry = "func.START_THREAD";
+
+        this.callLabel.setText(__(localeEntry, 0));
+        if (parameters.length == 0) {
+            this.setInputsInline(true);
+        } else {
+            this.setInputsInline(false);
+            for (no = 0; no < parameters.length; no++) {
+                inp = this.appendValueInput("PAR" + no)
+                        .setCheck([parameters[no][1]])
+                        .appendField(parameters[no][0])
+                        .setAlign(Blockly.ALIGN_RIGHT);
+            }
+        }
+
+        // Threads ignore return values
+        if (this.outputConnection != null) {
+            // had output
+            this.unplug(true, true);
+            this.setOutput(false, "STATEMENT");
+            this.setPreviousStatement(true, "STATEMENT");
+            this.setNextStatement(true, "STATEMENT");
+        }
+
+    },
+    mutationToDom: function () {
+        var mutation = document.createElement('mutation');
+        var name = this.getFieldValue("NAME");
+        mutation.setAttribute("name", name);
+
+        // Write parameters to DOM
+        var symbol = Abbozza.getGlobalSymbol(name);
+
+        if (symbol == null) {
+            mutation.setAttribute("type", "VOID");
+            return mutation;
+        }
+
+        var no = 0;
+
+        var funcBlock = Abbozza.getTopBlock(name);
+        if (name == null)
+            return;
+
+        var parameters = funcBlock.symbols.getParameters(true);
+        var el;
+        var t;
+
+        for (no = 0; no < parameters.length; no++) {
+            el = document.createElement("par");
+            el.setAttribute("type", parameters[no][1]);
+            el.setAttribute("name", parameters[no][0])
+            mutation.appendChild(el);
+        }
+
+        mutation.setAttribute("type", symbol[1]);
+
+        return mutation;
+    },
+    domToMutation: function (xmlElement) {
+        var name = xmlElement.getAttribute("name");
+        var type = xmlElement.getAttribute("type");
+
+        var parameters = xmlElement.getElementsByTagName("par");
+        var inp;
+
+        var no = Abbozza.deleteInputs(this, "PAR");
+
+        var localeEntry = "func.START_THREAD";
+
+        this.callLabel.setText(__(localeEntry, 0));
+
+        if (parameters[0] == null) {
+            this.setInputsInline(true);
+        } else {
+            no = 0;
+            while (parameters[no]) {
+                this.setInputsInline(false);
+                inp = this.appendValueInput("PAR" + no).
+                        setCheck([parameters[no].getAttribute("type")]);
+                inp.appendField(parameters[no].getAttribute("name"));
+                inp.setAlign(Blockly.ALIGN_RIGHT);
+                no++;
+            }
+            // this.appendDummyInput("PAR" + no).appendField(") " + __(localeEntry, 1));
+        }
+
+        // Threads ignore return values.
+        this.setOutput(false, "STATEMENT");
+        this.setPreviousStatement(true, "STATEMENT");
+        this.setNextStatement(true, "STATEMENT");
+    }
+};
+
+Blockly.Blocks['func_start_thread'] = Abbozza.FunctionStartThread;
+
+
+
+/**
+ * Start Thread
+ */
+Abbozza.FunctionStartThreadId = {
+    callLabel: null,
+    init: function () {
+        this.setHelpUrl(Abbozza.HERLP_URL);
+        this.setColour(ColorMgr.getColor("cat.FUNC"));
+        var thisBlock = this;
+        this.callLabel = new Blockly.FieldLabel(__("func.START_THREAD", 0));
+        this.callLabel2 = new Blockly.FieldLabel(__("func.START_THREAD", 1));
+        this.appendDummyInput("INP")
+                .appendField(this.callLabel)
+                .appendField(new FunctionDropdown(this, function(entry) {
+                    thisBlock.refitInputs(entry);
+                }), "NAME")
+                .appendField(this.callLabel2);
+        this.setInputsInline(true);
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+        this.setOutput(true,"NUMBER");
+        this.setTooltip('');
+    },
+    onchange: function () {
+        var name = this.getFieldValue("NAME");
+        // this.refitInputs(name);
+    },
+    refitInputs: function(name) {
+        var symbol = Abbozza.getGlobalSymbol(name);
+
+        if (symbol == null)
+            return;
+
+        var no = Abbozza.deleteInputs(this, "PAR");
+
+        var funcBlock = Abbozza.getTopBlock(name);
+        if (name == null)
+            return;
+
+        if (funcBlock.symbols == null)
+            return;
+
+        var parameters = funcBlock.symbols.getParameters(true);
+        var inp;
+
+        var localeEntry = "func.START_THREAD";
+
+        this.callLabel.setText(__(localeEntry, 0));
+        if (parameters.length == 0) {
+            this.setInputsInline(true);
+        } else {
+            this.setInputsInline(false);
+            for (no = 0; no < parameters.length; no++) {
+                inp = this.appendValueInput("PAR" + no)
+                        .setCheck([parameters[no][1]])
+                        .appendField(parameters[no][0])
+                        .setAlign(Blockly.ALIGN_RIGHT);
+            }
+        }
+    },
+    mutationToDom: function () {
+        var mutation = document.createElement('mutation');
+        var name = this.getFieldValue("NAME");
+        mutation.setAttribute("name", name);
+
+        // Write parameters to DOM
+        var symbol = Abbozza.getGlobalSymbol(name);
+
+        if (symbol == null) {
+            mutation.setAttribute("type", "VOID");
+            return mutation;
+        }
+
+        var no = 0;
+
+        var funcBlock = Abbozza.getTopBlock(name);
+        if (name == null)
+            return;
+
+        var parameters = funcBlock.symbols.getParameters(true);
+        var el;
+        var t;
+
+        for (no = 0; no < parameters.length; no++) {
+            el = document.createElement("par");
+            el.setAttribute("type", parameters[no][1]);
+            el.setAttribute("name", parameters[no][0])
+            mutation.appendChild(el);
+        }
+
+        mutation.setAttribute("type", symbol[1]);
+
+        return mutation;
+    },
+    domToMutation: function (xmlElement) {
+        var name = xmlElement.getAttribute("name");
+        var type = xmlElement.getAttribute("type");
+
+        var parameters = xmlElement.getElementsByTagName("par");
+        var inp;
+
+        var no = Abbozza.deleteInputs(this, "PAR");
+
+        var localeEntry = "func.START_THREAD";
+
+        this.callLabel.setText(__(localeEntry, 0));
+
+        if (parameters[0] == null) {
+            this.setInputsInline(true);
+        } else {
+            no = 0;
+            while (parameters[no]) {
+                this.setInputsInline(false);
+                inp = this.appendValueInput("PAR" + no).
+                        setCheck([parameters[no].getAttribute("type")]);
+                inp.appendField(parameters[no].getAttribute("name"));
+                inp.setAlign(Blockly.ALIGN_RIGHT);
+                no++;
+            }
+            // this.appendDummyInput("PAR" + no).appendField(") " + __(localeEntry, 1));
+        }
+    }
+};
+
+Blockly.Blocks['func_start_thread_id'] = Abbozza.FunctionStartThreadId;
+
+
+Abbozza.FunctionThreadRunning =  {
+  init: function() {
+    this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getCatColor("cat.FUNC"));
+    this.appendValueInput("ID").setCheck("NUMBER")
+        .appendField(__("func.thread_running",0));
+    this.appendDummyInput()
+        .appendField(__("func.thread_running",1));
+    this.setInputsInline(true);
+    this.setOutput(true,["BOOLEAN"]);
+    this.setTooltip('');
+  }
+};
+
+Blockly.Blocks['func_thread_running'] = Abbozza.FunctionThreadRunning;
+
+
+Abbozza.FunctionWaitForThread =  {
+  init: function() {
+    this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getCatColor("cat.FUNC"));
+    this.appendValueInput("ID").setCheck("NUMBER")
+        .appendField(_("func.wait_for_thread"));
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true,"STATEMENT");
+    this.setNextStatement(true,"STATEMENT");
+    this.setTooltip('');
+  }
+};
+
+Blockly.Blocks['func_wait_for_thread'] = Abbozza.FunctionWaitForThread;
+
+
+Abbozza.FunctionSyncThread =  {
+  init: function() {
+    this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getCatColor("cat.FUNC"));
+    this.appendValueInput("ID").setCheck("NUMBER")
+        .appendField(_("func.sync_thread"));
+    this.setInputsInline(true);
+    this.setOutput(false);
+    this.setPreviousStatement(true,"STATEMENT");
+    this.setNextStatement(true,"STATEMENT");
+    this.setTooltip('');
+  }
+};
+
+Blockly.Blocks['func_sync_thread'] = Abbozza.FunctionSyncThread;
+
+
+Abbozza.FunctionMainThread =  {
+  init: function() {
+    this.setHelpUrl(Abbozza.HELP_URL);
+    this.setColour(ColorMgr.getCatColor("cat.FUNC"));
+    this.appendDummyInput().appendField(_("block.MAIN"));
+    this.setInputsInline(true);
+    this.setOutput(true,"NUMBER");
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
+    this.setTooltip('');
+  }
+};
+
+Blockly.Blocks['func_main_thread'] = Abbozza.FunctionMainThread;

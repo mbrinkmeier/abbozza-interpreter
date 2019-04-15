@@ -48,7 +48,7 @@ Abbozza.initWorlds = function () {
     Abbozza.worldFrame.show();
     Abbozza.worldFrame.div.addEventListener("frame_resize",
             function (event) {
-                World.resize();
+                if (World.resize) World.resize();
             }
     );
     Abbozza.worldView = document.createElement("DIV");
@@ -607,7 +607,6 @@ Abbozza.generateSource = function () {
         Abbozza.appendOverlayText(_("msg.code_generated"));
     }
     Abbozza.closeOverlay();
-    AbbozzaInterpreter.resetSource();
 }
 
 
@@ -888,3 +887,34 @@ Abbozza._storeSketch = function (key) {
     
     return xml;
 };
+
+/**
+ * Add the variable blocks of the current world
+ * @param {type} list
+ */
+Abbozza.addVariableBlocks = function(list) {
+    if ( World.addVariableBlocks ) {
+        World.addVariableBlocks(list);
+    }
+}
+
+Abbozza.addTypes = function(list) {
+    if ( World.addTypes ) {
+        World.addTypes(list);
+    }
+}
+
+Abbozza.addTypesToMenu = function(list) {
+    if ( World.addTypesToMenu ) {
+        World.addTypesToMenu(list);
+    }
+}
+
+Abbozza.getBlockForSymbolEntry = function(entry, workspace) {
+    if ( World.getBlockForSymbolEntry) {
+        return World.getBlockForSymbolEntry(entry, workspace);
+    } else {
+        return null;
+    }
+}
+
