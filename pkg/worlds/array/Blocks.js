@@ -11,7 +11,16 @@ Abbozza.ArrayReset = {
                 [_("array.ascending"),"ASC"],
                 [_("array.descending"),"DESC"]
             ]),"ORDER")
+            .setCheck("NUMBER")
             .appendField(__("array.reset",1));
+        this.appendValueInput("MIN")
+            .setAlign(Blockly.ALIGN_RIGHT)            
+            .setCheck("NUMBER")
+            .appendField(__("array.reset",2));
+        this.appendValueInput("MAX")
+            .setAlign(Blockly.ALIGN_RIGHT)            
+            .setCheck("NUMBER")
+            .appendField(__("array.reset",3));
         this.setTooltip('');
     },
     execute : function(entry) {
@@ -22,8 +31,17 @@ Abbozza.ArrayReset = {
                 entry.phase = 1;
                 break;
             case 1:
-                World.arrayWorld.reset(entry.callResult,entry.order);
-                entry.nonBlocking = true;
+                entry.size = entry.callResult;
+                AbbozzaInterpreter.callInput(this,"MIN");
+                entry.phase = 2;
+                break;
+            case 2:
+                entry.min = entry.callResult;
+                AbbozzaInterpreter.callInput(this,"MAX");
+                entry.phase = 3;
+                break;
+            case 3:
+                World.arrayWorld.fill(entry.size,entry.min,entry.callResult,entry.order);
                 entry.finished();
                 break;
             default:
@@ -34,7 +52,7 @@ Abbozza.ArrayReset = {
 }
 
 Blockly.Blocks['array_reset'] = Abbozza.ArrayReset;
-AbbozzaCode['array_reset'] = ['reset(#);',["V_SIZE"]];
+AbbozzaCode['array_reset'] = ['fill(#,#,#,#);',["V_SIZE","V_MIN","V_MAX","F_ORDER"]];
 
 
 
@@ -221,3 +239,36 @@ Abbozza.ArrayAsIndex = {
 Blockly.Blocks['array_as_index'] = Abbozza.ArrayAsIndex;
 AbbozzaCode['array_as_index'] = ['showAsIndex("#","#");',["F_VAR","F_COLOR"]];
 
+
+Abbozza.ArrayAsVariable = {
+    init : function() {
+        this.setHelpUrl(Abbozza.HELP_URL);
+        this.setColour(ColorMgr.getCatColor("cat.ARRAY"));
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);            
+        this.setOutput(false);
+        this.setPreviousStatement(true,"STATEMENT");
+        this.setNextStatement(true,"STATEMENT");
+        this.setInputsInline(true);
+        this.appendDummyInput("INDEX")
+            .appendField(__("array.as_variable",0))
+            .appendField(new VariableTypedDropdown(this, "NUMBER", null), "VAR")
+            .appendField(__("array.as_variable",1));
+        this.setTooltip('');
+    },
+    execute : function(entry) {
+        switch ( entry.phase) {
+            case 0:
+                var varName = this.getFieldValue("VAR");
+                World.arrayWorld.showAsVariable(varName);
+                entry.finished();
+                return true;
+                break;
+            default:
+                return false;
+        }
+    }    
+}
+
+Blockly.Blocks['array_as_variable'] = Abbozza.ArrayAsVariable;
+AbbozzaCode['array_as_variable'] = ['showAsVariable("#");',["F_VAR"]];

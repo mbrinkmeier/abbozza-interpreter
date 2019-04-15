@@ -9,6 +9,18 @@
                         <mutation confirmed="false"/>
                     </block>
                 </value>                                
+                <value name="MIN">
+                    <block type="math_number">
+                        <field name="VALUE">0</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                                
+                <value name="MAX">
+                    <block type="math_number">
+                        <field name="VALUE">999</field>
+                        <mutation confirmed="false"/>
+                    </block>
+                </value>                                
             </block>     
             <block type="array_length"/>     
             <block type="array_get">
@@ -48,6 +60,7 @@
                 </value>                
             </block>     
             <block type="array_as_index"/>
+            <block type="array_as_variable"/>
         </category>             
     </feature>
 </features>
