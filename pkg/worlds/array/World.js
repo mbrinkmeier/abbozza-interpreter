@@ -452,13 +452,16 @@ World.createWrapper = function(func) {
 }
 
 World.initSourceInterpreter = function(interpreter,scope) {
-    var funcs = [
-      'swap','fill','showAsIndex','showAsVariable','getLength','set','get',
-    ];
-    for ( var i = 0; i < funcs.length; i++ ) {
-        interpreter.setProperty(scope,funcs[i],
-            interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
-        );        
-    }
+    AbbozzaInterpreter.createWrappers( interpreter, scope,
+        [
+            [ "fill"       ,World.arrayWorld,World.arrayWorld.fill       ,false,true ],
+            [ "swap"       ,World.arrayWorld,World.arrayWorld.swap       ,false,true ],
+            [ "reset"      ,World.arrayWorld,World.arrayWorld.reset      ,false,true ],
+            [ "showAsIndex",World.arrayWorld,World.arrayWorld.showAsIndex,false,true ],
+            [ "showAsVariable",World.arrayWorld,World.arrayWorld.showAsVariable,false,true ],
+            [ "getLength"  ,World.arrayWorld,World.arrayWorld.getLength  ,false,false],
+            [ "set"        ,World.arrayWorld,World.arrayWorld.set        ,false,true ],
+            [ "get"        ,World.arrayWorld,World.arrayWorld.get        ,false,false]
+        ]
+    );
 }
-

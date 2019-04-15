@@ -269,30 +269,13 @@ Hanoi.prototype.getSize = function(pos) {
     return 0;
 }
 
-
-World.wrapper = function(func,args) {
-    return func.apply(World.hanoi,args);
-}
-
-
-World.createWrapper = function(func) {
-    return function(arg) {
-        var args= [];
-        for ( var i = 0 ; i < arguments.length; i++ ) {
-            args[i] = arguments[i];
-        }
-        return World.wrapper(World.hanoi[func],args);        
-    }
-}
-
 World.initSourceInterpreter = function(interpreter,scope) {
     var funcs = [
-      'moveDisc','getNumberOfDiscs','getSize','reset'
+      ['moveDisc'        ,World.hanoi,World.hanoi.moveDisc        ,false,true ],
+      ['getNumberOfDiscs',World.hanoi,World.hanoi.getNumberOfDiscs,false,false],
+      ['getSize'         ,World.hanoi,World.hanoi.getSize         ,false,false],
+      ['reset'           ,World.hanoi,World.hanoi.reset           ,false,false]
     ];
-    for ( var i = 0; i < funcs.length; i++ ) {
-        interpreter.setProperty(scope,funcs[i],
-            interpreter.createNativeFunction( World.createWrapper(funcs[i]) )
-        );        
-    }
+    AbbozzaInterpreter.createWrappers(interpreter,scope,funcs);
 }
 

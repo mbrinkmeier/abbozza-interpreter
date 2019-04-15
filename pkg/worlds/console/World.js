@@ -244,48 +244,11 @@ Console.prototype.keydown = function (event) {
 World.initSourceInterpreter = function(interpreter,scope) {
     AbbozzaInterpreter.createWrappers( interpreter, scope,
         [
-            [ "println" ,false,World.mycon,World.mycon.println ],
-            [ "print"   ,false,World.mycon,World.mycon.print ],
-            [ "readline",true,World.mycon,World.mycon.readline ],
-            [ "readkey",true,World.mycon,World.mycon.readkey ],
-            [ "clear",false,World.mycon,World.mycon.clear ]
+            [ "println" ,World.mycon,World.mycon.println ,false,true ],
+            [ "print"   ,World.mycon,World.mycon.print   ,false,true ],
+            [ "readline",World.mycon,World.mycon.readline,true ,true ],
+            [ "readkey" ,World.mycon,World.mycon.readkey ,true ,true ],
+            [ "clear"   ,World.mycon,World.mycon.clear   ,true ,true ]
         ]
     );
-    // interpreter.setProperty(scope,"println",AbbozzaInterpreter.createWrapper(interpreter,false,World.mycon,World.mycon.println));
-    // interpreter.setProperty(scope,"readline",AbbozzaInterpreter.createWrapper(interpreter,true,World.mycon,World.mycon.readline));
-    // interpreter.setProperty(scope,"print",AbbozzaInterpreter.createWrapper(interpreter,false,World.mycon,World.mycon.print));
-    // interpreter.setProperty(scope,"readkey",AbbozzaInterpreter.createWrapper(interpreter,true,World.mycon,World.mycon.readkey));
-    // interpreter.setProperty(scope,"clear",AbbozzaInterpreter.createWrapper(interpreter,false,World.mycon,World.mycon.clear));
-
-    // interpreter.setProperty(scope,"println",interpreter.createNativeFunction(World.printlnWrapper));
-    // interpreter.setProperty(scope,"readline",interpreter.createAsyncFunction(World.readlineWrapper));
-    // interpreter.setProperty(scope,"print",interpreter.createNativeFunction(World.printWrapper));
-    // interpreter.setProperty(scope,"readkey",interpreter.createAsyncFunction(World.readkeyWrapper));
-    // interpreter.setProperty(scope,"clear",interpreter.createNativeFunction(World.clearWrapper));
 }
-
-/*
-World.printWrapper = function(text) {
-    World.mycon.print(text);
-}
-
-World.printlnWrapper = function(text) {
-    World.mycon.println(text);
-}
-
-World.clearWrapper = function() {
-    World.mycon.clear();
-}
-
-World.readkeyWrapper = function(callback) {
-    return World.mycon.readkey( function(text) {
-        callback(text);
-    });
-}
-
-World.readlineWrapper = function(callback) {
-    return World.mycon.readline( function(text) {
-        callback(text);
-    });
-}
-*/

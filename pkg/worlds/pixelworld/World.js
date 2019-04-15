@@ -312,29 +312,6 @@ World.setEditable = function(editable) {
 
 
 
-
-/**
- * 
- * @param {type} func
- * @param {type} args
- * @returns {unresolved}
- */
-World.wrapper = function(func,args) {
-    return func.apply(World.pixelworld,args);
-};
-
-
-World.createWrapper = function(func) {
-    return function(arg) {
-        var args= [];
-        for ( var i = 0 ; i < arguments.length; i++ ) {
-            args[i] = arguments[i];
-        }
-        return World.wrapper(World.pixelworld[func],args);        
-    };
-};
-
-
 /**
  * Initialize the source interpreter
  * 
@@ -345,11 +322,17 @@ World.createWrapper = function(func) {
 World.initSourceInterpreter = function(interpreter,scope) {
     // Create wrappers for al operations having only parameters of basic types.
     var funcs = [
-      'setPixel','getPixelRed','getPixelGreen','getPixelBlue','setDrawColor'
+      'getPixelRed','getPixelGreen','getPixelBlue','setDrawColor'
     ];
-    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.pixelworld,funcs);
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.pixelworld,funcs,false);
    
+    var funcs = [
+      'setPixel'
+    ];
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.pixelworld,funcs,true);
+
     var clearWrapper = function(color) {
+        AbbozzaInterpreter.currentThread.nonBlocking = true;
         World.pixelworld.clear(color.data);
     }
     interpreter.setProperty(scope, 'clear', interpreter.createNativeFunction(clearWrapper, false));

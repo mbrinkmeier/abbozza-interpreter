@@ -155,7 +155,8 @@
             <div class="sourcebuttons">
                 <img class="sourcebutton" onclick="Abbozza.generateSource()" src="/img/generate.png"/>
                 <img id="stepSource" class="sourcebutton" onclick="AbbozzaInterpreter.stepSource()" src="/img/step.png"/>
-                <img id="runSource" class="sourcebutton" onclick="AbbozzaInterpreter.runSource()" src="/img/run.png"/>
+                <img id="runSource" class="sourcebutton" onclick="AbbozzaInterpreter.runSource(false)" src="/img/run.png"/>
+                <img id="speedrunSource" class="sourcebutton" onclick="AbbozzaInterpreter.runSource(true)" src="/img/speedrun.png"/>
                 <img class="sourcebutton" onclick="AbbozzaInterpreter.resetSource()" src="/img/stop.png"/>
                 <img class="sourcebutton" onclick="Abbozza.loadSource()" src="/img/load.png"/>
                 <img class="sourcebutton" onclick="Abbozza.saveSource()" src="/img/save.png"/>
@@ -172,7 +173,7 @@
         <div class="topButton" id="step" title="Step" onclick="AbbozzaInterpreter.step()"><img width=50 height=50  src="/img/step.png"></div>
         <div class="topButton" id="runButtons">
             <div class="toolButton" id="run" title="Run" onclick="AbbozzaInterpreter.run(false)"><img width=50 height=50  src="/img/run.png"></div>
-            <div class="toolButton" id="speedrun" title="Speed Run" onclick="AbbozzaInterpreter.run(true)"><img width=50 height=50  src="/img/run.png"></div>
+            <div class="toolButton" id="speedrun" title="Speed Run" onclick="AbbozzaInterpreter.run(true)"><img width=50 height=50  src="/img/speedrun.png"></div>
         </div>
         <div class="topButton" id="stop" title="Stop" onclick="AbbozzaInterpreter.reset()"><img width=50 height=50  src="/img/stop.png"></div>
         <div class="topButton" id="new" title="Neuer Sketch" onclick="Abbozza.newSketch()"><img width=50 height=50  src="/img/new.png"></div>

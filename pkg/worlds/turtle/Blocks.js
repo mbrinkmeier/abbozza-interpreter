@@ -499,7 +499,20 @@ AbbozzaCode['turtle_turn_left'] = [ 'turnLeft(#);',["V_VALUE"]];
 AbbozzaCode['turtle_turn_right'] = [ 'turnRight(#);',["V_VALUE"]];
 AbbozzaCode['turtle_set_direction'] = [ 'setDirection(#);',["V_VALUE"]];
 AbbozzaCode['turtle_set_width'] = [ 'setWidth(#);',["V_VALUE"]];
-AbbozzaCode['turtle_set_color'] = [ 'setColor(#);',["F_COLOR"]];
+AbbozzaCode['turtle_set_color'] = [ 'setRGBColor(#);',[function (generator) {
+        var color = generator.fieldToCode(this,"COLOR");
+        
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+        var red = parseInt(result[1],16);
+        var green = parseInt(result[2],16);
+        var blue = parseInt(result[3],16);
+        
+        var code = "";
+        var code = "";
+        code = red + "," + green + "," + blue;
+        
+        return code;
+    }]];
 AbbozzaCode['turtle_set_rgb_color'] = [ 'setRGBColor(#,#,#);',["V_RED","V_GREEN","V_BLUE"]];
 AbbozzaCode['turtle_penup'] = [ 'penUp();',[]];
 AbbozzaCode['turtle_pendown'] = [ 'penDown();',[]];

@@ -41,6 +41,7 @@ Abbozza.ArrayReset = {
                 entry.phase = 3;
                 break;
             case 3:
+                entry.nonBlocking = true;
                 World.arrayWorld.fill(entry.size,entry.min,entry.callResult,entry.order);
                 entry.finished();
                 break;
@@ -52,7 +53,7 @@ Abbozza.ArrayReset = {
 }
 
 Blockly.Blocks['array_reset'] = Abbozza.ArrayReset;
-AbbozzaCode['array_reset'] = ['fill(#,#,#,#);',["V_SIZE","V_MIN","V_MAX","F_ORDER"]];
+AbbozzaCode['array_reset'] = ['fill(#,#,#,"#");',["V_SIZE","V_MIN","V_MAX","F_ORDER"]];
 
 
 

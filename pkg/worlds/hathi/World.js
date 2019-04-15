@@ -1580,7 +1580,23 @@ Hathi.prototype.fromDom = function(xml) {
 };
 
 
-Hathi.prototype.setEditable = function(editable) {
-    this.editable= editable;
+World.initSourceInterpreter = function(interpreter,scope) {
+    // Blocking wrappers
+    var funcs = [
+      'steppedForward','isOnBanana','isForwardEmpty','isForward','isOnBasket'
+    ];
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs,false);
+    
+    // Non-Blocking wrappers
+    var funcs = [
+      'turnRight','turnLeft','forward','pickUpBanana','dropBanana', 'say', 'getBananas', 'getBananasOnField'
+    ];
+    AbbozzaInterpreter.createNativeWrappersByName(interpreter,scope,World.hathi,funcs,true);
+};
+
+
+
+World.setEditable = function(editable) {
+    this.editable = editable;
 }
 
