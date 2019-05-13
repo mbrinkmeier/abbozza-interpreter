@@ -72,10 +72,12 @@ AbbozzaInterpreter.setState = function (state, sourceState) {
         case AbbozzaInterpreter.STATE_ERROR:
             document.getElementById("run").children[0].src = "/img/run.png";
             document.getElementById("speedrun").children[0].src = "/img/speedrun.png";
+            document.getElementById("speedrun").style.display = "block";
             break;
         case AbbozzaInterpreter.STATE_RUNNING:
             document.getElementById("run").children[0].src = "/img/pause.png";
             document.getElementById("speedrun").children[0].src = "/img/pause.png";
+            document.getElementById("speedrun").style.display = "none";
             break;
     }
 
@@ -88,10 +90,12 @@ AbbozzaInterpreter.setState = function (state, sourceState) {
         case AbbozzaInterpreter.STATE_ERROR:
             document.getElementById("runSource").src = "/img/run.png";
             document.getElementById("speedrunSource").src = "/img/speedrun.png";
+            document.getElementById("speedrunSource").style.display = "inline";
             break;
         case AbbozzaInterpreter.STATE_RUNNING:
             document.getElementById("runSource").src = "/img/pause.png";
             document.getElementById("speedrunSource").src = "/img/pause.png";
+            document.getElementById("speedrunSource").style.display = "none";
             break;
     }
 };
