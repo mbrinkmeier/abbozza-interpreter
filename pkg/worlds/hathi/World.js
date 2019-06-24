@@ -36,7 +36,7 @@ World.initView = function(view) {
     document.getElementById("size").value = World.hathi.squareSize;
     
     document.getElementById("width").oninput = function(event) {
-        if ( this.isEditable() ) {
+        if ( World.isEditable() ) {
             World.hathi.setWidth(document.getElementById("width").value);
         } else {
             document.getElementById("width").value = World.hathi.width;            
@@ -44,7 +44,7 @@ World.initView = function(view) {
     }
     
     document.getElementById("height").oninput = function(event) {
-        if ( this.isEditable() ) {
+        if ( World.isEditable() ) {
             World.hathi.setHeight(document.getElementById("height").value);
         } else {
             document.getElementById("height").value = World.hathi.height;
@@ -214,7 +214,7 @@ World.setEditable = function(editable) {
 }
 
 World.isEditable = function() {
-    return ( this.editable && (Abboza.editMode != Abbozza.WORKSHOP_MODE) );
+    return ( this.editable && (Abbozza.editMode != Abbozza.WORKSHOP_MODE) );
 }
 
 /**
@@ -1426,7 +1426,7 @@ Hathi.prototype.say = function(text) {
  * @returns {undefined}
  */
 Hathi.prototype.clicked = function(event) {
-    if ( !this.isEditable() ) return;
+    if ( !World.isEditable() ) return;
     
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize)-1;
@@ -1462,7 +1462,7 @@ Hathi.prototype.clicked = function(event) {
  * @returns {undefined}
  */
 Hathi.prototype.rightclicked = function(event) { 
-    if ( !this.isEditable()) return;
+    if ( !World.isEditable()) return;
     
     var hathi = World.hathi;
     var x = Math.floor(event.offsetX/hathi.squareSize) - 1;
